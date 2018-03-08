@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="author" content="Martin R. Smith" />
+
+<meta name="date" content="2018-03-08" />
+
+<title>Concavity profiles with Profile Parsimony</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceLine, a.sourceLine { display: inline-block; min-height: 1.25em; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; }
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+div.sourceLine, a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource div.sourceLine, .numberSource a.sourceLine
+  { position: relative; }
+pre.numberSource div.sourceLine::before, .numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: absolute; left: -5em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em; }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; color: #aaaaaa;  padding-left: 4px; }
+@media screen {
+a.sourceLine::before { text-decoration: underline; color = initial; }
+}
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.bn { color: #40a070; } /* BaseN */
+code span.fl { color: #40a070; } /* Float */
+code span.ch { color: #4070a0; } /* Char */
+code span.st { color: #4070a0; } /* String */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.ot { color: #007020; } /* Other */
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.fu { color: #06287e; } /* Function */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code span.cn { color: #880000; } /* Constant */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.im { } /* Import */
+code span.va { color: #19177c; } /* Variable */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.op { color: #666666; } /* Operator */
+code span.bu { } /* BuiltIn */
+code span.ex { } /* Extension */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.at { color: #7d9029; } /* Attribute */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#header {
+text-align: center;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Concavity profiles with Profile Parsimony</h1>
+<h4 class="author"><em>Martin R. Smith</em></h4>
+<h4 class="date"><em>2018-03-08</em></h4>
+
+
+
+<div id="profile-parsimony-preparing-data" class="section level1">
+<h1>Profile Parsimony: Preparing data</h1>
+<p>How are profile scores generated and what do they mean?</p>
+<p>In this vignette we’ll understand profile scores, and get a small insight into how they are calculated in the <code>TreeSearch</code> package.</p>
+<p>Let’s get started by loading the package and one of its datasets. (To understand how to load your own phylogenetic data into R, see the separate TreeSearch vignette.) These datasets are those generated by Congreve &amp; Lamsdell <span class="citation">(2016b, 2016a)</span>.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><div class="sourceLine" id="1" href="#1" data-line-number="1"><span class="kw">require</span>(phangorn)</div>
+<div class="sourceLine" id="2" href="#2" data-line-number="2"><span class="kw">require</span>(TreeSearch)</div>
+<div class="sourceLine" id="3" href="#3" data-line-number="3"><span class="kw">data</span>(referenceTree)</div>
+<div class="sourceLine" id="4" href="#4" data-line-number="4"><span class="kw">data</span>(congreveLamsdellMatrices)</div>
+<div class="sourceLine" id="5" href="#5" data-line-number="5">dataset &lt;-<span class="st"> </span>congreveLamsdellMatrices[[<span class="dv">1</span>]]</div></code></pre>
+<p>One thing that`s interesting to know is how much extra precision is gained by running larger samples of trees when generating concavity curves.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><div class="sourceLine" id="1" href="#1" data-line-number="1">preci1 &lt;-<span class="st"> </span><span class="kw">PrepareDataProfile</span>(dataset, <span class="dt">precision=</span><span class="fl">2e+05</span>) <span class="co"># Quick, imprecise</span></div></code></pre>
+<pre><code>## Warning in ICSteps(c(rep(1, a), rep(2, b)), maxIter = m, warn = warn): Will
+## truncate number of iterations at maxIter = 2e+05</code></pre>
+<pre><code>##   Token count 8 14 = 18.1916 bits @ 0 extra steps; simulating 2e+05 trees to estimate cost of further steps.</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><div class="sourceLine" id="1" href="#1" data-line-number="1">preci2 &lt;-<span class="st"> </span><span class="kw">PrepareDataProfile</span>(dataset, <span class="dt">precision=</span><span class="fl">4e+05</span>)</div>
+<div class="sourceLine" id="2" href="#2" data-line-number="2">preci3 &lt;-<span class="st"> </span><span class="kw">PrepareDataProfile</span>(dataset, <span class="dt">precision=</span><span class="fl">8e+05</span>)</div>
+<div class="sourceLine" id="3" href="#3" data-line-number="3">info1 &lt;-<span class="st"> </span><span class="kw">attr</span>(preci1, <span class="st">'info.amounts'</span>)</div>
+<div class="sourceLine" id="4" href="#4" data-line-number="4">info2 &lt;-<span class="st"> </span><span class="kw">attr</span>(preci2, <span class="st">'info.amounts'</span>)</div>
+<div class="sourceLine" id="5" href="#5" data-line-number="5">info3 &lt;-<span class="st"> </span><span class="kw">attr</span>(preci3, <span class="st">'info.amounts'</span>)</div>
+<div class="sourceLine" id="6" href="#6" data-line-number="6">diff32 &lt;-<span class="st"> </span><span class="kw">as.double</span>(info3 <span class="op">-</span><span class="st"> </span>info2)</div>
+<div class="sourceLine" id="7" href="#7" data-line-number="7"><span class="kw">hist</span> (diff32, <span class="dt">breaks=</span><span class="kw">seq</span>(<span class="kw">min</span>(diff32)<span class="op">-</span><span class="fl">0.002</span>, <span class="kw">max</span>(diff32) <span class="op">+</span><span class="st"> </span><span class="fl">0.005</span>, <span class="dt">by=</span><span class="fl">0.002</span>))</div></code></pre>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<pre class="sourceCode r"><code class="sourceCode r"><div class="sourceLine" id="1" href="#1" data-line-number="1"><span class="cf">if</span> (all_the_time_in_the_world &lt;-<span class="st"> </span><span class="ot">FALSE</span>) {</div>
+<div class="sourceLine" id="2" href="#2" data-line-number="2">preci4 &lt;-<span class="st"> </span><span class="kw">PrepareDataProfile</span>(dataset, <span class="dt">precision=</span><span class="fl">1.6e+06</span>)</div>
+<div class="sourceLine" id="3" href="#3" data-line-number="3">preci5 &lt;-<span class="st"> </span><span class="kw">PrepareDataProfile</span>(dataset, <span class="dt">precision=</span><span class="fl">3.2e+06</span>) <span class="co"># Slow, more precise</span></div>
+<div class="sourceLine" id="4" href="#4" data-line-number="4"></div>
+<div class="sourceLine" id="5" href="#5" data-line-number="5">info4 &lt;-<span class="st"> </span><span class="kw">attr</span>(preci4, <span class="st">'info.amounts'</span>)</div>
+<div class="sourceLine" id="6" href="#6" data-line-number="6">info5 &lt;-<span class="st"> </span><span class="kw">attr</span>(preci5, <span class="st">'info.amounts'</span>)</div>
+<div class="sourceLine" id="7" href="#7" data-line-number="7"></div>
+<div class="sourceLine" id="8" href="#8" data-line-number="8">diff42 &lt;-<span class="st"> </span><span class="kw">as.double</span>(info4 <span class="op">-</span><span class="st"> </span>info2)</div>
+<div class="sourceLine" id="9" href="#9" data-line-number="9">diff43 &lt;-<span class="st"> </span><span class="kw">as.double</span>(info4 <span class="op">-</span><span class="st"> </span>info3)</div>
+<div class="sourceLine" id="10" href="#10" data-line-number="10">diff54 &lt;-<span class="st"> </span><span class="kw">as.double</span>(info5 <span class="op">-</span><span class="st"> </span>info4)</div>
+<div class="sourceLine" id="11" href="#11" data-line-number="11">nonzero &lt;-<span class="st"> </span>info4 <span class="op">&gt;</span><span class="st"> </span><span class="fl">0.00001</span></div>
+<div class="sourceLine" id="12" href="#12" data-line-number="12"></div>
+<div class="sourceLine" id="13" href="#13" data-line-number="13"><span class="kw">hist</span> (diff43)</div>
+<div class="sourceLine" id="14" href="#14" data-line-number="14"><span class="kw">hist</span> (thisDiff &lt;-<span class="st"> </span>diff54); <span class="kw">quantile</span>(thisDiff, <span class="dt">probs=</span><span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">50</span>, <span class="dv">90</span>, <span class="dv">95</span>, <span class="dv">100</span>)<span class="op">/</span><span class="dv">100</span>)</div>
+<div class="sourceLine" id="15" href="#15" data-line-number="15"><span class="kw">hist</span> (diff42)</div>
+<div class="sourceLine" id="16" href="#16" data-line-number="16"><span class="kw">hist</span>(<span class="dv">100</span><span class="op">*</span>(diff32 <span class="op">/</span><span class="st"> </span>info4)[nonzero])</div>
+<div class="sourceLine" id="17" href="#17" data-line-number="17"><span class="kw">hist</span>(<span class="dv">100</span><span class="op">*</span>(diff42 <span class="op">/</span><span class="st"> </span>info4)[nonzero])</div>
+<div class="sourceLine" id="18" href="#18" data-line-number="18"><span class="kw">hist</span>(<span class="dv">100</span><span class="op">*</span>(diff43 <span class="op">/</span><span class="st"> </span>info4)[nonzero])</div>
+<div class="sourceLine" id="19" href="#19" data-line-number="19">}</div></code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><div class="sourceLine" id="1" href="#1" data-line-number="1">diff12 &lt;-<span class="st"> </span>info1[<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>, ] <span class="op">-</span><span class="st"> </span>info2</div>
+<div class="sourceLine" id="2" href="#2" data-line-number="2"></div>
+<div class="sourceLine" id="3" href="#3" data-line-number="3"><span class="kw">hist</span>(diff12, <span class="dt">breaks=</span><span class="kw">seq</span>(<span class="kw">min</span>(diff12)<span class="op">-</span><span class="fl">0.01</span>, <span class="kw">max</span>(diff12)<span class="op">+</span><span class="fl">0.01</span>, <span class="dt">by=</span><span class="fl">0.01</span>))</div></code></pre>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<pre class="sourceCode r"><code class="sourceCode r"><div class="sourceLine" id="1" href="#1" data-line-number="1"><span class="kw">hist</span>(info3 <span class="op">-</span><span class="st"> </span>info2)</div></code></pre>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<pre class="sourceCode r"><code class="sourceCode r"><div class="sourceLine" id="1" href="#1" data-line-number="1"><span class="kw">hist</span>(info3 <span class="op">-</span><span class="st"> </span>info1[<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>, ])</div></code></pre>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<pre class="sourceCode r"><code class="sourceCode r"><div class="sourceLine" id="1" href="#1" data-line-number="1"><span class="cf">if</span> (all_the_time_in_the_world) {</div>
+<div class="sourceLine" id="2" href="#2" data-line-number="2"><span class="kw">hist</span>(info4 <span class="op">-</span><span class="st"> </span>info2)</div>
+<div class="sourceLine" id="3" href="#3" data-line-number="3">}</div></code></pre>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1>References</h1>
+<div id="refs" class="references">
+<div id="ref-Congreve2016dd">
+<p>Congreve, C. R., &amp; Lamsdell, J. C. (2016a). Data from: Implied weighting and its utility in palaeontological datasets: a study using modelled phylogenetic matrices. <em>Dryad Digital Repository</em>, doi:10.5061/dryad.7dq0j. doi:<a href="https://doi.org/10.5061/dryad.7dq0j">10.5061/dryad.7dq0j</a></p>
+</div>
+<div id="ref-Congreve2016">
+<p>Congreve, C. R., &amp; Lamsdell, J. C. (2016b). Implied weighting and its utility in palaeontological datasets: a study using modelled phylogenetic matrices. <em>Palaeontology</em>, <em>59</em>(3), 447–465. doi:<a href="https://doi.org/10.1111/pala.12236">10.1111/pala.12236</a></p>
+</div>
+</div>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

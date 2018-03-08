@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="author" content="Martin R. Smith" />
+
+<meta name="date" content="2018-03-08" />
+
+<title>Tree Search With Profile Parsimony</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceLine, a.sourceLine { display: inline-block; min-height: 1.25em; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; }
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+div.sourceLine, a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource div.sourceLine, .numberSource a.sourceLine
+  { position: relative; }
+pre.numberSource div.sourceLine::before, .numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: absolute; left: -5em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em; }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; color: #aaaaaa;  padding-left: 4px; }
+@media screen {
+a.sourceLine::before { text-decoration: underline; color = initial; }
+}
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.bn { color: #40a070; } /* BaseN */
+code span.fl { color: #40a070; } /* Float */
+code span.ch { color: #4070a0; } /* Char */
+code span.st { color: #4070a0; } /* String */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.ot { color: #007020; } /* Other */
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.fu { color: #06287e; } /* Function */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code span.cn { color: #880000; } /* Constant */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.im { } /* Import */
+code span.va { color: #19177c; } /* Variable */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.op { color: #666666; } /* Operator */
+code span.bu { } /* BuiltIn */
+code span.ex { } /* Extension */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.at { color: #7d9029; } /* Attribute */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#header {
+text-align: center;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Tree Search With Profile Parsimony</h1>
+<h4 class="author"><em>Martin R. Smith</em></h4>
+<h4 class="date"><em>2018-03-08</em></h4>
+
+
+
+<p><code>TreeSearch</code> is an R package that allows, among other things, parsimony search on morphological datasets using the Profile Parsimony optimality criterion of Faith &amp; Trueman <span class="citation">(2001)</span>.</p>
+<p>Profile Parsimony finds the tree that is most faithful to the information contained within a given dataset.</p>
+<p>Character data are read from a   format using the R function ; see the latter function’s  for details.</p>
+<p> files can be edited in any standard text editor, for example .</p>
+<p>A notable limitation is that the parser cannot interpret curly braces, for example {01}.<br />
+Ambiguous tokens of this nature should be replaced with a separate character, for example ‘A’ to denote {01}, ‘B’ to denote {12}, perhaps using a search-and-replace operation in your favourite text editor.</p>
+<p>This said, the Profile Parsimony algorithm is currently implemented only for binary characters with no ambiguous tokens. I hope to address this limitation soon.</p>
+<div id="loading-the-package" class="section level2">
+<h2>Loading the package</h2>
+<p>To install the package for the first time, type</p>
+<pre class="sourceCode r"><code class="sourceCode r"><div class="sourceLine" id="1" href="#1" data-line-number="1"><span class="kw">install.packages</span>(<span class="st">'TreeSearch'</span>)</div></code></pre>
+<p>Once the package has been installed, load it using</p>
+<pre class="sourceCode r"><code class="sourceCode r"><div class="sourceLine" id="1" href="#1" data-line-number="1"><span class="kw">library</span>(<span class="st">'TreeSearch'</span>)</div></code></pre>
+</div>
+<div id="loading-data-into-the-package" class="section level2">
+<h2>Loading data into the package</h2>
+<p>To use this script on your own data, launch R, and type (or copy-paste) the following text into the R console. Lines starting with ‘#’ are comments and do not need to be copied.</p>
+<p>Data can be read from a nexus file (note the restrictions detailed above):</p>
+<pre class="sourceCode r"><code class="sourceCode r"><div class="sourceLine" id="1" href="#1" data-line-number="1">my.data &lt;-<span class="st"> </span><span class="kw">read.nexus.data</span>(<span class="st">'C:/path/to/filename.nex'</span>)</div></code></pre>
+<p>Alternatively you can use a built-in dataset:</p>
+<pre class="sourceCode r"><code class="sourceCode r"><div class="sourceLine" id="1" href="#1" data-line-number="1"><span class="kw">data</span>(congreveLamsdellMatrices)</div>
+<div class="sourceLine" id="2" href="#2" data-line-number="2">my.data &lt;-<span class="st"> </span>congreveLamsdellMatrices[[<span class="dv">10</span>]]</div></code></pre>
+<p>A contrast matrix translates the tokens used in your dataset to the character states to which they correspond: for example decoding ‘A’ to {01}. For more details, see the ‘phangorn-specials’ vignette in the phangorn package, accesible by typing ‘?phangorn’ in the R prompt and navigating to index &gt; package vignettes.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><div class="sourceLine" id="1" href="#1" data-line-number="1">contrast.matrix &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dt">data=</span><span class="kw">c</span>(</div>
+<div class="sourceLine" id="2" href="#2" data-line-number="2"><span class="co"># 0 1 -  # Each column corresponds to a character-state</span></div>
+<div class="sourceLine" id="3" href="#3" data-line-number="3">  <span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>, <span class="co"># Each row corresponds to a token, here 0, denoting the character-state set {0} </span></div>
+<div class="sourceLine" id="4" href="#4" data-line-number="4">  <span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>, <span class="co"># 1 | {1}</span></div>
+<div class="sourceLine" id="5" href="#5" data-line-number="5">  <span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>, <span class="co"># - | {-}</span></div>
+<div class="sourceLine" id="6" href="#6" data-line-number="6">  <span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>, <span class="co"># A | {01}</span></div>
+<div class="sourceLine" id="7" href="#7" data-line-number="7">  <span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>, <span class="co"># + | {01}</span></div>
+<div class="sourceLine" id="8" href="#8" data-line-number="8">  <span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>  <span class="co"># ? | {01-}</span></div>
+<div class="sourceLine" id="9" href="#9" data-line-number="9">), <span class="dt">ncol=</span><span class="dv">3</span>, <span class="dt">byrow=</span><span class="ot">TRUE</span>); <span class="co"># ncol should correspond to the number of columns in the matrix</span></div>
+<div class="sourceLine" id="10" href="#10" data-line-number="10"><span class="kw">dimnames</span>(contrast.matrix) &lt;-<span class="st"> </span><span class="kw">list</span>(</div>
+<div class="sourceLine" id="11" href="#11" data-line-number="11">  <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="st">'-'</span>, <span class="st">'A'</span>, <span class="st">'+'</span>, <span class="st">'?'</span>), <span class="co"># A list of the tokens corresponding to each row</span></div>
+<div class="sourceLine" id="12" href="#12" data-line-number="12">                               <span class="co"># in the contrast matrix</span></div>
+<div class="sourceLine" id="13" href="#13" data-line-number="13">  <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="st">'-'</span>) <span class="co"># A list of the character-states corresponding to the columns </span></div>
+<div class="sourceLine" id="14" href="#14" data-line-number="14">               <span class="co"># in the contrast matrix</span></div>
+<div class="sourceLine" id="15" href="#15" data-line-number="15">)</div>
+<div class="sourceLine" id="16" href="#16" data-line-number="16"></div>
+<div class="sourceLine" id="17" href="#17" data-line-number="17">contrast.matrix</div></code></pre>
+<pre><code>##   0 1 -
+## 0 1 0 0
+## 1 0 1 0
+## - 0 0 1
+## A 1 1 0
+## + 1 1 0
+## ? 1 1 1</code></pre>
+<p>If you need to use a contrast matrix, convert the data using</p>
+<pre class="sourceCode r"><code class="sourceCode r"><div class="sourceLine" id="1" href="#1" data-line-number="1">my.phyDat &lt;-<span class="st"> </span><span class="kw">phyDat</span>(my.data, <span class="dt">type=</span><span class="st">'USER'</span>, <span class="dt">contrast=</span>contrast.matrix)</div></code></pre>
+<p>We don’t have any such ambiguities in our dataset, so we can go straight in with</p>
+<pre class="sourceCode r"><code class="sourceCode r"><div class="sourceLine" id="1" href="#1" data-line-number="1">my.phyDat &lt;-<span class="st"> </span>phangorn<span class="op">::</span><span class="kw">phyDat</span>(my.data, <span class="dt">type=</span><span class="st">'USER'</span>, <span class="dt">levels=</span><span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</div></code></pre>
+<p>We then need to prepare our dataset for Profile Parsimony by calculating the information loss implied by each additional step in each character. Ideally we’d pick a high value of precision (&gt; 1e+06): this takes a while, but only needs doing once for each dataset of a given size.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><div class="sourceLine" id="1" href="#1" data-line-number="1">my.prepdata &lt;-<span class="st"> </span><span class="kw">PrepareDataProfile</span>(my.phyDat, <span class="dt">precision=</span><span class="fl">4e+04</span>)</div></code></pre>
+<p>To start analysis, we need to load a starting tree. We can do this at random:</p>
+<pre class="sourceCode r"><code class="sourceCode r"><div class="sourceLine" id="1" href="#1" data-line-number="1"><span class="kw">set.seed</span>(<span class="dv">888</span>)</div>
+<div class="sourceLine" id="2" href="#2" data-line-number="2">tree &lt;-<span class="st"> </span><span class="kw">RandomTree</span>(my.phyDat)</div></code></pre>
+<p>Or using a neighbour joining method, to start at a reasonably good tree:</p>
+<pre class="sourceCode r"><code class="sourceCode r"><div class="sourceLine" id="1" href="#1" data-line-number="1">tree &lt;-<span class="st"> </span><span class="kw">NJTree</span>(my.phyDat)</div>
+<div class="sourceLine" id="2" href="#2" data-line-number="2"><span class="kw">par</span>(<span class="dt">mar=</span><span class="kw">rep</span>(<span class="fl">0.25</span>, <span class="dv">4</span>), <span class="dt">cex=</span><span class="fl">0.75</span>) <span class="co"># make plot easier to read</span></div>
+<div class="sourceLine" id="3" href="#3" data-line-number="3"><span class="kw">plot</span>(tree)</div></code></pre>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>Calculate the tree’s parsimony score:</p>
+<pre class="sourceCode r"><code class="sourceCode r"><div class="sourceLine" id="1" href="#1" data-line-number="1"><span class="kw">ProfileScore</span>(tree, my.prepdata)</div></code></pre>
+<pre><code>## [1] -277.2639</code></pre>
+<p>Search for a better tree:</p>
+<pre class="sourceCode r"><code class="sourceCode r"><div class="sourceLine" id="1" href="#1" data-line-number="1">better.tree &lt;-<span class="st"> </span><span class="kw">ProfileTreeSearch</span>(ape<span class="op">::</span><span class="kw">root</span>(tree, <span class="st">'1'</span>, <span class="dt">resolve.root=</span><span class="ot">TRUE</span>), my.prepdata, <span class="dt">EdgeSwapper=</span>RootedTBRSwap)</div></code></pre>
+<pre><code>## 
+##   - Performing tree search.  Initial score: -277.2639
+##   - Final score -278.7152 found 2 times after 100 rearrangements</code></pre>
+<p>The parsimony ratchet <span class="citation">(Nixon, 1999)</span> is better at finding globally optimal trees. <code>ProfileRatchet</code> is a convenient wrapper for the underlying function <code>Ratchet</code>.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><div class="sourceLine" id="1" href="#1" data-line-number="1"><span class="co"># Longwinded approach:</span></div>
+<div class="sourceLine" id="2" href="#2" data-line-number="2">better.tree &lt;-<span class="st"> </span><span class="kw">Ratchet</span>(better.tree, my.prepdata, <span class="dt">searchHits=</span><span class="dv">10</span>, <span class="dt">searchIter=</span><span class="dv">100</span>, <span class="dt">ratchIter=</span><span class="dv">5</span>,</div>
+<div class="sourceLine" id="3" href="#3" data-line-number="3">                       <span class="dt">swappers=</span><span class="kw">list</span>(RootedTBRSwap, RootedSPRSwap, RootedNNISwap),</div>
+<div class="sourceLine" id="4" href="#4" data-line-number="4">                       <span class="dt">InitializeData=</span>ProfileInitMorphy, <span class="dt">CleanUpData=</span>ProfileDestroyMorphy,</div>
+<div class="sourceLine" id="5" href="#5" data-line-number="5">                       <span class="dt">TreeScorer=</span>ProfileScoreMorphy, <span class="dt">Bootstrapper=</span>ProfileBootstrap)</div></code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><div class="sourceLine" id="1" href="#1" data-line-number="1"><span class="co"># Less typing!</span></div>
+<div class="sourceLine" id="2" href="#2" data-line-number="2">RootedSwappers &lt;-<span class="st"> </span><span class="kw">list</span>(RootedTBRSwap, RootedSPRSwap, RootedNNISwap)</div>
+<div class="sourceLine" id="3" href="#3" data-line-number="3">better.tree &lt;-<span class="st"> </span><span class="kw">ProfileRatchet</span>(better.tree, my.prepdata,</div>
+<div class="sourceLine" id="4" href="#4" data-line-number="4">                              <span class="dt">swappers=</span>RootedSwappers,</div>
+<div class="sourceLine" id="5" href="#5" data-line-number="5">                              <span class="dt">searchHits=</span><span class="dv">10</span>, <span class="dt">searchIter=</span><span class="dv">100</span>, <span class="dt">ratchIter=</span><span class="dv">5</span>)</div></code></pre>
+<pre><code>## 
+## * Beginning Parsimony Ratchet, with initial score -278.7152
+## Completed parsimony ratchet after 5 iterations with score -299.3744</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><div class="sourceLine" id="1" href="#1" data-line-number="1"><span class="kw">par</span>(<span class="dt">mar=</span><span class="kw">rep</span>(<span class="fl">0.25</span>, <span class="dv">4</span>), <span class="dt">cex=</span><span class="fl">0.75</span>) <span class="co"># make plot easier to read</span></div>
+<div class="sourceLine" id="2" href="#2" data-line-number="2"><span class="kw">plot</span>(better.tree)</div></code></pre>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>The default parameters may not be enough to find the optimal tree; type <code>?Ratchet</code> to view all search parameters.</p>
+</div>
+<div id="view-the-results" class="section level2">
+<h2>View the results</h2>
+<p>In parsimony search, it is generally good practice to consider trees that are slightly suboptimal. Here, we’ll take a consensus that includes all trees that are suboptimal by up to 1.5 bits. To sample this region of tree space well, the trick is to use large values of <code>ratchHits</code> and <code>ratchIter</code>, and small values of <code>searchHits</code> and <code>searchiter</code>, so that many runs don’t quite hit the optimal tree. In a serious study, you would want to sample many more than 25 Ratchet hits (<code>ratchHits</code>).</p>
+<pre class="sourceCode r"><code class="sourceCode r"><div class="sourceLine" id="1" href="#1" data-line-number="1">suboptimals &lt;-<span class="st"> </span><span class="kw">ProfileRatchet</span>(better.tree, my.prepdata, </div>
+<div class="sourceLine" id="2" href="#2" data-line-number="2">                              <span class="dt">swappers=</span><span class="kw">list</span>(RootedTBRSwap),</div>
+<div class="sourceLine" id="3" href="#3" data-line-number="3">                              <span class="dt">returnAll=</span><span class="ot">TRUE</span>, <span class="dt">suboptimal=</span><span class="dv">5</span>, </div>
+<div class="sourceLine" id="4" href="#4" data-line-number="4">                              <span class="dt">ratchHits=</span><span class="dv">25</span>, <span class="dt">ratchIter=</span><span class="dv">5000</span>, </div>
+<div class="sourceLine" id="5" href="#5" data-line-number="5">                              <span class="dt">bootstrapHits=</span><span class="dv">15</span>, <span class="dt">bootstrapIter=</span><span class="dv">450</span>,</div>
+<div class="sourceLine" id="6" href="#6" data-line-number="6">                              <span class="dt">searchHits=</span><span class="dv">10</span>, <span class="dt">searchIter=</span><span class="dv">50</span>)</div></code></pre>
+<pre><code>## 
+## * Beginning Parsimony Ratchet, with initial score -299.3744
+## Completed parsimony ratchet after 45 iterations with score -300.4859 
+## 
+## Found 1 unique MPTs and 4 suboptimal trees.</code></pre>
+<p>Let’s calculate and display a consensus tree that includes slightly suboptimal trees.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><div class="sourceLine" id="1" href="#1" data-line-number="1"><span class="kw">par</span>(<span class="dt">mar=</span><span class="kw">rep</span>(<span class="fl">0.2</span>, <span class="dv">4</span>))</div>
+<div class="sourceLine" id="2" href="#2" data-line-number="2"><span class="kw">plot</span>(my.consensus &lt;-<span class="st"> </span>ape<span class="op">::</span><span class="kw">consensus</span>(suboptimals))</div></code></pre>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</div>
+<div id="references" class="section level2 unnumbered">
+<h2>References</h2>
+<div id="refs" class="references">
+<div id="ref-Faith2001">
+<p>Faith, D. P., &amp; Trueman, J. W. H. (2001). Towards an inclusive philosophy for phylogenetic inference. <em>Systematic Biology</em>, <em>50</em>(3), 331–350. doi:<a href="https://doi.org/10.1080/10635150118627">10.1080/10635150118627</a></p>
+</div>
+<div id="ref-Nixon1999">
+<p>Nixon, K. C. (1999). The Parsimony Ratchet, a new method for rapid parsimony analysis. <em>Cladistics</em>, <em>15</em>(4), 407–414. doi:<a href="https://doi.org/10.1111/j.1096-0031.1999.tb00277.x">10.1111/j.1096-0031.1999.tb00277.x</a></p>
+</div>
+</div>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
