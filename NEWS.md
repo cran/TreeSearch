@@ -1,6 +1,21 @@
+# TreeSearch 0.1.0
+
+## New features
+- Helper functions to read Nexus and TNT data and trees.
+- Brewer palette in local data to allow easier colouring
+
+## Enhancements
+- Allow additional parameters to be passed to `consensus` via `ConsensusWithout`
+
+## Bug fixes
+- C11 compliance
+- `IWRatchetConsensus` now relays concavity value to subsequent functions
+- `ReadCharacters` returns labels for all characters and states if `character_num = NULL`
+
+
 # TreeSearch 0.0.8
 
-## New functions
+## New features
 - Added NJTree function as shortcut to generate Neighbour-Joining tree from a dataset
 - Add functions to allow recovery of all trees one rearrangement from that input
 
@@ -12,6 +27,7 @@
 ## Bug fixes
 - [9003] User now able to specify value of concavity constant (was overridden to k = 4)
 - [9003] Bootstrap replicates now scored correctly (and without warning) under implied weights
+
 
 # TreeSearch 0.0.7
 

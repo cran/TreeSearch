@@ -12,7 +12,7 @@
 
 <meta name="author" content="Martin R. Smith" />
 
-<meta name="date" content="2018-03-08" />
+<meta name="date" content="2018-03-13" />
 
 <title>Loading phylogenetic data into R</title>
 
@@ -268,7 +268,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 <h1 class="title toc-ignore">Loading phylogenetic data into R</h1>
 <h4 class="author"><em>Martin R. Smith</em></h4>
-<h4 class="date"><em>2018-03-08</em></h4>
+<h4 class="date"><em>2018-03-13</em></h4>
 
 
 
@@ -313,15 +313,33 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 </div>
 <div id="from-a-nexus-file" class="section level3">
 <h3>From a Nexus file</h3>
+<p><code>TreeSearch</code> contains an inbuilt NEXUS parser:</p>
+<pre class="sourceCode r"><code class="sourceCode r"><div class="sourceLine" id="1" href="#1" data-line-number="1">raw_data &lt;-<span class="st"> </span><span class="kw">ReadCharacters</span>(filename)</div>
+<div class="sourceLine" id="2" href="#2" data-line-number="2"><span class="co"># Or, to go straight to PhyDat format:</span></div>
+<div class="sourceLine" id="3" href="#3" data-line-number="3">as_phydat &lt;-<span class="st"> </span><span class="kw">ReadAsPhyDat</span>(filename)</div></code></pre>
+<p>This will extract character names and codings from a dataset. It’s been written to work with datasets downloaded from <a href="https://morphobank.org/">MorphoBank</a>, but should work with most valid (and many invalid) NEXUS files. If there’s a file that’s not being read correctly, please <a href="https://github.com/ms609/TreeSearch/issues/new?title=Unsupported+NEXUS+file&amp;body=Please%20attach%20the%20problematic%20NEXUS%20file%20and%20describe%20the%20issue&amp;labels=enhancement">let me know</a> and I’ll try to fix it.</p>
 <p>If your data is in a NEXUS file, you can read it using the preinstalled package <code>ape</code>:</p>
 <pre class="sourceCode r"><code class="sourceCode r"><div class="sourceLine" id="1" href="#1" data-line-number="1">raw_data &lt;-<span class="st"> </span>ape<span class="op">::</span><span class="kw">read.nexus.data</span>(filename)</div></code></pre>
 <p>Non-standard elements of a Nexus file might be beyond the capabilities of ape’s parser. In particular, you will need to replace spaces in taxon names with an underscore, and to arrange all data into a single block starting <code>BEGIN DATA</code>. You’ll need to strip out comments, character definitions and separate taxon blocks.</p>
 <p>The function <code>readNexus</code> in package <code>phylobase</code> promises to be more powerful, yet I’ve not been able to get it to work.</p>
 </div>
+<div id="from-a-tnt-file" class="section level3">
+<h3>From a TNT file</h3>
+<p>A TNT format dataset downloaded from <a href="https://morphobank.org/">MorphoBank</a> can be parsed with <code>ReadTntCharacters</code>, which might also handle other TNT-compatible files. If there’s a file that’s not being read correctly, please <a href="https://github.com/ms609/TreeSearch/issues/new?title=Unsupported+TNT+file&amp;body=Please%20attach%20the%20problematic%20TNT%20file%20and%20describe%20the%20issue&amp;labels=enhancement">let me know</a> and I’ll try to fix it.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><div class="sourceLine" id="1" href="#1" data-line-number="1">raw_data &lt;-<span class="st"> </span><span class="kw">ReadTntCharacters</span>(filename)</div>
+<div class="sourceLine" id="2" href="#2" data-line-number="2"><span class="co"># Or, to go straight to PhyDat format:</span></div>
+<div class="sourceLine" id="3" href="#3" data-line-number="3">my_data &lt;-<span class="st"> </span><span class="kw">ReadTntAsPhyDat</span>(filename)</div></code></pre>
+</div>
 </div>
 <div id="processing-raw-data" class="section level2">
 <h2>Processing raw data</h2>
-<p>The next stage is to get the raw data into a format that <code>TreeSearch</code> can understand. Here we’ll enlist the help of the <code>phangorn</code> package, which was installed when you installed <code>TreeSearch</code>:</p>
+<p>The next stage is to get the raw data into a format that <code>TreeSearch</code> can understand. If you’ve used the <code>ReadAsPhyDat</code> or <code>ReadTntAsPhyDat</code> functions, then you can skip this step – you’re already there.</p>
+<p>Otherwise, you can try</p>
+<pre class="sourceCode r"><code class="sourceCode r"><div class="sourceLine" id="1" href="#1" data-line-number="1">my_data &lt;-<span class="st"> </span><span class="kw">PhyDat</span>(raw_data)</div></code></pre>
+<p>or if that doesn’t work,</p>
+<pre class="sourceCode r"><code class="sourceCode r"><div class="sourceLine" id="1" href="#1" data-line-number="1">my_data &lt;-<span class="st"> </span><span class="kw">MatrixToPhyDat</span>(raw_data)</div></code></pre>
+<p>These functions haven’t been exhaustively tested – if they don’t work on your dataset, please <a href="https://github.com/ms609/TreeSearch/issues/new?title=data+to+PhyDat+conversion+issue&amp;body=Please%20describe+the+problem+here:&amp;labels=bug">let me know</a>.</p>
+<p>Failing that, you can enlist the help of the <code>phangorn</code> package, which was installed when you installed <code>TreeSearch</code>:</p>
 <pre class="sourceCode r"><code class="sourceCode r"><div class="sourceLine" id="1" href="#1" data-line-number="1"><span class="kw">library</span>(<span class="st">'phangorn'</span>)</div>
 <div class="sourceLine" id="2" href="#2" data-line-number="2">my_data &lt;-<span class="st"> </span><span class="kw">phyDat</span>(raw_data, <span class="dt">type=</span><span class="st">'USER'</span>, <span class="dt">levels=</span><span class="kw">c</span>(<span class="dv">0</span><span class="op">:</span><span class="dv">9</span>, <span class="st">'-'</span>))</div></code></pre>
 <p><code>type='USER'</code> tells the parser to expect morphological data.</p>
