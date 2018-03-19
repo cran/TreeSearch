@@ -12,7 +12,7 @@
 
 <meta name="author" content="Martin R. Smith" />
 
-<meta name="date" content="2018-03-13" />
+<meta name="date" content="2018-03-19" />
 
 <title>Loading phylogenetic data into R</title>
 
@@ -268,7 +268,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 <h1 class="title toc-ignore">Loading phylogenetic data into R</h1>
 <h4 class="author"><em>Martin R. Smith</em></h4>
-<h4 class="date"><em>2018-03-13</em></h4>
+<h4 class="date"><em>2018-03-19</em></h4>
 
 
 
@@ -325,7 +325,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 </div>
 <div id="from-a-tnt-file" class="section level3">
 <h3>From a TNT file</h3>
-<p>A TNT format dataset downloaded from <a href="https://morphobank.org/">MorphoBank</a> can be parsed with <code>ReadTntCharacters</code>, which might also handle other TNT-compatible files. If there’s a file that’s not being read correctly, please <a href="https://github.com/ms609/TreeSearch/issues/new?title=Unsupported+TNT+file&amp;body=Please%20attach%20the%20problematic%20TNT%20file%20and%20describe%20the%20issue&amp;labels=enhancement">let me know</a> and I’ll try to fix it.</p>
+<p>A TNT format dataset downloaded from <a href="https://morphobank.org">MorphoBank</a> can be parsed with <code>ReadTntCharacters</code>, which might also handle other TNT-compatible files. If there’s a file that’s not being read correctly, please <a href="https://github.com/ms609/TreeSearch/issues/new?title=Unsupported+TNT+file&amp;body=Please%20attach%20the%20problematic%20TNT%20file%20and%20describe%20the%20issue&amp;labels=enhancement">let me know</a> and I’ll try to fix it.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><div class="sourceLine" id="1" href="#1" data-line-number="1">raw_data &lt;-<span class="st"> </span><span class="kw">ReadTntCharacters</span>(filename)</div>
 <div class="sourceLine" id="2" href="#2" data-line-number="2"><span class="co"># Or, to go straight to PhyDat format:</span></div>
 <div class="sourceLine" id="3" href="#3" data-line-number="3">my_data &lt;-<span class="st"> </span><span class="kw">ReadTntAsPhyDat</span>(filename)</div></code></pre>
