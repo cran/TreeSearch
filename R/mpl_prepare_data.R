@@ -45,12 +45,18 @@ StringToPhyDat <- StringToPhydat <- function (string, tips, byTaxon = TRUE) {
 #' @export
 PhyToString <- function (phy, ps='', useIndex=TRUE, byTaxon=TRUE, concatenate=TRUE) {
   at <- attributes(phy)
-  phyLevels <- at$allLevels		
-  phyChars <- at$nr		
-  phyContrast <- at$contrast == 1		
-  phyIndex <- if (useIndex) at$index else seq_len(phyChars)		
-  outLevels <- seq_len(ncol(phyContrast)) - 1		
-  if (any(inappLevel <- phyLevels == '-')) outLevels[which(phyContrast[inappLevel])] <- '-'		
+  phyLevels <- at$allLevels
+  phyChars <- at$nr
+  phyContrast <- at$contrast == 1
+  phyIndex <- if (useIndex) at$index else seq_len(phyChars)
+  outLevels <- seq_len(ncol(phyContrast)) - 1
+  if (any(inappLevel <- phyLevels == '-')) {
+    inappColumn <- which(phyContrast[inappLevel])
+    if (length(inappColumn) > 1) {
+      warning("More than one inapplicable level identified.  Is phy$levels malformed?")
+    }
+    outLevels[inappColumn] <- '-'
+  }
 
   levelLengths <- vapply(outLevels, nchar, integer(1))
   longLevels <- levelLengths > 1
@@ -104,13 +110,13 @@ PhyToString <- function (phy, ps='', useIndex=TRUE, byTaxon=TRUE, concatenate=TR
 #' 
 #' @export
 AsBinary <- function(x) {
-	N <- length(x)
-	xMax <- max(x)	
-	ndigits <- (floor(logb(xMax, base=2))+1)
-	Base.b <- array(NA, dim=c(N, ndigits))
-	for (i in 1:ndigits){#i <- 1
-		Base.b[, i] <- (x %% 2)
-		x <- (x %/% 2)
-	}
-	if(N == 1) Base.b[1, ] else Base.b
+  N <- length(x)
+  xMax <- max(x)
+  ndigits <- max(1, (floor(logb(xMax, base=2)) + 1L))
+  Base.b <- array(NA, dim=c(N, ndigits))
+  for (i in 1:ndigits){#i <- 1
+    Base.b[, i] <- (x %% 2)
+    x <- (x %/% 2)
+  }
+  if(N == 1) Base.b[1, ] else Base.b
 }

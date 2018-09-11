@@ -2,12 +2,25 @@
 % Please edit documentation in R/parse_files.R
 \name{ReadTntTree}
 \alias{ReadTntTree}
+\alias{TNTText2Tree}
 \title{Parse TNT Tree}
 \usage{
-ReadTntTree(filename)
+ReadTntTree(filename, relativePath = NULL, keepEnd = 1L)
+
+TNTText2Tree(treeText)
 }
 \arguments{
-\item{filename}{character string specifying path to TNT `.tre file}
+\item{filename}{character string specifying path to TNT `.tre` file}
+
+\item{relativePath}{(optional) character string specifying location of the matrix 
+file used to generate the TNT results, 
+relative to the current working directory, for portability.}
+
+\item{keepEnd}{(optional, default 1) integer specifying how many elements of the file
+path to conserve when creating relative path (see examples)}
+
+\item{treeText}{Character string describing a tree, in the parenthetical 
+format output by TNT.}
 }
 \value{
 a tree of class \code{phylo}.
@@ -15,6 +28,47 @@ a tree of class \code{phylo}.
 \description{
 Reads a tree from TNT's paranthetical output.
 }
+\section{Functions}{
+\itemize{
+\item \code{TNTText2Tree}: Converts text representation of a tree in TNT to an object of class `phylo`
+}}
+
+\examples{
+{
+  \dontrun{
+  # TNT read a matrix from c:/myproject/tnt/coding1/dataset.nex
+  # The results of an analysis were written to c:/myproject/tnt/output/results1.tnt
+  # results1.tnt will contain a hard-coded reference to 
+  # "c:/myproject/tnt/coding1/dataset.nex"
+  
+  getwd() # Gives the current working directory
+  
+  # Say that working directory is c:/myproject, which perhaps corresponds to a
+  # Git repository.
+  # This directory may be saved into another location by collaborators, or on a 
+  # different filesystem by a continuous integration platform.
+  
+  # Works on local machine but not elsewhere:
+  ReadTntTree('tnt/output/results1.tnt')
+  
+  # Takes only the filename from the results
+  ReadTntTree('tnt/output.results1.tnt', 'tnt/coding1')
+  
+  # Uses the last three elements of c:/myproject/tnt/coding1/dataset.nex
+  #                                               3     2       1
+  # '.' means "relative to the current directory", which is c:/myproject
+  ReadTntTree('tnt/output/results1.tnt', '.', 3)
+  
+  # If the current working directory was c:/myproject/rscripts/testing,
+  # you could navigate up the directory path with '..':
+  ReadTntTree('../../tnt/output/results1.tnt', '../..', 3)
+  
+  }
+}
+
+}
 \author{
+Martin R. Smith
+
 Martin R. Smith
 }

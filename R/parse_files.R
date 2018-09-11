@@ -2,29 +2,81 @@
 #' 
 #' Reads a tree from TNT's paranthetical output.
 #' 
-#' @param filename character string specifying path to TNT `.tre file
+#' @param filename character string specifying path to TNT `.tre` file
+#' @param relativePath (optional) character string specifying location of the matrix 
+#'                     file used to generate the TNT results, 
+#'                     relative to the current working directory, for portability.
+#' @param keepEnd (optional, default 1) integer specifying how many elements of the file
+#'                path to conserve when creating relative path (see examples)
+#'                     
 #' 
 #' @return a tree of class \code{phylo}.
+#' 
+#' @examples {
+#'   \dontrun{
+#'   # TNT read a matrix from c:/myproject/tnt/coding1/dataset.nex
+#'   # The results of an analysis were written to c:/myproject/tnt/output/results1.tnt
+#'   # results1.tnt will contain a hard-coded reference to 
+#'   # "c:/myproject/tnt/coding1/dataset.nex"
+#'   
+#'   getwd() # Gives the current working directory
+#'   
+#'   # Say that working directory is c:/myproject, which perhaps corresponds to a
+#'   # Git repository.
+#'   # This directory may be saved into another location by collaborators, or on a 
+#'   # different filesystem by a continuous integration platform.
+#'   
+#'   # Works on local machine but not elsewhere:
+#'   ReadTntTree('tnt/output/results1.tnt')
+#'   
+#'   # Takes only the filename from the results
+#'   ReadTntTree('tnt/output.results1.tnt', 'tnt/coding1')
+#'   
+#'   # Uses the last three elements of c:/myproject/tnt/coding1/dataset.nex
+#'   #                                               3     2       1
+#'   # '.' means "relative to the current directory", which is c:/myproject
+#'   ReadTntTree('tnt/output/results1.tnt', '.', 3)
+#'   
+#'   # If the current working directory was c:/myproject/rscripts/testing,
+#'   # you could navigate up the directory path with '..':
+#'   ReadTntTree('../../tnt/output/results1.tnt', '../..', 3)
+#'   
+#'   }
+#' }
 #' 
 #' @author Martin R. Smith
 #' @importFrom ape read.tree
 #' @export
-ReadTntTree <- function (filename) {
+ReadTntTree <- function (filename, relativePath = NULL, keepEnd = 1L) {
   fileText <- readLines(filename)
-  trees <- lapply(fileText[2:(length(fileText)-1)], function (treeText) {
-    treeText <- gsub("(\\d+)", "\\1,", treeText, perl=TRUE)
-    treeText <- gsub(")(", "),(", treeText, fixed=TRUE)
-    treeText <- gsub("*", ";", treeText, fixed=TRUE)
-    # Return:
-    read.tree(text=gsub(", )", ")", treeText, fixed=TRUE))
-  })
+  trees <- lapply(fileText[2:(length(fileText)-1)], TNTText2Tree)
   
   taxonFile <- gsub("tread 'tree(s) from TNT, for data in ", '', fileText[1], fixed=TRUE)
   taxonFile <- gsub("'", '', gsub('\\', '/', taxonFile, fixed=TRUE), fixed=TRUE)
+  if (!is.null(relativePath)) {
+    taxonFileParts <- strsplit(taxonFile, '/')[[1]]
+    nParts <- length(taxonFileParts)
+    if (nParts < keepEnd) {
+      stop("Taxon file path (", taxonFile, ") contains fewer than keepEnd (",
+           keepEnd, ") components.")
+    }
+    taxonFile <- paste0(c(relativePath, taxonFileParts[(nParts + 1L - keepEnd):nParts]),
+                        collapse='/')
+  }
   if (!file.exists(taxonFile)) {
-    warning("Cannot find linked data file ", taxonFile)
+    warning("Cannot find linked data file:\n  ", taxonFile)
   } else {
     tipNames <- rownames(ReadTntCharacters(taxonFile, 1))
+    if (is.null(tipNames)) {
+      # TNT character read failed.  Perhaps taxonFile is in NEXUS format?
+      tipNames <- rownames(ReadCharacters(taxonFile, 1))
+    }
+    if (is.null(tipNames)) {
+      warning("Could not read taxon names from linked TNT file:\n  ",
+              taxonFile, 
+              "\nIs the file in TNT or Nexus format? If failing inexplicably, please report:",
+              "\n  https://github.com/ms609/TreeSearch/issues/new")
+    }
     trees <- lapply(trees, function (tree) {
       tree$tip.label <- tipNames[as.integer(tree$tip.label) + 1]
       tree
@@ -41,6 +93,19 @@ ReadTntTree <- function (filename) {
     trees
   }
   
+}
+
+#' @describeIn ReadTntTree Converts text representation of a tree in TNT to an object of class `phylo`
+#' @param treeText Character string describing a tree, in the parenthetical 
+#'                 format output by TNT.
+#' @author Martin R. Smith
+#' @export
+TNTText2Tree <- function (treeText) {
+  treeText <- gsub("(\\d+)", "\\1,", treeText, perl=TRUE)
+  treeText <- gsub(")(", "),(", treeText, fixed=TRUE)
+  treeText <- gsub("*", ";", treeText, fixed=TRUE)
+  # Return:
+  read.tree(text=gsub(", )", ")", treeText, fixed=TRUE))
 }
 
 #' Extract taxa from a matrix block
@@ -134,7 +199,8 @@ ExtractTaxa <- function (matrixLines, character_num=NULL, session=NULL) {
 #'
 ReadCharacters <- function (filepath, character_num=NULL, session=NULL) {
   
-  lines <- readLines(filepath)
+  lines <- readLines(filepath, warn=FALSE) # Missing EOL is quite common, so 
+                                           # warning not helpful
   nexusComment.pattern <- "\\[[^\\]*\\]"
   lines <- gsub(nexusComment.pattern, "", lines)
   lines <- trimws(lines)
@@ -198,7 +264,8 @@ ReadCharacters <- function (filepath, character_num=NULL, session=NULL) {
 #' @describeIn ReadCharacters Read characters from TNT file
 ReadTntCharacters <- function (filepath, character_num=NULL, session=NULL) {
   
-  lines <- readLines(filepath)
+  lines <- readLines(filepath, warn=FALSE) # Missing EOL might occur in user-
+                                           # generated file, so warning not helpful
   tntComment.pattern <- "'[^']*']"
   lines <- gsub(tntComment.pattern, "", lines)
   lines <- trimws(lines)
@@ -305,9 +372,13 @@ ReadTntAsPhyDat <- function (filepath) {
 
 
 #' @describeIn ReadCharacters A convenient wrapper for \pkg{phangorn}'s \code{phyDat},
-#' which converts a list of morphological characters into a phyDat object.
+#' which converts a *list* of morphological characters into a phyDat object.
+#' If your morphological characters are in the form of a *matrix*, perhaps because
+#' they have been read using `read.table`, try [MatrixToPhyDat] instead.
 #'
-#' @param dataset list of taxa and characters, in the format produced by [read.nexus.data].
+#' @param dataset list of taxa and characters, in the format produced by [read.nexus.data]:
+#'                a list of sequences each made of a single vector of mode character,
+#'                and named with the taxon name.  
 #'
 #' @export
 PhyDat <- function (dataset) {
@@ -328,4 +399,3 @@ PhyDat <- function (dataset) {
 RightmostCharacter <- function (string, len=nchar(string)) {
   substr(string, len, len)
 }
-

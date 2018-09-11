@@ -4,15 +4,19 @@
 \name{brewer}
 \alias{brewer}
 \title{Brewer palettes}
-\format{An object of class \code{list} of length 11.}
+\format{An object of class \code{list} of length 12.}
 \source{
-[ColourBrewer2.org](http://colorbrewer2.org/#type=diverging&scheme=RdYlBu&n=3)
+{
+  [ColourBrewer2.org](http://colorbrewer2.org/#type=diverging&scheme=RdYlBu&n=3)
+  [Martin Krzywinski](http://mkweb.bcgsc.ca/colorblind/)
+}
 }
 \usage{
 brewer
 }
 \description{
 A list of eleven Brewer palettes containing one to eleven colours that
-are readily distinguished by colourblind viewers
+are readily distinguished by colourblind viewers, followed by a twelfth
+12-colour palette adapted for colour blindness.
 }
 \keyword{datasets}

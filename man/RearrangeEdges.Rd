@@ -4,9 +4,9 @@
 \alias{RearrangeEdges}
 \title{Rearrange edges of a phylogenetic tree}
 \usage{
-RearrangeEdges(parent, child, dataset, TreeScorer = MorphyLength, EdgeSwapper,
-  scoreToBeat = TreeScorer(parent, child, dataset, ...), iter = "?",
-  hits = 0L, verbosity = 0L, ...)
+RearrangeEdges(parent, child, dataset, TreeScorer = MorphyLength,
+  EdgeSwapper, scoreToBeat = TreeScorer(parent, child, dataset, ...),
+  iter = "?", hits = 0L, verbosity = 0L, ...)
 }
 \arguments{
 \item{parent}{the first column of the edge matrix of a tree of class \code{\link{phylo}}, i.e. tree$edge[, 1]}

@@ -27,7 +27,9 @@ PhyDat(dataset)
 \item{session}{(optionally) a Shiny session with a numericInput named character_num
 whose maximum should be updated.}
 
-\item{dataset}{list of taxa and characters, in the format produced by [read.nexus.data].}
+\item{dataset}{list of taxa and characters, in the format produced by [read.nexus.data]:
+a list of sequences each made of a single vector of mode character,
+and named with the taxon name.}
 }
 \value{
 A matrix whose row names correspond to tip labels, and column names
@@ -54,7 +56,9 @@ incorrectly parsed files.
 \item \code{ReadTntAsPhyDat}: Read TNT characters as phyDat object
 
 \item \code{PhyDat}: A convenient wrapper for \pkg{phangorn}'s \code{phyDat},
-which converts a list of morphological characters into a phyDat object.
+which converts a *list* of morphological characters into a phyDat object.
+If your morphological characters are in the form of a *matrix*, perhaps because
+they have been read using `read.table`, try [MatrixToPhyDat] instead.
 }}
 
 \references{

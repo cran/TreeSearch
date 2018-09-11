@@ -1,9 +1,9 @@
 Package: TreeSearch
 Title: Phylogenetic Tree Search Using Custom Optimality Criteria
-Version: 0.1.2
-Date: 2018-03-19
+Version: 0.2.0
+Date: 2018-09-06
 Authors@R: c(person("Martin R.", 'Smith',
-                  email="martins@gmail.com", 
+                  email="martin.smith@durham.ac.uk", 
                   role=c("aut", "cre", "cph"), 
                   comment=c(ORCID = "0000-0001-5660-1727")),
                person(given = "Emmanuel", family="Paradis",
@@ -22,20 +22,21 @@ Description: Searches for phylogenetic trees that are optimal using a user-defin
 URL: https://github.com/ms609/TreeSearch
 BugReports: https://github.com/ms609/TreeSearch/issues
 Depends: R (>= 3.4.0)
-Imports: ape (>= 5.0), memoise, phangorn (>= 2.2.1), R.cache, Rdpack,
-        stats
+Imports: ape (>= 5.0), colorspace, gmp, memoise, phangorn (>= 2.2.1),
+        R.cache, Rdpack, stats
 Suggests: knitr, rmarkdown, shiny, testthat, xlsx
 RdMacros: Rdpack
 LazyData: true
 ByteCompile: true
+Encoding: UTF-8
 VignetteBuilder: knitr
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0
 NeedsCompilation: yes
-Packaged: 2018-03-19 17:34:06 UTC; ms609
+Packaged: 2018-09-10 11:21:54 UTC; ms609
 Author: Martin R. Smith [aut, cre, cph]
     (<https://orcid.org/0000-0001-5660-1727>),
   Emmanuel Paradis [cph],
   Martin Brazeau [cph]
-Maintainer: Martin R. Smith <martins@gmail.com>
+Maintainer: Martin R. Smith <martin.smith@durham.ac.uk>
 Repository: CRAN
-Date/Publication: 2018-03-19 19:18:45 UTC
+Date/Publication: 2018-09-11 11:00:02 UTC
