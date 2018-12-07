@@ -12,7 +12,7 @@
 
 <meta name="author" content="Martin R. Smith" />
 
-<meta name="date" content="2018-09-10" />
+<meta name="date" content="2018-12-07" />
 
 <title>Loading phylogenetic data into R</title>
 
@@ -268,7 +268,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 <h1 class="title toc-ignore">Loading phylogenetic data into R</h1>
 <h4 class="author"><em>Martin R. Smith</em></h4>
-<h4 class="date"><em>2018-09-10</em></h4>
+<h4 class="date"><em>2018-12-07</em></h4>
 
 
 
@@ -343,7 +343,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <pre class="sourceCode r"><code class="sourceCode r"><div class="sourceLine" id="1" href="#1" data-line-number="1"><span class="kw">library</span>(<span class="st">'phangorn'</span>)</div>
 <div class="sourceLine" id="2" href="#2" data-line-number="2">my_data &lt;-<span class="st"> </span><span class="kw">phyDat</span>(raw_data, <span class="dt">type=</span><span class="st">'USER'</span>, <span class="dt">levels=</span><span class="kw">c</span>(<span class="dv">0</span><span class="op">:</span><span class="dv">9</span>, <span class="st">'-'</span>))</div></code></pre>
 <p><code>type='USER'</code> tells the parser to expect morphological data.</p>
-<p>The <code>levels</code> parameter simply lists all the states that any character might take. <code>0:9</code> includes all the integer digits from 0 to 9. If you have inapplicable data in your matrix, you should list <code>-</code> as a separate level as it represents an additional state (as handled by the Morphy implementation of <span class="citation">(Brazeau, Guillerme, &amp; Smith, 2017)</span>).</p>
+<p>The <code>levels</code> parameter simply lists all the states that any character might take. <code>0:9</code> includes all the integer digits from 0 to 9. If you have inapplicable data in your matrix, you should list <code>-</code> as a separate level as it represents an additional state (as handled by the Morphy implementation of <span class="citation">(Brazeau, Guillerme, &amp; Smith, 2019)</span>).</p>
 </div>
 <div id="what-next" class="section level2">
 <h2>What next?</h2>
@@ -356,7 +356,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <h2>References</h2>
 <div id="refs" class="references">
 <div id="ref-Brazeau2018">
-<p>Brazeau, M. D., Guillerme, T., &amp; Smith, M. R. (2017). Morphological phylogenetic analysis with inapplicable data. <em>Biorxiv</em>. doi:<a href="https://doi.org/10.1101/209775">10.1101/209775</a></p>
+<p>Brazeau, M. D., Guillerme, T., &amp; Smith, M. R. (2019). An algorithm for morphological phylogenetic analysis with inapplicable data. <em>Systematic Biology</em>, in press. doi:<a href="https://doi.org/10.1093/sysbio/syy083">10.1093/sysbio/syy083</a></p>
 </div>
 </div>
 </div>

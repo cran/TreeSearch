@@ -12,7 +12,7 @@
 
 <meta name="author" content="Martin R. Smith" />
 
-<meta name="date" content="2018-09-10" />
+<meta name="date" content="2018-12-07" />
 
 <title>Tree Search With Profile Parsimony</title>
 
@@ -268,7 +268,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 <h1 class="title toc-ignore">Tree Search With Profile Parsimony</h1>
 <h4 class="author"><em>Martin R. Smith</em></h4>
-<h4 class="date"><em>2018-09-10</em></h4>
+<h4 class="date"><em>2018-12-07</em></h4>
 
 
 
@@ -294,7 +294,7 @@ Ambiguous tokens of this nature should be replaced with a separate character, fo
 <p>Alternatively you can use a built-in dataset:</p>
 <pre class="sourceCode r"><code class="sourceCode r"><div class="sourceLine" id="1" href="#1" data-line-number="1"><span class="kw">data</span>(congreveLamsdellMatrices)</div>
 <div class="sourceLine" id="2" href="#2" data-line-number="2">my.data &lt;-<span class="st"> </span>congreveLamsdellMatrices[[<span class="dv">10</span>]]</div></code></pre>
-<p>A contrast matrix translates the tokens used in your dataset to the character states to which they correspond: for example decoding ‘A’ to {01}. For more details, see the ‘phangorn-specials’ vignette in the phangorn package, accesible by typing ‘?phangorn’ in the R prompt and navigating to index &gt; package vignettes.</p>
+<p>A contrast matrix translates the tokens used in your dataset to the character states to which they correspond: for example decoding ‘A’ to {01}. For more details, see the ‘phangorn-specials’ vignette in the phangorn package, accessible by typing ‘?phangorn’ in the R prompt and navigating to index &gt; package vignettes.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><div class="sourceLine" id="1" href="#1" data-line-number="1">contrast.matrix &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dt">data=</span><span class="kw">c</span>(</div>
 <div class="sourceLine" id="2" href="#2" data-line-number="2"><span class="co"># 0 1 -  # Each column corresponds to a character-state</span></div>
 <div class="sourceLine" id="3" href="#3" data-line-number="3">  <span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>, <span class="co"># Each row corresponds to a token, here 0, denoting the character-state set {0} </span></div>

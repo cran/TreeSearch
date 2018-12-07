@@ -11,17 +11,16 @@ SplitFrequency(reference, forest)
 
 SplitNumber(tips, tree, tipIndex, powersOf2)
 
-ForestSplits(forest)
+ForestSplits(forest, powersOf2)
 
 TreeSplits(tree)
 }
 \arguments{
 \item{reference}{A tree of class phylo, or a character vector specifying its splits 
-(as obtained through [TreeSplits])}
+(as obtained through [Quartet::Tree2Splits])}
 
-\item{forest}{a list of trees of class phylo, or a multiPhylo object; or a table
-enumerating the occurrences of each split in that forest 
-      (as obtained through [ForestSplits])}
+\item{forest}{a list of trees of class phylo, or a multiPhylo object; or a
+list of their constituent splits (as obtained through [Quartet::Tree2Splits])}
 
 \item{tips}{Integer vector specifying the tips of the tree within the chosen split}
 
@@ -66,18 +65,13 @@ constituent functions (see examples)
   forest <- list(tree1, tree2, tree2, tree3, rtree(7))
   
   # Simple, but means counting each split in the forest twice:
-  SplitFrequency(tree1, forest)
+  tree1Freqs <- SplitFrequency(tree1, forest)
   SplitFrequency(tree2, forest)
   
-  # Takes more typing, but caches the forest splits to save time at runtime:
-  forestSplits <- ForestSplits(forest)
-  tree1Freqs <- SplitFrequency(tree1, forestSplits)
-  tree2Freqs <- SplitFrequency(tree2, forestSplits)
-  
   plot(tree1)
-  nodelabels(c('-', '-', # The first two nodes do not denote unique splits
-               tree1Freqs))
+  nodelabels(tree1Freqs, node=as.integer(names(tree1Freqs)))
 }
+
 }
 \author{
 Martin R. Smith

@@ -5,19 +5,26 @@
 \alias{TNTText2Tree}
 \title{Parse TNT Tree}
 \usage{
-ReadTntTree(filename, relativePath = NULL, keepEnd = 1L)
+ReadTntTree(filename, relativePath = NULL, keepEnd = 1L,
+  tipLabels = NULL)
 
 TNTText2Tree(treeText)
 }
 \arguments{
-\item{filename}{character string specifying path to TNT `.tre` file}
+\item{filename}{character string specifying path to TNT `.tre` file.}
 
-\item{relativePath}{(optional) character string specifying location of the matrix 
-file used to generate the TNT results, 
-relative to the current working directory, for portability.}
+\item{relativePath}{(optional) character string specifying location of the
+matrix file used to generate the TNT results, relative to the current working
+directory, for portability.  Taxon names will be read from this file if they
+are not specified by `tipLabels`.}
 
 \item{keepEnd}{(optional, default 1) integer specifying how many elements of the file
-path to conserve when creating relative path (see examples)}
+path to conserve when creating relative path (see examples).}
+
+\item{tipLabels}{(optional) character vector specifying the names of the 
+taxa, in the sequence that they appear in the TNT file.  If not specified,
+taxon names will be loaded from the data file linked in the first line of the
+ `.tre` file specified in `filename`.}
 
 \item{treeText}{Character string describing a tree, in the parenthetical 
 format output by TNT.}

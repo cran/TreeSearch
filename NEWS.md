@@ -1,4 +1,28 @@
-# TreeSearch 0.1.3
+# TreeSearch 0.2.1
+
+## New features
+ - `CollapseNodes` and `CollapseEdges` allow the creation of polytomies
+ - `Tree2Splits` lists the bipartition splits implied by a tree topology
+
+## Enhancements
+ - `SplitFrequency` now supports larger trees
+ - Can specify tip labels directly to `ReadTntTree`, to avoid reliance on
+   generative file
+
+## New features
+ - `CollapseNodes` and `CollapseEdges` allow the creation of polytomies
+ - `Tree2Splits` lists the bipartition splits implied by a tree topology
+
+## Enhancements
+ - `SplitFrequency` now supports larger trees
+ - Can specify tip labels directly to `ReadTntTree`, to avoid reliance on
+   generative file
+
+## Bug fixes
+ - Export missing functions
+
+
+# TreeSearch 0.2.0
 
 ## New features
  - `RootTree` function allows rooting of tree on incompletely specified
@@ -24,6 +48,7 @@
  - [IW]MultiRatchet now considers trees identical even if they've been hit 
    a different number of times
 
+
 # TreeSearch 0.1.2
 
 ## Bug fixes
@@ -31,6 +56,7 @@
 - Remove non-ASCII characters from data
 - Disable slow-building and problematic vignette
 - Use local copy of citation style when building vignettes
+
 
 # TreeSearch 0.1.0
 
@@ -73,6 +99,7 @@
 - Integrated with this package (previously in `ProfileParsimony`)
 - Faster calculation of concavity profiles in C
 - Persistent memoization with R.cache
+
 
 # TreeSearch 0.0.6
 - First CRAN submission
