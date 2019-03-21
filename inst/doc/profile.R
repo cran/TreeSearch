@@ -31,6 +31,7 @@ my.phyDat <- phangorn::phyDat(my.data, type='USER', levels=c(1, 2))
 my.prepdata <- PrepareDataProfile(my.phyDat, precision=4e+04)
 
 ## ----Random tree---------------------------------------------------------
+suppressWarnings(RNGversion("3.5.0")) # Until we can require R3.6.0
 set.seed(888)
 tree <- RandomTree(my.phyDat)
 

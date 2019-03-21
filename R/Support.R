@@ -8,9 +8,9 @@
 #' 
 #' 
 #' @param reference A tree of class phylo, or a character vector specifying its splits 
-#'                     (as obtained through [Quartet::Tree2Splits])
+#'                     (as obtained through [Tree2Splits])
 #' @param forest a list of trees of class phylo, or a multiPhylo object; or a
-#' list of their constituent splits (as obtained through [Quartet::Tree2Splits])
+#' list of their constituent splits (as obtained through [Tree2Splits])
 #'                     
 #' @return Number of trees in `forest` that contain each split in `reference`. 
 #'         if `reference` is a tree of class phylo, then the sequence will
@@ -64,7 +64,7 @@ SplitFrequency <- function(reference, forest) {
 #' `matches`.
 #' 
 #' @param original,matches Logical matrix describing the bipartition splits
-#' defined by a tree (see [Quartet:Tree2Splits] for format).  The first row
+#' defined by a tree (see [Tree2Splits] for format).  The first row
 #' of `original` must be `FALSE` for all splits.
 #' 
 #' @keywords internal
@@ -107,17 +107,11 @@ ForestSplits <- function (forest, powersOf2) {
   }, character(nTip - 3L)))
 }
 
-#' @describeIn SplitFrequency Lists the splits in a given tree
-#' @importFrom gmp as.bigz
+#' @describeIn SplitFrequency Deprecated. Listed the splits in a given tree. 
+#' Use Quartet::Tree2Splits instead.
 #' @export
 TreeSplits <- function (tree) {
-  .Deprecated("Quartet::Tree2Splits")
-  tipIndex <- sort(tree$tip.label)
-  nTip <- length(tipIndex)
-  powersOf2 <- as.bigz(2L ^ (seq_len(nTip) - 1L))
-  # Return:
-  vapply(Descendants(tree, nTip + 2L + seq_len(tree$Nnode - 2L), type='tips'),
-           SplitNumber, character(1), tree, tipIndex, powersOf2)
+  .Deprecated("Tree2Splits")
 }
 
 #' Support colour
