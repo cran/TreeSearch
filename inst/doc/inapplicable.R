@@ -1,14 +1,16 @@
-## ----Load-library--------------------------------------------------------
+## ----Load-library, message=FALSE-----------------------------------------
 library('TreeSearch')
 
 ## ----Load-data-----------------------------------------------------------
 my.data <- TreeSearch::inapplicable.datasets[['Vinther2008']]
 my.phyDat <- phangorn::phyDat(my.data, type='USER', levels=c(0:9, '-'))
 
-## ----Random-tree---------------------------------------------------------
-# Set random seed so that random functions will generate consistent output in this document
-suppressWarnings(RNGversion("3.5.0")) # Until we can require R3.6.0
+## ----RNG-version, warning=FALSE------------------------------------------
+# Set a random seed so that random functions in this document are reproducible
+RNGversion("3.5.0") # Until we can require R3.6.0
 set.seed(0)
+
+## ----Random-tree---------------------------------------------------------
 random.tree <- RandomTree(my.phyDat)
 par(mar=rep(0.25, 4), cex=0.75) # make plot easier to read
 plot(random.tree)
@@ -58,13 +60,6 @@ plot(strict.consensus)
 par(mar=rep(0.25, 4), cex=0.75) # make plot easier to read
 majority.consensus <- ape::consensus(some.optimal.trees, p=0.5)
 plot(majority.consensus)
-
-node.frequency <- SplitFrequency(majority.consensus, some.optimal.trees) /
-  length(some.optimal.trees)
-ape::nodelabels(paste('\n\n', signif(node.frequency, 2)), 
-           col=SupportColour(node.frequency), 
-           adj=0, pos=2, frame='none')
-
 
 ## ----Jackknife-annotations-----------------------------------------------
 jack.trees <- Jackknife(best.tree, my.phyDat, EdgeSwapper=RootedTBRSwap,

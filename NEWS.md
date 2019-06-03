@@ -1,3 +1,21 @@
+# TreeSearch 0.3.2
+
+## Enhancements
+ - Improve text, content and build speed of vignettes
+
+
+# TreeSearch 0.3.1
+
+## New features
+ - `NyeTreeSimilarity` function implements the tree similarity metric of
+   Nye _et al._ (2006)
+ - `MatchingSplitDistance` function implementing the Matching Split distance of 
+   Bogdanowicz & Giaro (2012)
+
+## Bug fixes
+ - Check whether input tree is bifurcating before attempting rearrangements,
+   to avoid crashes on unsupported input
+
 # TreeSearch 0.3.0
 
 ## New features
@@ -5,7 +23,7 @@
  - Prepare for new random number generator in R3.6.0
 
 ## Deprecations
- - Function `TreeSplits` is deprecated; use `Tree2Splits` instead.
+ - Function `TreeSplits` is deprecated; use `Tree2Splits` instead
 
 ## Bug fixes
  - Correct some mistakes in the documentation
@@ -71,7 +89,7 @@
 # TreeSearch 0.1.0
 
 ## New features
-- Helper functions to read Nexus and TNT data and trees.
+- Helper functions to read Nexus and TNT data and trees
 - Brewer palette in local data to allow easier colouring
 
 ## Enhancements
