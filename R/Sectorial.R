@@ -72,7 +72,7 @@
 ######MorphySectorial <- function (parent, child, dataset, TreeScorer = MorphyLength, maxSectIter=100, 
 ######                         maxIter=500, maxImprovements=5, smallestSector=4, largestSector=1e+06, 
 ######                         Rearrangements=list(RootedNNI), verbosity=0, ...) {
-######  if (verbosity >= 0) cat(' - Sectorial search: optimizing sectors of', smallestSector, 'to', floor(largestSector), 'tips')
+######  if (verbosity >= 0) message(' - Sectorial search: optimizing sectors of', smallestSector, 'to', floor(largestSector), 'tips')
 ######  nEdge <- length(parent)
 ######  nTip <- (nEdge / 2) + 1
 ######  nonRootNodes <- (nTip + 2):(nEdge + 1)
@@ -94,26 +94,26 @@
 ######    
 ######    nodeLengths <- CladeSizes(tree, nonRootNodes)
 ######    candidateNodes <- nonRootNodes[nodeLengths >= smallestSector & nodeLengths <= largestSector]
-######    if (verbosity >= 0) cat ("\n - Iteration", i, "- attempting sectorial search on node ")
+######    if (verbosity >= 0) message("\n - Iteration ", i, "- attempting sectorial search on node ")
 ######    repeat {
 ######      sector <- sample(candidateNodes, 1)
 ######      candidate <- Subtree(tree, sector)
 ######      crownTips <- candidate$tip.label
 ######      sectorSize <- length(crownTips)
-######      cat(sector, 'size', sectorSize, '...')
+######      message(sector, 'size', sectorSize, '...')
 ######      
-######      if (SectorHasData(dataset, crownTips)) break else cat('unsuitable (no dataset); trying')
+######      if (SectorHasData(dataset, crownTips)) break else message('unsuitable (no dataset); trying')
 ######      
 ######      candidateNodes <- candidateNodes[-match(sector, candidateNodes)]
 ######      if (length(candidateNodes == 0)) stop('No selectable sectors contain parsimony information! Either "largestSector" is close to "smallestSector" or your dataset is short of parsimony information.')
 ######    }
-######    if (verbosity >= 0) cat(' Sector OK.')
+######    if (verbosity >= 0) message(' Sector OK.')
 ######    
 ######    crown <- root(AddTip(crown, 0, 'SECTOR_ROOT'), length(crown$tip.label) + 1, resolve.root=TRUE)
 ######    initialScore <- TreeScorer(candidate, dataset, ...)
 ######    attr(candidate, 'score') <- initialScore
 ######    
-######    if (verbosity >= 0) cat("\n - Rearranging sector", sector)
+######    if (verbosity >= 0) message("\n - Rearranging sector", sector)
 ######    for (Rearrange in Rearrangements) {
 ######      candidate <- TreeSearch(candidate, dataset, TreeScorer, Rearrange,
 ######                                verbosity=verbosity-1, maxIter=maxIter, ...) 
@@ -138,12 +138,12 @@
 ######      tree$edge[edges, 1] <- subtree.parent + nodeAdjust
 ######      tree$edge[edges, 2] <- subtree.child
 ######      
-######      if (verbosity > 0) cat(' : improved local pscore, updated tree')
-######    } else if (verbosity > 0) cat (' : no improvement to local pscore')
+######      if (verbosity > 0) message(' : improved local pscore, updated tree')
+######    } else if (verbosity > 0) message (' : no improvement to local pscore')
 ######    if (improvements == maxImprovements) break()
 ######  } # for
 ######  if (verbosity >= 0)
-######    cat ("\nCompleted sectorial rearrangements.\n")
+######    message ("\nCompleted sectorial rearrangements.\n")
 ######  attr(tree, 'score') <- NULL
 ######  attr(tree, 'hits') <- NULL
 ######  # Return:
@@ -166,7 +166,7 @@
 #######'
 #######''
 #######' @template treeParam 
-#######' @param dataset a dataset in the format required by TreeScorer.
+#######' @param dataset a dataset in the format required by `TreeScorer()`.
 #######' @template InitializeDataParam
 #######' @template CleanUpDataParam
 #######' @template treeScorerParam
@@ -194,8 +194,8 @@
 #######' @seealso \code{\link{MorphyRatchet}}
 #######' 
 #######' @examples
-#######' data('Lobo')
-#######' njtree <- NJTree(Lobo.phy)
+#######' data('Lobo', package='TreeTools')
+#######' njtree <- TreeTools::NJTree(Lobo.phy)
 #######'
 #######' \dontrun{
 #######' SectorialSearch(njtree, Lobo.phy, maxIter=20, EdgeSwapper=NNISwap,
@@ -219,8 +219,8 @@
 ######  # initialize tree and data
 ######  if (dim(tree$edge)[1] != 2 * tree$Nnode) stop("tree must be bifurcating; try rooting with ape::root")
 ######  tree <- RenumberTips(tree, names(dataset))
-######  edgeList <- MatrixToList(tree$edge)
-######  edgeList <- RenumberEdges(edgeList[[1]], edgeList[[2]])
+######  edgeList <- tree$edge
+######  edgeList <- RenumberEdges(edgeList[, 1], edgeList[, 2])
 ######  
 ######  initializedData <- InitializeData(dataset)
 ######  on.exit(initializedData <- CleanUpData(initializedData))
@@ -231,7 +231,7 @@
 ######    attr(tree, 'score')
 ######  }
 ######  
-######  if (verbosity > 0L) cat("\n* Beginning Sectorial Search, with initial score", bestScore)
+######  if (verbosity > 0L) message("\n* Beginning Sectorial Search, with initial score", bestScore)
 ######  if (!is.null(stopAtScore) && bestScore < stopAtScore + epsilon) return(tree)
 ######  
 ######  
@@ -248,7 +248,7 @@
 ######                             verbosity = verbosity - 1L)
 ######  
 ######  if (edgeList[[3]] <= bestScore) {
-######    sect$edge <- ListToMatrix(edgeList)
+######    sect$edge <- cbind(edgeList[[1]], edgeList[[2]])
 ######    attr(sect, 'score') <- edgeList[[3]]
 ######    attr(sect, 'hits') <- edgeList[[4]]
 ######    # Return:
@@ -286,7 +286,7 @@
 #######' @describeIn Ratchet Shortcut for Ratchet search using implied weights
 #######' @template concavityParam
 #######' @export
-######IWSectorial <- function (tree, dataset, concavity=4,
+######IWSectorial <- function (tree, dataset, concavity = 10,
 ######                       swappers = list(TBRSwap, SPRSwap, NNISwap),
 ######                       BootstrapSwapper = swappers[[length(swappers)]],
 ######                       returnAll=FALSE, stopAtScore=NULL,
@@ -295,7 +295,7 @@
 ######                       suboptimal=1e-08, ...) {
 ######  dataset <- PrepareDataIW(dataset)
 ######  SectorialSearch(tree=tree, dataset=dataset, 
-######                  concavity=concavity, minSteps=attr(dataset, 'min.steps'), 
+######                  concavity=concavity, minLength=attr(dataset, 'min.length'), 
 ######                  InitializeData=IWInitMorphy, CleanUpData=IWDestroyMorphy,
 ######                  TreeScorer=IWScoreMorphy, Bootstrapper=IWBootstrap,
 ######                  swappers=swappers, BootstrapSwapper=BootstrapSwapper,

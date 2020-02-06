@@ -8,7 +8,10 @@
 #' @template stopAtPeakParam
 #' @template stopAtPlateauParam
 #' @template verbosityParam
-#' @param \dots further parameters to send to \code{TreeScorer}
+#' @param \dots further parameters to send to `TreeScorer()`
+#'
+#' @references 
+#' - \insertRef{SmithTern}{TreeSearch}
 #'
 #' @return A tree that is optimal under a random sampling of the original characters
 #' @export
@@ -65,7 +68,7 @@ ProfileBootstrap <- function (edgeList, dataset, EdgeSwapper = NNISwap,
 #' @describeIn MorphyBootstrap Bootstrapper for Implied weighting
 #' @template concavityParam
 #' @export
-IWBootstrap <- function (edgeList, dataset, concavity=4L, EdgeSwapper = NNISwap, 
+IWBootstrap <- function (edgeList, dataset, concavity = 10L, EdgeSwapper = NNISwap, 
                               maxIter, maxHits, verbosity=1L, ...) {
   att <- attributes(dataset)
   startWeights <- att[['weight']]
@@ -77,12 +80,12 @@ IWBootstrap <- function (edgeList, dataset, concavity=4L, EdgeSwapper = NNISwap,
   sampledAtt <- att
   sampledAtt[['weight']] <- resampling[sampled]
   sampledAtt[['index']] <- rep(seq_len(sum(sampled)), resampling[sampled])
-  sampledAtt[['min.steps']] <- minSteps <- att[['min.steps']][sampled] # Can probably delete but I'm too nervous to... MS, 2018-03-06
+  sampledAtt[['min.length']] <- minLength <- att[['min.length']][sampled] # Can probably delete but I'm too nervous to... MS, 2018-03-06
   sampledAtt[['morphyObjs']] <- att[['morphyObjs']][sampled]
   attributes(sampledData) <- sampledAtt
   
   res <- EdgeListSearch(edgeList[1:2], sampledData, TreeScorer=IWScoreMorphy,
-                        concavity=concavity, minSteps = minSteps,
+                        concavity=concavity, minLength = minLength,
                         EdgeSwapper=EdgeSwapper, maxIter=maxIter, maxHits=maxHits,
                         verbosity=verbosity-1L)
   

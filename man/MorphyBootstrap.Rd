@@ -13,7 +13,7 @@ MorphyBootstrap(edgeList, morphyObj, EdgeSwapper = NNISwap, maxIter,
 ProfileBootstrap(edgeList, dataset, EdgeSwapper = NNISwap, maxIter,
   maxHits, verbosity = 1L, ...)
 
-IWBootstrap(edgeList, dataset, concavity = 4L, EdgeSwapper = NNISwap,
+IWBootstrap(edgeList, dataset, concavity = 10L, EdgeSwapper = NNISwap,
   maxIter, maxHits, verbosity = 1L, ...)
 }
 \arguments{
@@ -23,11 +23,11 @@ IWBootstrap(edgeList, dataset, concavity = 4L, EdgeSwapper = NNISwap,
 - (optionally) score of the tree
 - (optionally, if score provided) number of times this score has been hit}
 
-\item{morphyObj}{A morphy object, perhaps created with \code{\link{PhyDat2Morphy}}.}
+\item{morphyObj}{Object of class \code{morphy}, perhaps created with
+\code{\link[=PhyDat2Morphy]{PhyDat2Morphy()}}.}
 
 \item{EdgeSwapper}{a function that rearranges a parent and child vector,
-and returns a list with modified vectors; for example
-\code{\link{SPRSwap}}.}
+and returns a list with modified vectors; for example \code{\link[=SPRSwap]{SPRSwap()}}.}
 
 \item{maxIter}{maximum number of iterations to perform in tree search}
 
@@ -39,24 +39,25 @@ more verbose feedback to the user.}
 \item{stopAtPeak}{Logical specifying whether to terminate search once a subsequent
 iteration recovers a sub-optimal score. Useful with methods that
 return all trees one rearrangement from the current tree, such
-as \code{\link{AllTBR}}.  Will be overridden if a passed function
+as \code{\link[=AllTBR]{AllTBR()}}.  Will be overridden if a passed function
 has an attribute \code{stopAtPeak} set by
 \code{attr(FunctionName, 'stopAtPeak') <- TRUE}.}
 
 \item{stopAtPlateau}{Integer. If > 0, tree search will terminate if the score
 has not improved after \code{stopAtPlateau} iterations.
-Useful with methods that return all trees one
-rearrangement from the current tree, such as
-\code{\link{AllTBR}}.
-Will be overridden if a passed function has an attribute
-\code{stopAtPlateau} set by \code{attr(FunctionName, 'stopAtPlateau') <- TRUE}.}
+Useful with methods that return all trees one rearrangement from the current
+tree, such as \code{\link[=AllTBR]{AllTBR()}}.
+Will be overridden if a passed function has an attribute \code{stopAtPlateau} set
+by \code{attr(FunctionName, 'stopAtPlateau') <- TRUE}.}
 
-\item{\dots}{further parameters to send to \code{TreeScorer}}
+\item{\dots}{further parameters to send to \code{TreeScorer()}}
 
 \item{dataset}{A phylogenetic data matrix of class \code{\link[phangorn]{phyDat}},
 whose names correspond to the labels of any accompanying tree.}
 
-\item{concavity}{A numeric value to use as the concavity constant (\code{k}) in implied weighting.}
+\item{concavity}{A numeric value to use as the concavity constant (\code{k})
+in implied weighting. Defaults to 10; TNT sets a default of 3, but this
+is too low in some circumstances (Smith, 2019).}
 }
 \value{
 A tree that is optimal under a random sampling of the original characters
@@ -71,3 +72,8 @@ Ratchet bootstrapper
 \item \code{IWBootstrap}: Bootstrapper for Implied weighting
 }}
 
+\references{
+\itemize{
+\item \insertRef{SmithTern}{TreeSearch}
+}
+}

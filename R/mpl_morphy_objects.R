@@ -7,6 +7,7 @@
 #'
 #' @author Martin R. Smith
 #' @method summary morphyPtr
+#' @family Morphy API functions
 #' @export
 summary.morphyPtr <- function (object, ...) {
   ans <- list()
@@ -31,6 +32,7 @@ summary.morphyPtr <- function (object, ...) {
 #'         exact rates specified by the user; row 2 the approximate (integral)
 #'         weights used by MorphyLib
 #'
+#' @family Morphy API functions
 #' @author Martin R. Smith
 #' @export
 MorphyWeights <- function(morphyObj) {
@@ -46,8 +48,10 @@ MorphyWeights <- function(morphyObj) {
 #' @param checkInput Whether to sanity-check input data before applying. 
 #'         Defaults to TRUE to protect the user from crashes.
 #'
-#' @return The Morphy error code generated when applying tipData
+#' @return `SetMorphyWeights()` returns the Morphy error code generated when
+#' applying `tipData`.
 #' 
+#' @family Morphy API functions
 #' @author Martin R. Smith
 #' @export
 SetMorphyWeights <- function (weight, morphyObj, checkInput = TRUE) {
@@ -58,15 +62,18 @@ SetMorphyWeights <- function (weight, morphyObj, checkInput = TRUE) {
   mpl_apply_tipdata(morphyObj)
 }
 
-#' Initialize a Morphy Object from a phyDat object
+#' Initialize a Morphy Object from a `phyDat` object
 #' 
-#' Creates a new Morphy object with the same size and characters as the phyDat object 
+#' Creates a new Morphy object with the same size and characters as the 
+#' `phyDat` object 
 #'
 #' @param phy An object of class \code{\link{phyDat}}.
 #' @return A pointer to an initialized Morphy object.
 #' 
 #' @author Martin R. Smith
+#' @family Morphy API functions
 #' @importFrom phangorn phyDat
+#' @importFrom TreeTools PhyToString
 #' @export
 PhyDat2Morphy <- function (phy) {
   
@@ -108,6 +115,7 @@ PhyDat2Morphy <- function (phy) {
 #' Check for error whilst modifying Morphy object
 #' @param action action to perform
 #'
+#' @family Morphy API functions
 #' @keywords internal
 #' @export
 MorphyErrorCheck <- function (action) {
@@ -119,12 +127,13 @@ MorphyErrorCheck <- function (action) {
 #' @param char State of each character at each tip in turn, in a format that will be converted
 #'             to a character string by \code{\link{paste0}(char, ';', collapse='')}.
 #'
-#' @return A pointer to a morphyObj.
+#' @return A pointer to an object of class `morphyObj`.
 #' Don't forget to unload it when you've finished with it:
 #' \code{morphyObj <- \link{UnloadMorphy}(morphyObj)}.
 #'
 #' @author Martin R. Smith
 #'
+#' @family Morphy API functions
 #' @export
 SingleCharMorphy <- function (char) {
   char <- paste0(c(char, ';'), collapse='')
@@ -143,13 +152,16 @@ SingleCharMorphy <- function (char) {
 
 #' Destroy a Morphy Object
 #'
+#' Destroys a previously-created Morphy object.
+#'
 #' Best practice is to call \code{morphyObj <- UnloadMorphy(morphyObj)}
-#' Failure to do so will cause a crash if UnloadMorphy is called on an object that 
-#' has already been destroyed
+#' Failure to do so will cause a crash if `UnloadMorphy()` is called on an
+#' object that  has already been destroyed
 #'
 #' @template morphyObjParam
 #' @return Morphy error code, decipherable using \code{\link{mpl_translate_error}}
 #' @author Martin R. Smith
+#' @family Morphy API functions
 #' @export
 UnloadMorphy <- function (morphyObj) {
   if (class(morphyObj) != 'morphyPtr') stop ("Object is not a valid pointer; cannot destroy.")
@@ -158,7 +170,3 @@ UnloadMorphy <- function (morphyObj) {
   }
   return (error)
 }
-
-#' Unload this library
-#' @export
-UnloadTreeSearch <- function () detach("package:TreeSearch", unload=TRUE)

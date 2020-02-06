@@ -9,11 +9,11 @@ RearrangeEdges(parent, child, dataset, TreeScorer = MorphyLength,
   iter = "?", hits = 0L, verbosity = 0L, ...)
 }
 \arguments{
-\item{parent}{the first column of the edge matrix of a tree of class
-\code{\link{phylo}}, i.e. \code{tree$edge[, 1]}}
+\item{parent}{Integer vector corresponding to the first column of the edge
+matrix of a tree of class \code{\link{phylo}}, i.e. \code{tree$edge[, 1]}.}
 
-\item{child}{the second column of the edge matrix of a tree of class
-\code{\link{phylo}}, i.e. \code{tree$edge[, 2]}}
+\item{child}{Integer vector corresponding to the second column of the edge
+matrix of a tree of class \code{\link{phylo}}, i.e. \code{tree$edge[, 2]}.}
 
 \item{dataset}{Third argument to pass to \code{TreeScorer}.}
 
@@ -22,8 +22,7 @@ The function will be passed three parameters, corresponding to the
 \code{parent} and \code{child} entries of a tree's edge list, and a dataset.}
 
 \item{EdgeSwapper}{a function that rearranges a parent and child vector,
-and returns a list with modified vectors; for example
-\code{\link{SPRSwap}}.}
+and returns a list with modified vectors; for example \code{\link[=SPRSwap]{SPRSwap()}}.}
 
 \item{scoreToBeat}{Double giving score of input tree.}
 
@@ -34,8 +33,8 @@ and returns a list with modified vectors; for example
 \item{verbosity}{Level of detail to display in console: larger numbers provide
 more verbose feedback to the user.}
 
-\item{\dots}{further arguments to pass to \code{TreeScorer} function
-(e.g. \code{\link{TipsAreColumns}}, \code{dataset})}
+\item{\dots}{further arguments to pass to \code{TreeScorer()}
+(e.g. \code{\link{TipsAreColumns}}, \code{dataset}).}
 }
 \value{
 This function returns a list with two to four elements, corresponding to a binary tree:
@@ -56,8 +55,8 @@ It also reports the number of times that this score was hit in the
 current function call.
 }
 \examples{
-data('Lobo')
-random.tree <- RandomTree(Lobo.phy)
+data('Lobo', package='TreeTools')
+random.tree <- TreeTools::RandomTree(Lobo.phy)
 edge <- random.tree$edge
 parent <- edge[, 1]
 child <- edge[, 2]

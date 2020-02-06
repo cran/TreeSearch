@@ -2,7 +2,7 @@
 % Please edit documentation in R/mpl_morphy_objects.R
 \name{PhyDat2Morphy}
 \alias{PhyDat2Morphy}
-\title{Initialize a Morphy Object from a phyDat object}
+\title{Initialize a Morphy Object from a \code{phyDat} object}
 \usage{
 PhyDat2Morphy(phy)
 }
@@ -13,8 +13,40 @@ PhyDat2Morphy(phy)
 A pointer to an initialized Morphy object.
 }
 \description{
-Creates a new Morphy object with the same size and characters as the phyDat object
+Creates a new Morphy object with the same size and characters as the
+\code{phyDat} object
+}
+\seealso{
+Other Morphy API functions: \code{\link{MorphyErrorCheck}},
+  \code{\link{MorphyWeights}},
+  \code{\link{SetMorphyWeights}},
+  \code{\link{SingleCharMorphy}},
+  \code{\link{UnloadMorphy}},
+  \code{\link{mpl_apply_tipdata}},
+  \code{\link{mpl_attach_rawdata}},
+  \code{\link{mpl_attach_symbols}},
+  \code{\link{mpl_delete_Morphy}},
+  \code{\link{mpl_delete_rawdata}},
+  \code{\link{mpl_first_down_recon}},
+  \code{\link{mpl_first_up_recon}},
+  \code{\link{mpl_get_charac_weight}},
+  \code{\link{mpl_get_num_charac}},
+  \code{\link{mpl_get_num_internal_nodes}},
+  \code{\link{mpl_get_numtaxa}},
+  \code{\link{mpl_get_symbols}},
+  \code{\link{mpl_init_Morphy}},
+  \code{\link{mpl_new_Morphy}},
+  \code{\link{mpl_second_down_recon}},
+  \code{\link{mpl_second_up_recon}},
+  \code{\link{mpl_set_charac_weight}},
+  \code{\link{mpl_set_num_internal_nodes}},
+  \code{\link{mpl_set_parsim_t}},
+  \code{\link{mpl_translate_error}},
+  \code{\link{mpl_update_lower_root}},
+  \code{\link{mpl_update_tip}},
+  \code{\link{summary.morphyPtr}}
 }
 \author{
 Martin R. Smith
 }
+\concept{Morphy API functions}

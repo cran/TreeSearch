@@ -1,46 +1,3 @@
-#' @describeIn N1Spr Information content of trees 0 or 1 SPR step from tree with n tips.
-#' @export
-IC1Spr <- function(n) -log2((1L + N1Spr(n)) / NUnrooted(n)) 
-
-#' @describeIn NRooted Log number of unrooted trees
-#' @export
-LnUnrootedSplits <- function (splits) {
-  if ((nSplits <- length(splits)) < 2) return (LnUnrooted(splits));
-  if (nSplits == 2) return (LnRooted(splits[1]) + LnRooted(splits[2]));
-  return (LnUnrootedMult(splits))
-}
-#' @describeIn NRooted Number of unrooted trees
-#' @export
-NUnrootedSplits  <- function (splits) {
-  if ((nSplits <- length(splits)) < 2) return (NUnrooted(splits));
-  if (nSplits == 2) return (NRooted(splits[1]) * NRooted(splits[2]))
-  return (NUnrootedMult(splits))
-}
-#' @describeIn NRooted Log unrooted mult
-#' @references 
-#'  \insertRef{Carter1990}{TreeSearch}
-#' @export
-LnUnrootedMult <- function (splits) {  # Carter et al. 1990, Theorem 2
-  splits <- splits[splits > 0]
-  totalTips <- sum(splits)
-  
-  # Return:
-  LogDoubleFactorial(totalTips +  totalTips - 5L) -
-    LogDoubleFactorial(2L * (totalTips - length(splits)) - 1L) +
-    sum(LogDoubleFactorial(splits + splits - 3L))
-}
-#' @describeIn NRooted Number of unrooted trees (mult)
-#' @export
-NUnrootedMult  <- function (splits) {  # Carter et al. 1990, Theorem 2
-  splits <- splits[splits > 0]
-  totalTips <- sum(splits)
-  
-  # Return:
-  round(DoubleFactorial(totalTips + totalTips - 5L) /
-          DoubleFactorial(2L * (totalTips - length(splits)) - 1L)
-        * prod(DoubleFactorial(splits + splits - 3L)))
-}
-
 #' Information Content Steps
 #'
 #'   This function estimates the information content of a character \code{char} when e extra steps
@@ -76,6 +33,7 @@ NUnrootedMult  <- function (splits) {  # Carter et al. 1990, Theorem 2
 #'   character <- c(rep(1, 10), rep(2, 5))
 #'   ICSteps (character)
 #' }
+#' @importFrom TreeTools NUnrooted NUnrootedMult
 #' @export
 ICSteps <- function (char, ambiguousToken = 0, expectedMinima = 25, maxIter = 10000,
                      warn = TRUE) {
@@ -102,10 +60,11 @@ ICSteps <- function (char, ambiguousToken = 0, expectedMinima = 25, maxIter = 10
   #analyticIc1<- -log(nOneExtraStep/NUnrooted(sum(split))) / log(2)
   #analyticIc1<- -log((nNoExtraSteps + nOneExtraStep)/NUnrooted(sum(split))) / log(2)
   if (warn) {
-    cat('  Token count', split, "=", signif(analyticIc0, ceiling(log10(maxIter))),
-        'bits @ 0 extra steps; simulating', nIter, 
-        'trees to estimate cost of further steps.\n')
-    # cat(c(round(analyticIc0, 3), 'bits @ 0 extra steps;', round(analyticIc1, 3),
+    message('  Token count ', split, " = ",
+            signif(analyticIc0, ceiling(log10(maxIter))),
+            ' bits @ 0 extra steps; simulating ', nIter, 
+            ' trees to estimate cost of further steps.')
+    # message(c(round(analyticIc0, 3), 'bits @ 0 extra steps;', round(analyticIc1, 3),
     #    '@ 1; attempting', nIter, 'iterations.\n'))
   }
   
@@ -152,6 +111,7 @@ ICPerStep <- function(splits, maxIter, warn=TRUE) ICS(min(splits), max(splits), 
 
 #' Number of trees with one extra step
 #' @template splitsParam
+#' @importFrom TreeTools NRooted
 #' @export
 WithOneExtraStep <- function (splits) {
   # Ignore singletons, which can be added at the end...
@@ -192,7 +152,8 @@ WithOneExtraStep <- function (splits) {
 #' Extract points from a fitted model
 #'
 #' @param x an integer vector giving x co-ordinates.
-#' @param fittedModel a fitted model, perhaps generated using \kbd{nls(cumP ~ SSlogis(nSteps, Asym, xmid, scal))}.
+#' @param fittedModel a fitted model, perhaps generated using 
+#' `nls(cumP ~ SSlogis(nSteps, Asym, xmid, scal))`.
 #'
 #' @return values of y co-ordinates corresponding to the x co-ordinates provided
 #' @author Martin R. Smith
@@ -224,7 +185,7 @@ Evaluate <- function (tree, dataset, warn=TRUE) {
                          double(1)), 12)
   infoLosses <- apply(chars, 1, ICSteps, ambiguousToken=ambiguousToken, maxIter=1000, warn=warn)
   infoAmounts <- lapply(infoLosses, function(p) {
-    #cat(length(p))
+    #message(length(p))
     cumP <- cumsum(p)
     nSteps <- as.integer(names(p))
     infer <- min(nSteps):max(nSteps)
@@ -252,7 +213,9 @@ Evaluate <- function (tree, dataset, warn=TRUE) {
   info.overkill <- total.info / info.needed
   info.retained <- sum(info.used[index])
   signal.noise <- info.retained / info.misleading
-  cat("\n", total.info, 'bits, of which', round(info.retained, 2), 'kept,', round(total.info - info.retained, 2), 'lost,', round(info.needed, 2), 'needed.  SNR =', signal.noise, "\n")
+  message(total.info, ' bits, of which ', round(info.retained, 2), ' kept, ',
+          round(total.info - info.retained, 2), ' lost,',
+          round(info.needed, 2), ' needed.  SNR = ', signal.noise, "\n")
   # Return:
   c(signal.noise, info.retained/info.needed)
 }

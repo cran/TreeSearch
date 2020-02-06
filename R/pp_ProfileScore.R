@@ -1,6 +1,7 @@
 #' Profile Parsimony Score
 #'
-#' Calculate a tree's Profile Parsimony score with a given dataset, after Faith and Trueman (2001)
+#' Calculate a tree's Profile Parsimony score with a given dataset, after
+#' Faith and Trueman (2001).
 #'
 #' @template treeParam
 #' @param dataset Dataset of class \code{phyDat}.  The dataset should have been
@@ -22,7 +23,8 @@
 #'   # In actual use, the dataset should be prepared with a much higher
 #'   # precision: try 1e+06?
 #'   # Of course, gaining higher precision takes substantially longer.
-#'   dataset <- PrepareDataProfile(congreveLamsdellMatrices[[42]], precision=1e+03)
+#'   dataset <- suppressWarnings(
+#'     PrepareDataProfile(congreveLamsdellMatrices[[42]], precision = 1e+03))
 #'   ProfileScore(referenceTree, dataset)
 #'
 #' @author Martin R. Smith
@@ -36,7 +38,7 @@ ProfileScore <- function (tree, dataset) {
   at <- attributes(dataset)
   nChar  <- at$nr # strictly, transformation series patterns; these'll be upweighted later
   weight <- at$weight
-  steps <- FitchSteps(tree, dataset)
+  steps <- CharacterLength(tree, dataset)
   info <- at$info.amounts
   nRowInfo <- nrow(info)
   infoPerChar <- vapply(seq_len(nChar), function (i) {
@@ -63,24 +65,26 @@ ProfileScoreMorphy <- function (parent, child, dataset, ...) {
   }, double(1)) * attr(dataset, 'weight'))
 }
 
-#' @describeIn ProfileScore Initialize dataset by adding morphyObjs.
+#' @describeIn ProfileScore Initialize dataset by adding `morphyObjs` attribute.
 #' @export
 ProfileInitMorphy <- function (dataset) {
   attr(dataset, 'morphyObjs') <- 
-    lapply(PhyToString(dataset, byTaxon=FALSE, useIndex=FALSE, concatenate=FALSE), 
+    lapply(PhyToString(dataset, byTaxon = FALSE, useIndex = FALSE, 
+                       concatenate = FALSE), 
            SingleCharMorphy)
   # Return:
   dataset
 }
 
-#' @describeIn ProfileScore Free memory from morphyObjs initialized by
-#' \kbd{ProfileScoreMorphy}.
+#' @describeIn ProfileScore Free memory from `morphyObjs` initialized by
+#' `ProfileScoreMorphy()`.
 #' @export
 ProfileDestroyMorphy <- function (dataset) {
   vapply(attr(dataset, 'morphyObjs'), UnloadMorphy, integer(1))
 }
 
-#' @describeIn IWScore Free memory from morphyObjs initialized by \kbd{IWScoreMorphy}.
+#' @describeIn IWScore Free memory from `morphyObjs` initialized by
+#' `IWScoreMorphy()`.
 #' @export
 IWDestroyMorphy <- ProfileDestroyMorphy
 

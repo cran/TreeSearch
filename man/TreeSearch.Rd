@@ -7,14 +7,13 @@
 \alias{ProfileTreeSearch}
 \title{Search for most parsimonious trees}
 \usage{
-IWTreeSearch(tree, dataset, concavity = 4, EdgeSwapper = RootedTBR,
+IWTreeSearch(tree, dataset, concavity = 10, EdgeSwapper = RootedTBR,
   maxIter = 100, maxHits = 20, forestSize = 1, verbosity = 1, ...)
 
 EdgeListSearch(edgeList, dataset, TreeScorer = MorphyLength,
   EdgeSwapper = RootedTBRSwap, maxIter = 100, maxHits = 20,
   bestScore = NULL, stopAtScore = NULL, stopAtPeak = FALSE,
-  stopAtPlateau = 0L, forestSize = 1L, cluster = NULL,
-  verbosity = 1L, ...)
+  stopAtPlateau = 0L, forestSize = 1L, verbosity = 1L, ...)
 
 TreeSearch(tree, dataset, InitializeData = PhyDat2Morphy,
   CleanUpData = UnloadMorphy, TreeScorer = MorphyLength,
@@ -31,11 +30,12 @@ ProfileTreeSearch(tree, dataset, EdgeSwapper = RootedTBR,
 
 \item{dataset}{Data in format required by \code{InitializeData}.}
 
-\item{concavity}{A numeric value to use as the concavity constant (\code{k}) in implied weighting.}
+\item{concavity}{A numeric value to use as the concavity constant (\code{k})
+in implied weighting. Defaults to 10; TNT sets a default of 3, but this
+is too low in some circumstances (Smith, 2019).}
 
 \item{EdgeSwapper}{a function that rearranges a parent and child vector,
-and returns a list with modified vectors; for example
-\code{\link{SPRSwap}}.}
+and returns a list with modified vectors; for example \code{\link[=SPRSwap]{SPRSwap()}}.}
 
 \item{maxIter}{the maximum number of iterations to perform before abandoning the search.}
 
@@ -46,8 +46,8 @@ and returns a list with modified vectors; for example
 \item{verbosity}{Level of detail to display in console: larger numbers provide
 more verbose feedback to the user.}
 
-\item{\dots}{further arguments to pass to \code{TreeScorer} function
-(e.g. \code{\link{TipsAreColumns}}, \code{dataset})}
+\item{\dots}{further arguments to pass to \code{TreeScorer()}
+(e.g. \code{\link{TipsAreColumns}}, \code{dataset}).}
 
 \item{edgeList}{a list containing the following:
 - vector of integers corresponding to the parent of each edge in turn
@@ -62,24 +62,23 @@ The function will be passed three parameters, corresponding to the
 \item{stopAtPeak}{Logical specifying whether to terminate search once a subsequent
 iteration recovers a sub-optimal score. Useful with methods that
 return all trees one rearrangement from the current tree, such
-as \code{\link{AllTBR}}.  Will be overridden if a passed function
+as \code{\link[=AllTBR]{AllTBR()}}.  Will be overridden if a passed function
 has an attribute \code{stopAtPeak} set by
 \code{attr(FunctionName, 'stopAtPeak') <- TRUE}.}
 
 \item{stopAtPlateau}{Integer. If > 0, tree search will terminate if the score
 has not improved after \code{stopAtPlateau} iterations.
-Useful with methods that return all trees one
-rearrangement from the current tree, such as
-\code{\link{AllTBR}}.
-Will be overridden if a passed function has an attribute
-\code{stopAtPlateau} set by \code{attr(FunctionName, 'stopAtPlateau') <- TRUE}.}
+Useful with methods that return all trees one rearrangement from the current
+tree, such as \code{\link[=AllTBR]{AllTBR()}}.
+Will be overridden if a passed function has an attribute \code{stopAtPlateau} set
+by \code{attr(FunctionName, 'stopAtPlateau') <- TRUE}.}
 
 \item{InitializeData}{Function that sets up data object to prepare for tree search.
-The function will be passed the \kbd{dataset} parameter.
-Its return value will be passed to TreeScorer and CleanUpData.}
+The function will be passed the \code{dataset} parameter.
+Its return value will be passed to \code{TreeScorer()} and \code{CleanUpData()}.}
 
 \item{CleanUpData}{Function to destroy data object on function exit.
-The function will be passed the value returned by \kbd{InitializeData}.}
+The function will be passed the value returned by \code{InitializeData()}.}
 
 \item{dataset}{A phylogenetic data matrix of class \code{\link[phangorn]{phyDat}},
 whose names correspond to the labels of any accompanying tree.}
@@ -94,6 +93,11 @@ was generated using the same \code{data} that is passed here.
 \description{
 Run standard search algorithms (\acronym{NNI}, \acronym{SPR} or \acronym{TBR})
 to search for a more parsimonious tree.
+
+For detailed documentation of the TreeSearch package, including full
+instructions for loading phylogenetic data into R and initiating and
+configuring tree search, see the
+\href{https://ms609.github.io/TreeSearch}{package documentation}.
 }
 \section{Functions}{
 \itemize{
@@ -105,14 +109,19 @@ to search for a more parsimonious tree.
 }}
 
 \examples{
-data('Lobo')
-njtree <- NJTree(Lobo.phy)
+data('Lobo', package='TreeTools')
+njtree <- TreeTools::NJTree(Lobo.phy)
 
 \dontrun{
 TreeSearch(njtree, Lobo.phy, maxIter=20, EdgeSwapper=NNISwap)
 TreeSearch(njtree, Lobo.phy, maxIter=20, EdgeSwapper=RootedSPRSwap)
 TreeSearch(njtree, Lobo.phy, maxIter=20, EdgeSwapper=TBRSwap)}
 
+}
+\references{
+\itemize{
+\item \insertRef{SmithTern}{TreeSearch}
+}
 }
 \seealso{
 \itemize{

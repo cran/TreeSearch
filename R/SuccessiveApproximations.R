@@ -1,6 +1,7 @@
 #' Tree Search using Successive Approximations
 #'
-#' Searches for a tree that is optimal under the Successive Approximations criterion
+#' Searches for a tree that is optimal under the Successive Approximations 
+#' criterion.
 #'
 #' @template treeParam
 #' @template datasetParam
@@ -14,7 +15,8 @@
 #' @param verbosity integer (default 0) specifying how much detail to print to stdout
 #' @param suboptimal retain trees that are this proportion less optimal than the optimal tree
 #' 
-#' @return list of optimal (and slightly suboptimal, if suboptimal > 0) trees
+#' @return `SuccessiveApproximations()` returns a list of class `multiPhylo`
+#' containing optimal (and slightly suboptimal, if suboptimal > 0) trees.
 #'
 #' @importFrom ape consensus root
 #' @export
@@ -29,11 +31,11 @@ SuccessiveApproximations <- function (tree, dataset, outgroup = NULL, k = 3, max
   max.node <- max(tree$edge[, 1])
   n.tip <- length(tree$tip.label)
   n.node <- max.node - n.tip
-  bests <- vector('list', maxSuccIter + 1)
-  bestsConsensus <- vector('list', maxSuccIter + 1)
+  bests <- vector('list', maxSuccIter + 1L)
+  bestsConsensus <- vector('list', maxSuccIter + 1L)
   best <- bests[[1]] <- bestsConsensus[[1]] <- root(tree, outgroup, resolve.root=TRUE)
-  for (i in seq_len(maxSuccIter) + 1) {
-    if (verbosity > 0) cat('\nSuccessive Approximations Iteration', i - 1)
+  for (i in seq_len(maxSuccIter) + 1L) {
+    if (verbosity > 0) message('\nSuccessive Approximations Iteration ', i - 1L)
     attr(best, 'score') <- NULL
     if (suboptimal > 0) {
       suboptimalSearch <- suboptimal * sum(attr(dataset, 'sa.weights') * attr(dataset, 'weight'))
@@ -48,15 +50,15 @@ SuccessiveApproximations <- function (tree, dataset, outgroup = NULL, k = 3, max
     bestsConsensus[[i]] <- consensus(trees[suboptimality == 0])
     if (all.equal(bestsConsensus[[i]], bestsConsensus[[i - 1]])) return(bests[2:i])
     best <- trees[suboptimality == 0][[1]]
-    l.i <- FitchSteps(best, dataset)
+    l.i <- CharacterLength(best, dataset)
     p.i <- l.i / (n.node - 1)
     w.i <- ((p.i)^-k) - 1
     attr(dataset, 'sa.weights') <- w.i
   }
-  cat('Stability not reached.')
+  message('Stability not reached.')
   
   # Return:
-  bests
+  structure(bests, class = 'multiPhylo')
 }
 
 #' Tree suboptimality
@@ -81,12 +83,14 @@ Suboptimality <- function (trees, proportional = FALSE) {
 
 #' Successive Weights
 #' 
-#' Calculate weight for tree scored by successive approximations
+#' Calculate weight for tree scored by successive approximations.
 #' 
 #' @template treeParam
 #' @template datasetParam
 #'
-#' @return Score of a tree, given the weighting instructions specified in the attributes of the dataset
+#' @return `SuccessiveWeights()` returns the score of a tree, given the
+#' weighting instructions specified in the attributes of the dataset.
+#' 
 #' @keywords internal
 #' @export
 SuccessiveWeights <- function(tree, dataset) {
@@ -99,7 +103,7 @@ SuccessiveWeights <- function(tree, dataset) {
   weight <- at$weight
   sa.weights <- at$sa.weights
   if (is.null(sa.weights)) sa.weights <- rep(1, length(weight))
-  steps <- FitchSteps(tree, dataset)
+  steps <- CharacterLength(tree, dataset)
   
   # Return:
   sum(steps * sa.weights * weight)

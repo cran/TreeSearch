@@ -1,6 +1,7 @@
 #' Implied weights parsimony Score
 #'
-#' Calculate a tree's Parsimony score with a given dataset using implied weights (Goloboff 1997)
+#' Calculate a tree's Parsimony score with a given dataset using implied weights
+#' (Goloboff 1997).
 #'
 #' @template treeParam
 #' @param dataset Dataset of class \code{phyDat}.  The dataset should have been
@@ -16,7 +17,9 @@
 #'         and `k` is a constant (the 'concavity constant')
 #'
 #' @references
-#'  \insertRef{Goloboff1997}{TreeSearch}
+#'  - \insertRef{Goloboff1997}{TreeSearch}
+#'  
+#'  - \insertRef{SmithTern}{TreeSearch}
 #'
 #' @examples
 #'   data(referenceTree)
@@ -25,46 +28,53 @@
 #'   IWScore(referenceTree, dataset)
 #'
 #' @author Martin R. Smith
+#' @family tree scoring
 #' @keywords tree
 #' @export
-IWScore <- function (tree, dataset, concavity=4, ...) {
+IWScore <- function (tree, dataset, concavity = 10, ...) {
   if (class(dataset) != 'phyDat') {
-    stop('Invalid dataset type; prepare dataset with PhyDat() and PrepareDataIW().')
+    stop('Data not of class phyDat; see PhyDat() and PrepareDataIW().')
   }
-  if (!('info.amounts' %in% names(attributes(dataset)))) dataset <- PrepareDataIW(dataset)
+  if (!('min.length' %in% names(attributes(dataset)))) {
+    dataset <- PrepareDataIW(dataset)
+  }
   at <- attributes(dataset)
   nChar  <- at$nr # strictly, transformation series patterns; these'll be upweighted later
   weight <- at$weight
-  steps <- FitchSteps(tree, dataset)
-  minSteps <- at$min.steps
-  homoplasies <- steps - minSteps
+  steps <- CharacterLength(tree, dataset)
+  minLength <- at$min.length
+  homoplasies <- steps - minLength
   
-  # TODO remove this paranoid check once 100% happy with minSteps calculation.
+  # This check has been triggered - underlying C memory failure suspected
+  # but remains under investigation...
   if (any(homoplasies < 0)) stop("Minimum steps have been miscalculated.\n", 
-                            "       Please report this bug at:\n", 
-                            "       https://github.com/ms609/TreeSearch/issues/new")
+    "       Please report this bug at:\n", 
+    "       https://github.com/ms609/TreeSearch/issues/new\n\n",
+    "       See above for full tree: ", dput(tree))
   fit <- homoplasies / (homoplasies + concavity)
   # Return:
   sum(fit * weight)
 }
 
-#' @describeIn ProfileScore Scorer for initialized dataset.
+#' @describeIn ProfileScore Scorer for Implied Weighting dataset.
 #' @template concavityParam
-#' @param minSteps Integer vector specifying the minimum number of steps
-#'                 possible for each character in `dataset`, perhaps calculated
-#'                 using \code{\link{MinimumSteps}}.
-#'                 
+#' @param minLength Integer vector specifying the minimum length
+#'                  possible for each character in `dataset`, perhaps calculated
+#'                  using \code{\link{MinimumLength}}.
+#'
 #' @export
-IWScoreMorphy <- function (parent, child, dataset, concavity=4, 
-                           minSteps = attr(dataset, 'min.steps'), ...) {
-  steps <- vapply(attr(dataset, 'morphyObjs'), MorphyLength, parent=parent, child=child, integer(1))
-  homoplasies <- steps - minSteps
+IWScoreMorphy <- function (parent, child, dataset, concavity = 10L, 
+                           minLength = attr(dataset, 'min.length'), ...) {
+  steps <- vapply(attr(dataset, 'morphyObjs'), MorphyLength,
+                  parent=parent, child=child, integer(1))
+  homoplasies <- steps - minLength
   fit <- homoplasies / (homoplasies + concavity)
   # Return:
   sum(fit * attr(dataset, 'weight'))
 }
 
-#' @describeIn IWScore Initialize dataset by adding morphyObjs and min.steps.
+#' @describeIn IWScore Initialize dataset by adding `morphyObjs` and 
+#' `min.length` properties.
 #' @export
 IWInitMorphy <- function (dataset) {
   attr(dataset, 'morphyObjs') <- 
@@ -79,15 +89,16 @@ IWInitMorphy <- function (dataset) {
 #' @describeIn TreeSearch Search using profile parsimony
 #' @template concavityParam
 #' @export
-IWTreeSearch <- function (tree, dataset, concavity = 4, EdgeSwapper = RootedTBR,
+IWTreeSearch <- function (tree, dataset, concavity = 10, 
+                          EdgeSwapper = RootedTBR,
                         maxIter = 100, maxHits = 20, forestSize = 1,
                         verbosity = 1, ...) {
   if (class(dataset) != 'phyDat') stop("Unrecognized dataset class; should be phyDat, not ", class(dataset), '.')
-  if (!('min.steps' %in% names(attributes(dataset)))) dataset <- PrepareDataIW(dataset)
+  if (!('min.length' %in% names(attributes(dataset)))) dataset <- PrepareDataIW(dataset)
   at <- attributes(dataset)
   
   TreeSearch(tree, dataset, nChar=at$nr, weight=at$weight,
-             minSteps=at$min.steps, concavity = concavity,
+             minLength=at$min.length, concavity = concavity,
              InitializeData = IWInitMorphy,
              CleanUpData = IWDestroyMorphy,
              TreeScorer = IWScoreMorphy,

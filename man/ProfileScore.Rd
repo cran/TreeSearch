@@ -8,8 +8,8 @@
 \alias{ProfileDestroyMorphy}
 \title{Profile Parsimony Score}
 \usage{
-IWScoreMorphy(parent, child, dataset, concavity = 4,
-  minSteps = attr(dataset, "min.steps"), ...)
+IWScoreMorphy(parent, child, dataset, concavity = 10L,
+  minLength = attr(dataset, "min.length"), ...)
 
 ProfileScore(tree, dataset)
 
@@ -20,11 +20,11 @@ ProfileInitMorphy(dataset)
 ProfileDestroyMorphy(dataset)
 }
 \arguments{
-\item{parent}{the first column of the edge matrix of a tree of class
-\code{\link{phylo}}, i.e. \code{tree$edge[, 1]}}
+\item{parent}{Integer vector corresponding to the first column of the edge
+matrix of a tree of class \code{\link{phylo}}, i.e. \code{tree$edge[, 1]}.}
 
-\item{child}{the second column of the edge matrix of a tree of class
-\code{\link{phylo}}, i.e. \code{tree$edge[, 2]}}
+\item{child}{Integer vector corresponding to the second column of the edge
+matrix of a tree of class \code{\link{phylo}}, i.e. \code{tree$edge[, 2]}.}
 
 \item{dataset}{Dataset of class \code{phyDat}.  The dataset should have been
 prepared using \code{dataset <- \link{PrepareDataProfile}(dataset)};
@@ -33,11 +33,13 @@ prepared within the function.
 In subsidiary functions, the dataset will have been initialized using
 \code{ProfileInitMorphy}, must be destroyed using \code{ProfileDestroyMorphy}.}
 
-\item{concavity}{A numeric value to use as the concavity constant (\code{k}) in implied weighting.}
+\item{concavity}{A numeric value to use as the concavity constant (\code{k})
+in implied weighting. Defaults to 10; TNT sets a default of 3, but this
+is too low in some circumstances (Smith, 2019).}
 
-\item{minSteps}{Integer vector specifying the minimum number of steps
+\item{minLength}{Integer vector specifying the minimum length
 possible for each character in \code{dataset}, perhaps calculated
-using \code{\link{MinimumSteps}}.}
+using \code{\link{MinimumLength}}.}
 
 \item{\dots}{unused; allows additional parameters specified within \dots to be
 received by the function without throwing an error.}
@@ -49,18 +51,19 @@ Zero minus the profile score (because the optimization algorithm
 treats smaller numbers as better)
 }
 \description{
-Calculate a tree's Profile Parsimony score with a given dataset, after Faith and Trueman (2001)
+Calculate a tree's Profile Parsimony score with a given dataset, after
+Faith and Trueman (2001).
 }
 \section{Functions}{
 \itemize{
-\item \code{IWScoreMorphy}: Scorer for initialized dataset.
+\item \code{IWScoreMorphy}: Scorer for Implied Weighting dataset.
 
 \item \code{ProfileScoreMorphy}: Scorer for initialized dataset.
 
-\item \code{ProfileInitMorphy}: Initialize dataset by adding morphyObjs.
+\item \code{ProfileInitMorphy}: Initialize dataset by adding \code{morphyObjs} attribute.
 
-\item \code{ProfileDestroyMorphy}: Free memory from morphyObjs initialized by
-\kbd{ProfileScoreMorphy}.
+\item \code{ProfileDestroyMorphy}: Free memory from \code{morphyObjs} initialized by
+\code{ProfileScoreMorphy()}.
 }}
 
 \examples{
@@ -69,7 +72,8 @@ Calculate a tree's Profile Parsimony score with a given dataset, after Faith and
   # In actual use, the dataset should be prepared with a much higher
   # precision: try 1e+06?
   # Of course, gaining higher precision takes substantially longer.
-  dataset <- PrepareDataProfile(congreveLamsdellMatrices[[42]], precision=1e+03)
+  dataset <- suppressWarnings(
+    PrepareDataProfile(congreveLamsdellMatrices[[42]], precision = 1e+03))
   ProfileScore(referenceTree, dataset)
 
 }

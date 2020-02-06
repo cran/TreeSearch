@@ -9,30 +9,34 @@ set.seed(888)
 ## ----Load Longrich data--------------------------------------------------
 data(congreveLamsdellMatrices)
 my.data <- congreveLamsdellMatrices[[10]]
-my.phyDat <- phangorn::phyDat(my.data, type='USER', levels=c(1, 2))
+my.phyDat <- phangorn::phyDat(my.data, type = 'USER', levels = c(1, 2))
 
-## ----Prepare the data for analysis, warning=FALSE------------------------
-my.prepdata <- PrepareDataProfile(my.phyDat, precision=4e+04)
+## ----Prepare the data for analysis, warning=FALSE, message=FALSE---------
+my.prepdata <- PrepareDataProfile(my.phyDat, precision = 4e+04)
 
 ## ----Random tree, eval=FALSE---------------------------------------------
 #  tree <- RandomTree(my.phyDat)
 
 ## ----NJ Tree-------------------------------------------------------------
-tree <- NJTree(my.phyDat)
-par(mar=rep(0.25, 4), cex=0.75) # make plot easier to read
+tree <- TreeTools::NJTree(my.phyDat)
+par(mar = rep(0.25, 4), cex = 0.75) # make plot easier to read
 plot(tree)
 
 ## ----Starting score------------------------------------------------------
 ProfileScore(tree, my.prepdata)
 
-better.tree <- ProfileTreeSearch(tree, my.prepdata, EdgeSwapper=RootedTBRSwap)
+better.tree <- ProfileTreeSearch(tree, my.prepdata, EdgeSwapper = RootedTBRSwap)
 
 ## ----longwinded, eval=FALSE----------------------------------------------
 #  # Longwinded approach:
-#  better.tree <- Ratchet(better.tree, my.prepdata, searchHits=10, searchIter=100, ratchIter=5,
-#                         swappers=list(RootedTBRSwap, RootedSPRSwap, RootedNNISwap),
-#                         InitializeData=ProfileInitMorphy, CleanUpData=ProfileDestroyMorphy,
-#                         TreeScorer=ProfileScoreMorphy, Bootstrapper=ProfileBootstrap)
+#  better.tree <- Ratchet(better.tree, my.prepdata, searchHits = 10,
+#                         searchIter = 100, ratchIter = 5,
+#                         swappers = list(RootedTBRSwap, RootedSPRSwap,
+#                                         RootedNNISwap),
+#                         InitializeData = ProfileInitMorphy,
+#                         CleanUpData = ProfileDestroyMorphy,
+#                         TreeScorer = ProfileScoreMorphy,
+#                         Bootstrapper = ProfileBootstrap)
 
 ## ----Cached results of ratchet search, echo=FALSE------------------------
 # The ratchet search takes a little while to run,
@@ -58,16 +62,16 @@ better.tree <- structure(list(edge = structure(c(23L, 23L, 24L, 25L, 26L, 26L,
 
 ## ----Ratchet-search-results----------------------------------------------
 attr(better.tree, 'score')
-par(mar=rep(0.25, 4), cex=0.75) # make plot easier to read
+par(mar = rep(0.25, 4), cex = 0.75) # make plot easier to read
 plot(better.tree)
 
 ## ----Suboptimal sampling, eval=FALSE-------------------------------------
 #  suboptimals <- ProfileRatchet(better.tree, my.prepdata,
-#                                swappers=list(RootedTBRSwap),
-#                                returnAll=TRUE, suboptimal=5,
-#                                ratchHits=25, ratchIter=500,
-#                                bootstrapHits=15, bootstrapIter=450,
-#                                searchHits=10, searchIter=100)
+#                                swappers = list(RootedTBRSwap),
+#                                returnAll = TRUE, suboptimal = 5,
+#                                ratchHits = 25, ratchIter = 500,
+#                                bootstrapHits = 15, bootstrapIter = 450,
+#                                searchHits = 10, searchIter = 100)
 
 ## ----cached-SoS, echo=FALSE----------------------------------------------
 # Use cached results of last block to reduce compilation time.

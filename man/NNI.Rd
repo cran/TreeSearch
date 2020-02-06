@@ -25,11 +25,11 @@ generated randomly if not specified.
 Alternatively, set to \code{-1} to return a complete list
 of all trees one step from the input tree.}
 
-\item{parent}{the first column of the edge matrix of a tree of class
-\code{\link{phylo}}, i.e. \code{tree$edge[, 1]}}
+\item{parent}{Integer vector corresponding to the first column of the edge
+matrix of a tree of class \code{\link{phylo}}, i.e. \code{tree$edge[, 1]}.}
 
-\item{child}{the second column of the edge matrix of a tree of class
-\code{\link{phylo}}, i.e. \code{tree$edge[, 2]}}
+\item{child}{Integer vector corresponding to the second column of the edge
+matrix of a tree of class \code{\link{phylo}}, i.e. \code{tree$edge[, 2]}.}
 
 \item{nTips}{(optional) Number of tips.}
 }
@@ -61,7 +61,7 @@ All nodes in a tree must be bifurcating; \link[ape:collapse.singles]{ape::collap
 }}
 
 \examples{
-tree <- ape::rtree(20, br=NULL)
+tree <- ape::rtree(20, br = NULL)
 NNI(tree)
 NNI(tree, edgeToBreak = -1)
 
@@ -70,6 +70,11 @@ NNI(tree, edgeToBreak = -1)
 The algorithm is summarized in
 \insertRef{Felsenstein2004}{TreeSearch}
 }
+\seealso{
+Other tree rearrangement functions: \code{\link{SPR}},
+  \code{\link{TBR}}
+}
 \author{
 Martin R. Smith
 }
+\concept{tree rearrangement functions}
