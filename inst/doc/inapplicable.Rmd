@@ -45,15 +45,15 @@ my.data <- TreeSearch::inapplicable.datasets[['Vinther2008']]
 my.phyDat <- phangorn::phyDat(my.data, type = 'USER', levels = c(0:9, '-'))
 ```
 
-```{R RNG-version, warning=FALSE}
+```{R RNG-version}
 # Set a random seed so that random functions in this document are reproducible
-RNGversion("3.5.0") # Until we can require R3.6.0
+suppressWarnings(RNGversion("3.5.0")) # Until we can require R3.6.0
 set.seed(0)
 ```
 
 We can generate a random tree and calculate its parsimony score thus:
 ```{r Random-tree}
-random.tree <- TreeTools::RandomTree(my.phyDat)
+random.tree <- TreeTools::RandomTree(my.phyDat, root = TRUE)
 par(mar = rep(0.25, 4), cex = 0.75) # make plot easier to read
 plot(random.tree)
 Fitch(random.tree, my.phyDat)

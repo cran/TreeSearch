@@ -6,32 +6,33 @@
 #' @template treeParam 
 #' @template datasetParam
 #' 
-#' @examples
-#' data('inapplicable.datasets')
-#' tree <- TreeTools::RandomTree(inapplicable.phyData[[1]])
-#' result <- Fitch(tree, inapplicable.phyData[[1]])
-#' 
-#' @return This function returns the elements from a list containing:
+#' @return `Fitch()` returns the elements from a list containing:
 #'    \itemize{
 #' \item     The total parsimony score
 #' \item     The parsimony score associated with each character 
 #' \item     A matrix comprising character reconstructions for each node
 #'           after the final pass
 #'   }
-#' The elements to return are specified by the parameter \code{detail}.  
+#' The elements to return are specified by the parameter `detail`.  
 #' If a single element is requested (default) then just that element will be returned
 #' If multiple elements are requested then these will be returned in a list.
 #' 
+#' 
+#' @examples
+#' data("inapplicable.datasets")
+#' tree <- TreeTools::BalancedTree(inapplicable.phyData[[1]])
+#' Fitch(tree, inapplicable.phyData[[1]])
 #' @seealso 
 #' - [`TreeSearch()`]
 #' @family tree scoring
 #' 
 #' @author Martin R. Smith (using Morphy C library, by Martin Brazeau)
 #' @importFrom phangorn phyDat
-#' @importFrom TreeTools Renumber RenumberTips
+#' @importFrom TreeTools Renumber RenumberTips TreeIsRooted
 #' @export
 Fitch <- function (tree, dataset) {
   tree <- RenumberTips(Renumber(tree), names(dataset))
+  if (!TreeIsRooted(tree)) stop("`tree` must be rooted; try RootTree(tree)")
   morphyObj <- PhyDat2Morphy(dataset)
   on.exit(morphyObj <- UnloadMorphy(morphyObj))
   MorphyTreeLength(tree, morphyObj)
@@ -131,12 +132,12 @@ MorphyTreeLength <- function (tree, morphyObj) {
 #' @template treeChild
 #' @author Martin R. Smith
 #' @keywords internal
-#' @importFrom TreeTools PostorderEdges
+#' @importFrom TreeTools Postorder
 #' @export
 MorphyLength <- function (parent, child, morphyObj, inPostorder = FALSE,
                           nTaxa = mpl_get_numtaxa(morphyObj)) {
   if (!inPostorder) {
-    edgeList <- PostorderEdges(cbind(parent, child))
+    edgeList <- Postorder(cbind(parent, child))
     parent <- edgeList[, 1]
     child <- edgeList[, 2]
   }

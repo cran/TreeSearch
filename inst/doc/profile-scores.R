@@ -1,4 +1,4 @@
-## ----Set up, eval=FALSE--------------------------------------------------
+## ----Set up, eval=FALSE-------------------------------------------------------
 #  library(TreeSearch)
 #  data(referenceTree)
 #  data(congreveLamsdellMatrices)
@@ -6,7 +6,7 @@
 #  suppressWarnings(RNGversion("3.5.0")) # Until we can require R3.6.0
 #  set.seed(0)
 
-## ----Precision testing, cache=TRUE, warning=FALSE, eval=FALSE------------
+## ----Precision testing, cache=TRUE, warning=FALSE, eval=FALSE-----------------
 #  preci1 <- PrepareDataProfile(dataset, precision=2e+05) # Quick, imprecise
 #  preci2 <- PrepareDataProfile(dataset, precision=4e+05)
 #  preci3 <- PrepareDataProfile(dataset, precision=8e+05)
@@ -36,7 +36,7 @@
 #  hist(100*(diff43 / info4)[nonzero])
 #  }
 
-## ----More histograms, eval=FALSE-----------------------------------------
+## ----More histograms, eval=FALSE----------------------------------------------
 #  diff12 <- info1[1:10, ] - info2
 #  
 #  hist(diff12, breaks=seq(min(diff12)-0.01, max(diff12)+0.01, by=0.01))

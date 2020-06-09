@@ -1,33 +1,33 @@
-## ----Load-library, message=FALSE-----------------------------------------
+## ----Load-library, message=FALSE----------------------------------------------
 library('TreeSearch')
 
-## ----RNG-version, warning=FALSE------------------------------------------
+## ----RNG-version--------------------------------------------------------------
 # Set a random seed so that random functions in this document are reproducible
-RNGversion("3.5.0") # Until we can require R3.6.0
+suppressWarnings(RNGversion("3.5.0")) # Until we can require R3.6.0
 set.seed(888)
 
-## ----Load Longrich data--------------------------------------------------
+## ----Load Longrich data-------------------------------------------------------
 data(congreveLamsdellMatrices)
 my.data <- congreveLamsdellMatrices[[10]]
 my.phyDat <- phangorn::phyDat(my.data, type = 'USER', levels = c(1, 2))
 
-## ----Prepare the data for analysis, warning=FALSE, message=FALSE---------
-my.prepdata <- PrepareDataProfile(my.phyDat, precision = 4e+04)
+## ----Prepare the data for analysis, message=FALSE-----------------------------
+my.prepdata <- suppressWarnings(PrepareDataProfile(my.phyDat, precision = 4e+04))
 
-## ----Random tree, eval=FALSE---------------------------------------------
-#  tree <- RandomTree(my.phyDat)
+## ----Random tree, eval=FALSE--------------------------------------------------
+#  tree <- TreeTools::RandomTree(my.phyDat, root = TRUE)
 
-## ----NJ Tree-------------------------------------------------------------
+## ----NJ Tree------------------------------------------------------------------
 tree <- TreeTools::NJTree(my.phyDat)
 par(mar = rep(0.25, 4), cex = 0.75) # make plot easier to read
 plot(tree)
 
-## ----Starting score------------------------------------------------------
+## ----Starting score-----------------------------------------------------------
 ProfileScore(tree, my.prepdata)
 
 better.tree <- ProfileTreeSearch(tree, my.prepdata, EdgeSwapper = RootedTBRSwap)
 
-## ----longwinded, eval=FALSE----------------------------------------------
+## ----longwinded, eval=FALSE---------------------------------------------------
 #  # Longwinded approach:
 #  better.tree <- Ratchet(better.tree, my.prepdata, searchHits = 10,
 #                         searchIter = 100, ratchIter = 5,
@@ -38,7 +38,7 @@ better.tree <- ProfileTreeSearch(tree, my.prepdata, EdgeSwapper = RootedTBRSwap)
 #                         TreeScorer = ProfileScoreMorphy,
 #                         Bootstrapper = ProfileBootstrap)
 
-## ----Cached results of ratchet search, echo=FALSE------------------------
+## ----Cached results of ratchet search, echo=FALSE-----------------------------
 # The ratchet search takes a little while to run,
 # so I've cached its results
 better.tree <- structure(list(edge = structure(c(23L, 23L, 24L, 25L, 26L, 26L, 
@@ -52,7 +52,7 @@ better.tree <- structure(list(edge = structure(c(23L, 23L, 24L, 25L, 26L, 26L,
 "10", "11", "12", "19", "18", "17", "15", "16", "13", "14", "20", 
 "21", "22"), Nnode = 21L), class = "phylo", order = "cladewise", score = -309.16150317298, hits = 2)
 
-## ----Ratchet search, eval=FALSE------------------------------------------
+## ----Ratchet search, eval=FALSE-----------------------------------------------
 #  # Equivalent, but less typing!
 #  RootedSwappers <- list(RootedTBRSwap, RootedSPRSwap, RootedNNISwap)
 #  better.tree <- ProfileRatchet(better.tree, my.prepdata,
@@ -60,12 +60,12 @@ better.tree <- structure(list(edge = structure(c(23L, 23L, 24L, 25L, 26L, 26L,
 #                                searchHits=10, searchIter=100, ratchIter=5)
 #  
 
-## ----Ratchet-search-results----------------------------------------------
+## ----Ratchet-search-results---------------------------------------------------
 attr(better.tree, 'score')
 par(mar = rep(0.25, 4), cex = 0.75) # make plot easier to read
 plot(better.tree)
 
-## ----Suboptimal sampling, eval=FALSE-------------------------------------
+## ----Suboptimal sampling, eval=FALSE------------------------------------------
 #  suboptimals <- ProfileRatchet(better.tree, my.prepdata,
 #                                swappers = list(RootedTBRSwap),
 #                                returnAll = TRUE, suboptimal = 5,
@@ -73,7 +73,7 @@ plot(better.tree)
 #                                bootstrapHits = 15, bootstrapIter = 450,
 #                                searchHits = 10, searchIter = 100)
 
-## ----cached-SoS, echo=FALSE----------------------------------------------
+## ----cached-SoS, echo=FALSE---------------------------------------------------
 # Use cached results of last block to reduce compilation time.
 # A slow compile means that CRAN can't check incoming vignettes.
 # 
@@ -187,7 +187,7 @@ structure(list(structure(list(edge = structure(c(23L, 23L, 24L,
     20L, 1L, 21L, 1L, 88L, 1L, 1L, 1L, 1L, 1L, 1L, 3L, 37L, 1L, 3L, 
     1L, 1L, 1L))
 
-## ----Plot suboptimal consensus-------------------------------------------
+## ----Plot suboptimal consensus------------------------------------------------
 par(mar=rep(0.25, 4), cex=0.75)
 plot(my.consensus <- ape::consensus(suboptimals))
 

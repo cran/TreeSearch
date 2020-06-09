@@ -4,8 +4,13 @@
 \alias{ICSteps}
 \title{Information Content Steps}
 \usage{
-ICSteps(char, ambiguousToken = 0, expectedMinima = 25,
-  maxIter = 10000, warn = TRUE)
+ICSteps(
+  char,
+  ambiguousToken = 0,
+  expectedMinima = 25L,
+  maxIter = 10000L,
+  warn = TRUE
+)
 }
 \arguments{
 \item{char}{The character in question.}
@@ -35,18 +40,15 @@ of steps will be recovered at least \code{expected.minima} times, in order to ob
 results.
 }
 \examples{
-{
-  # A character that is present in ten taxa and absent in five
-  character <- c(rep(1, 10), rep(2, 5))
-  ICSteps (character)
-}
+# A character that is present in ten taxa and absent in five
+character <- c(rep(1, 10), rep(2, 5))
+suppressWarnings(ICSteps(character))
 }
 \references{
 \insertRef{Faith2001}{TreeSearch}
 }
 \author{
-{
-Martin R. Smith
-}
+\href{https://orcid.org/0000-0001-5660-1727}{Martin R. Smith}
+(\href{mailto:martin.smith@durham.ac.uk}{martin.smith@durham.ac.uk})
 }
 \keyword{tree}
