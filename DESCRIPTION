@@ -1,6 +1,6 @@
 Package: TreeSearch
 Title: Phylogenetic Tree Search Using Custom Optimality Criteria
-Version: 0.4.1
+Version: 0.4.2
 Authors@R: c(person("Martin R.", 'Smith',
                   email="martin.smith@durham.ac.uk", 
                   role=c("aut", "cre", "cph"), 
@@ -31,12 +31,12 @@ ByteCompile: true
 Encoding: UTF-8
 Language: en-GB
 VignetteBuilder: knitr
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 NeedsCompilation: yes
-Packaged: 2020-06-09 08:01:37 UTC; ms609
+Packaged: 2020-07-07 10:20:26 UTC; ms609
 Author: Martin R. Smith [aut, cre, cph]
     (<https://orcid.org/0000-0001-5660-1727>),
   Martin Brazeau [cph] (<https://orcid.org/0000-0002-0650-1282>)
 Maintainer: Martin R. Smith <martin.smith@durham.ac.uk>
 Repository: CRAN
-Date/Publication: 2020-06-09 08:30:03 UTC
+Date/Publication: 2020-07-07 11:00:02 UTC
