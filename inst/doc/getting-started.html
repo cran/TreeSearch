@@ -12,7 +12,7 @@
 
 <meta name="author" content="Martin R. Smith" />
 
-<meta name="date" content="2020-07-07" />
+<meta name="date" content="2020-07-09" />
 
 <title>Installing R and TreeSearch</title>
 
@@ -26,22 +26,6 @@ document.addEventListener('DOMContentLoaded', function(e) {
     if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
     a = h.attributes;
     while (a.length > 0) h.removeAttribute(a[0].name);
-  }
-});
-</script>
-<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
-// v0.0.1
-// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
-
-document.addEventListener('DOMContentLoaded', function() {
-  const codeList = document.getElementsByClassName("sourceCode");
-  for (var i = 0; i < codeList.length; i++) {
-    var linkList = codeList[i].getElementsByTagName('a');
-    for (var j = 0; j < linkList.length; j++) {
-      if (linkList[j].innerHTML === "") {
-        linkList[j].setAttribute('aria-hidden', 'true');
-      }
-    }
   }
 });
 </script>
@@ -331,7 +315,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Installing R and TreeSearch</h1>
 <h4 class="author">Martin R. Smith</h4>
-<h4 class="date">2020-07-07</h4>
+<h4 class="date">2020-07-09</h4>
 
 
 
@@ -342,17 +326,17 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h3>Simple installation</h3>
 <p>To use ‘TreeSearch’ you will first need to <a href="https://CRAN.R-project.org/">install R</a>. <a href="https://www.rstudio.com/">RStudio</a> (<a href="https://dss.princeton.edu/training/RStudio101.pdf">overview</a>) is a popular front-end that makes several of R’s features easier to use.</p>
 <p>The ‘TreeSearch’ package can be installed as any other package. To get the latest stable version from CRAN, type</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">install.packages</span>(<span class="st">&#39;TreeSearch&#39;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="kw">install.packages</span>(<span class="st">&#39;TreeSearch&#39;</span>)</span></code></pre></div>
 <p>into the R (or RStudio) command line.</p>
 </div>
 <div id="for-advanced-users" class="section level3">
 <h3>For advanced users</h3>
 <p>To get the latest development version from GitHub, type</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="cf">if</span> (<span class="op">!</span><span class="kw">require</span>(<span class="st">&#39;devtools&#39;</span>)) <span class="kw">install.packages</span>(<span class="st">&#39;devtools&#39;</span>)</span>
-<span id="cb2-2"><a href="#cb2-2"></a>devtools<span class="op">::</span><span class="kw">install_github</span>(<span class="st">&#39;ms609/TreeSearch&#39;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="cf">if</span> (<span class="op">!</span><span class="kw">require</span>(<span class="st">&#39;devtools&#39;</span>)) <span class="kw">install.packages</span>(<span class="st">&#39;devtools&#39;</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a>devtools<span class="op">::</span><span class="kw">install_github</span>(<span class="st">&#39;ms609/TreeSearch&#39;</span>)</span></code></pre></div>
 <p>You’ll probably need to install <a href="https://cran.r-project.org/bin/windows/Rtools/">Rtools</a> before installing from the GitHub source code, which may be complicated.</p>
 <p>Once installed, load the ‘TreeSearch’ package into R using</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">library</span>(<span class="st">&#39;TreeSearch&#39;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="kw">library</span>(<span class="st">&#39;TreeSearch&#39;</span>)</span></code></pre></div>
 </div>
 </div>
 <div id="what-next" class="section level2">

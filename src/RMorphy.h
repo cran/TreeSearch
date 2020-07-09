@@ -5,10 +5,12 @@
 #include <float.h>
 #include <R.h>
 #include <Rinternals.h>
+#include <Rdefines.h>
 #include "mpl.h"
 #include "RMorphyUtils.h"
 
 SEXP _R_wrap_mpl_new_Morphy(void);
+void _finalize_Morphy(SEXP MorphyHandl);
 SEXP _R_wrap_mpl_delete_Morphy(SEXP MorphyHandl);
 SEXP _R_wrap_mpl_init_Morphy(SEXP Rntax, SEXP Rnchar, SEXP MorphHandl);    
 SEXP _R_wrap_mpl_get_numtaxa(SEXP MorphHandl);
