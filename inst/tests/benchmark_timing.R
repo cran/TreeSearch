@@ -47,13 +47,12 @@ dataName <- names(scores)[myDataset]
 tree <- nj.tree[[dataName]]
 dataset <- inapplicable.phyData[[dataName]]
 
-attr(AllTBR, 'stopAtPlateau') <- 6L
 oTree <- nj.tree[[dataName]]
 nMoves <- nrow(TBRMoves(oTree$edge[, 1], oTree$edge[, 2]))
 
 Rprof()
 Ratchet(nj.tree[[dataName]], inapplicable.phyData[[dataName]],
-          swappers=list(RootedTBRSwap, RootedSPRSwap, RootedNNISwap, AllTBR), BootstrapSwapper=RootedNNISwap,
+          swappers=list(RootedTBRSwap, RootedSPRSwap, RootedNNISwap), BootstrapSwapper=RootedNNISwap,
         stopAtScore=scores[[dataName]], ratchHits=1000, ratchIter=10000, searchIter=nMoves * 10, searchHits=35, 
         retainRoot=TRUE,
         verbosity=5L)
@@ -103,10 +102,10 @@ allRes <- array(c(results1, results2, results3.10, results3.20, results3.30, res
              c(7*length(candidates), 3)) 
 
 arr <- allRes
-rgl::plot3d(arr[, 2], arr[, 3], arr[, 1], zlab='Time', xlab='SearchHits', ylab='BootHits')
+TreeDist::Plot3(arr[, 2], arr[, 3], arr[, 1], zlab='Time', xlab='SearchHits', ylab='BootHits')
 manyBootHits <- allRes[allRes[, 3] > 30, ]
 arr <- manyBootHits
-rgl::plot3d(arr[, 2], arr[, 3], arr[, 1], zlab='Time', xlab='SearchHits', ylab='BootHits')
+TreeDist::Plot3(arr[, 2], arr[, 3], arr[, 1], zlab='Time', xlab='SearchHits', ylab='BootHits')
 
 library('profvis')
 RRprofStart()

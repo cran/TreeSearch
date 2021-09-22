@@ -2,27 +2,45 @@
 % Please edit documentation in R/mpl_morphy_objects.R
 \name{PhyDat2Morphy}
 \alias{PhyDat2Morphy}
-\title{Initialize a Morphy Object from a \code{phyDat} object}
+\title{Initialize a Morphy object from a \code{phyDat} object}
 \usage{
-PhyDat2Morphy(phy)
+PhyDat2Morphy(phy, gap = "inapplicable")
 }
 \arguments{
 \item{phy}{An object of class \code{\link{phyDat}}.}
+
+\item{gap}{An unambiguous abbreviation of \code{inapplicable}, \code{ambiguous}
+(= \code{missing}), or \verb{extra state}, specifying how gaps will be handled.}
 }
 \value{
-A pointer to an initialized Morphy object.
+\code{PhyDat2Morphy()} returns a pointer to an initialized Morphy object.
 }
 \description{
 Creates a new Morphy object with the same size and characters as the
-\code{phyDat} object
+\code{phyDat} object.
+Once finished with the object, it should be destroyed using
+\code{\link[=UnloadMorphy]{UnloadMorphy()}} to free the allocated memory.
+}
+\examples{
+data('Lobo', package='TreeTools')
+morphyObj <- PhyDat2Morphy(Lobo.phy)
+# Set object to be destroyed at end of session or closure of function
+# on.exit(morphyObj <- UnloadMorphy(morphyObj), add = TRUE)
+
+# Do something with pointer
+# ....
+
+# Or, instead of on.exit, manually destroy morphy object and free memory:
+morphyObj <- UnloadMorphy(morphyObj)
 }
 \seealso{
 Other Morphy API functions: 
+\code{\link{GapHandler}()},
 \code{\link{MorphyErrorCheck}()},
 \code{\link{MorphyWeights}()},
-\code{\link{SetMorphyWeights}()},
 \code{\link{SingleCharMorphy}()},
 \code{\link{UnloadMorphy}()},
+\code{\link{is.morphyPtr}()},
 \code{\link{mpl_apply_tipdata}()},
 \code{\link{mpl_attach_rawdata}()},
 \code{\link{mpl_attach_symbols}()},
@@ -31,6 +49,7 @@ Other Morphy API functions:
 \code{\link{mpl_first_down_recon}()},
 \code{\link{mpl_first_up_recon}()},
 \code{\link{mpl_get_charac_weight}()},
+\code{\link{mpl_get_gaphandl}()},
 \code{\link{mpl_get_num_charac}()},
 \code{\link{mpl_get_num_internal_nodes}()},
 \code{\link{mpl_get_numtaxa}()},
@@ -48,6 +67,7 @@ Other Morphy API functions:
 \code{\link{summary.morphyPtr}()}
 }
 \author{
-Martin R. Smith
+\href{https://smithlabdurham.github.io/}{Martin R. Smith}
+(\href{mailto:martin.smith@durham.ac.uk}{martin.smith@durham.ac.uk})
 }
 \concept{Morphy API functions}

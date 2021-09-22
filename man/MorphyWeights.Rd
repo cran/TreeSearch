@@ -2,29 +2,57 @@
 % Please edit documentation in R/mpl_morphy_objects.R
 \name{MorphyWeights}
 \alias{MorphyWeights}
-\title{Report the character weightings associated with a Morphy object}
+\alias{SetMorphyWeights}
+\title{Set and get the character weightings associated with a Morphy object.}
 \usage{
 MorphyWeights(morphyObj)
+
+SetMorphyWeights(weight, morphyObj, checkInput = TRUE)
 }
 \arguments{
 \item{morphyObj}{Object of class \code{morphy}, perhaps created with
 \code{\link[=PhyDat2Morphy]{PhyDat2Morphy()}}.}
+
+\item{weight}{A vector listing the new weights to be applied to each character}
+
+\item{checkInput}{Whether to sanity-check input data before applying.
+Defaults to \code{TRUE} to protect the user from crashes.}
 }
 \value{
-a matrix of dimensions (2, number of characters); row 1 lists the
-exact rates specified by the user; row 2 the approximate (integral)
-weights used by MorphyLib
+\code{MorphyWeights()} returns a data frame with two named rows and
+one column per character pattern:
+row 1, \code{approx}, is a list of integers specifying the approximate (integral)
+weights used by MorphyLib;
+row 2, \code{exact}, is a list of numerics specifying the exact weights specified
+by the user.
+
+\code{SetMorphyWeights()} returns the Morphy error code generated when
+applying \code{weight}.
 }
 \description{
-Report the character weightings associated with a Morphy object
+\code{MorphyWeights()} details the approximate and exact weights associated with
+characters in a \code{Morphy} object; \code{SetMorphyWeights()} edits them.
+}
+\examples{
+tokens <- matrix(c(
+  0, 0, 0, 1, 1, 2,
+  0, 0, 0, 0, 0, 0), byrow = TRUE, nrow = 2L,
+  dimnames = list(letters[1:2], NULL))
+pd <- TreeTools::MatrixToPhyDat(tokens)
+morphyObj <- PhyDat2Morphy(pd)
+MorphyWeights(morphyObj)
+if (SetMorphyWeights(c(1, 1.5, 2/3), morphyObj) != 0L) message("Errored")
+MorphyWeights(morphyObj)
+morphyObj <- UnloadMorphy(morphyObj)
 }
 \seealso{
 Other Morphy API functions: 
+\code{\link{GapHandler}()},
 \code{\link{MorphyErrorCheck}()},
 \code{\link{PhyDat2Morphy}()},
-\code{\link{SetMorphyWeights}()},
 \code{\link{SingleCharMorphy}()},
 \code{\link{UnloadMorphy}()},
+\code{\link{is.morphyPtr}()},
 \code{\link{mpl_apply_tipdata}()},
 \code{\link{mpl_attach_rawdata}()},
 \code{\link{mpl_attach_symbols}()},
@@ -33,6 +61,7 @@ Other Morphy API functions:
 \code{\link{mpl_first_down_recon}()},
 \code{\link{mpl_first_up_recon}()},
 \code{\link{mpl_get_charac_weight}()},
+\code{\link{mpl_get_gaphandl}()},
 \code{\link{mpl_get_num_charac}()},
 \code{\link{mpl_get_num_internal_nodes}()},
 \code{\link{mpl_get_numtaxa}()},
@@ -50,6 +79,7 @@ Other Morphy API functions:
 \code{\link{summary.morphyPtr}()}
 }
 \author{
-Martin R. Smith
+\href{https://smithlabdurham.github.io/}{Martin R. Smith}
+(\href{mailto:martin.smith@durham.ac.uk}{martin.smith@durham.ac.uk})
 }
 \concept{Morphy API functions}

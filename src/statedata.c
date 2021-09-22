@@ -319,7 +319,7 @@ unsigned long mpl_get_valid_matrix_length(const char* rawmatrix)
         }
         else if (*matptr == '[') {
             matptr = mpl_skip_closure(matptr, '[', ']');
-            assert(!(matptr < 0));
+            assert(matptr != NULL);
         }
         ++matptr;
     } while (*matptr);
@@ -340,7 +340,7 @@ void mpl_copy_valid_matrix_data(char *copy, const char* rawmatrix)
         }
         else if (*matptr == '[') {
             matptr = mpl_skip_closure(matptr, '[', ']');
-            assert(!(matptr < 0));
+            assert(matptr != NULL);
         }
         ++matptr;
     } while (*matptr);
@@ -404,7 +404,7 @@ int mpl_check_nexus_matrix_dimensions
             }
             
             current = err;
-            assert(!(current < 0));
+            assert(current != NULL);
             ++matrix_size;
         }
 
@@ -482,7 +482,8 @@ int mpl_init_inmatrix(Morphyp handl)
     int i = 0;
     
     for (i = 0; i < mat->ncells; ++i) {
-        mat->cells[i].asstr = (char*)calloc(nstates + 1, sizeof(char));
+        // MS: Consider case where nstates = 0 and we place a null in asstr[1].
+        mat->cells[i].asstr = (char*)calloc((nstates ? nstates + 1 : 2), sizeof(char));
         if (!mat->cells[i].asstr) {
             int j = 0;
             for (j = 0; j < i; ++j) {

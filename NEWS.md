@@ -1,7 +1,41 @@
+# TreeSearch 1.0.0
+
+## New functions
+ - `EasyTrees()` 'shiny' graphical user interface for tree search
+ - `AdditionTree()` adds each taxon in sequence to the most parsimonious place
+   on the tree, generating a more parsimonious starting tree than
+   neighbour-joining
+ - `PlotCharacter()` reconstructs character distributions on trees
+ - `ConstrainedNJ()` constructs starting trees that respect a constraint
+ - `ImposeConstraint()` reconciles a tree with a constraint
+ - `SiteConcordance()` calculates exact site concordance
+ - `ConcordantInformation()` evaluates signal:noise of dataset implied by a
+   given tree
+ - `PrepareDataProfile()` simplifies dataset to allow partial search when
+   multiple applicable tokens are present
+ - `Resample()` conducts bootstrap and jackknife resampling
+ - `Consistency()` calculates consistency and retention 'indices'
+ - `MinimumLength()` calculates minimum length of character in a dataset on any
+   tree.
+
+## Improvements
+ - `TreeLength()` supports lists of trees
+ - Set handling of 'gap' token (-) when creating Morphy object with `gap = `
+ - Label nodes with split frequencies using `JackLabels(plot = FALSE)`
+ - Support for topological constraints during tree search
+ - Remove redundant function `AsBinary()`
+ - Drop `nTip` parameter in `RandomTreeScore()` (infer from `morphyObj`)
+ - C implementations of rearrangement functions
+ - Improved command line interface for search progress messaging
+ 
+## Deprecations
+
+ - Remove redundant internal function `LogisticPoints()`
+
 # TreeSearch 0.4.3
 
  - Update tests for compatibility with 'TreeTools' v1.1.0
- - Improve memory and pointer handling.
+ - Improve memory and pointer handling
  
 # TreeSearch 0.4.2
 

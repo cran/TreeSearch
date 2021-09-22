@@ -7,6 +7,7 @@
 JackLabels(
   tree,
   jackTrees,
+  plot = TRUE,
   add = FALSE,
   adj = 0,
   col = NULL,
@@ -21,31 +22,46 @@ JackLabels(
 \item{jackTrees}{A list or \code{multiPhylo} object containing trees generated
 by \code{\link[=Jackknife]{Jackknife()}}.}
 
+\item{plot}{Logical specifying whether to plot results; if \code{FALSE},
+returns blank labels for nodes near the root that do not correspond to a
+unique split.}
+
 \item{add}{Logical specifying whether to add the labels to an existing
 plot.}
 
-\item{adj, col, frame, pos, \dots}{Parameters to pass to \code{nodelabels}.}
+\item{adj, col, frame, pos, \dots}{Parameters to pass to \code{nodelabels()}.}
 }
 \value{
 A named vector specifying the proportion of jackknife trees
 consistent with each node in \code{tree}, as plotted.
+If \code{plot = FALSE}, blank entries are included corresponding to nodes
+that do not require labelling; the return value is in the value required
+by \code{phylo$node.label}.
 }
 \description{
 Label nodes with jackknife support values
 }
 \examples{
-library('TreeTools') # for as.phylo
+library('TreeTools', quietly = TRUE) # for as.phylo
 
 # jackTrees will usually be generated with Jackknife(), but for simplicity:
 jackTrees <- as.phylo(1:100, 8)
 
-JackLabels(as.phylo(0, 8), jackTrees)
+tree <- as.phylo(0, 8)
+JackLabels(tree, jackTrees)
 
+tree$node.label <- JackLabels(tree, jackTrees, plot = FALSE)
 }
 \seealso{
 \code{\link[=Jackknife]{Jackknife()}}: Generate trees by jackknife resampling
+
+Other split support functions: 
+\code{\link{Jackknife}()},
+\code{\link{MaximizeParsimony}()},
+\code{\link{SiteConcordance}}
 }
 \author{
-\href{https://orcid.org/0000-0001-5660-1727}{Martin R. Smith}
+\href{https://smithlabdurham.github.io/}{Martin R. Smith}
 (\href{mailto:martin.smith@durham.ac.uk}{martin.smith@durham.ac.uk})
 }
+\concept{split support functions}

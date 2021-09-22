@@ -48,9 +48,12 @@ test_that("four-tip trees are randomly scored", {
   morphyObj <- MorphyWith('0011;')
   on.exit(morphyObj <- UnloadMorphy(morphyObj))
   
-  expectedBounds <- qbinom(c(stringency, 1-stringency), nTrees, NUnrooted(nTip - 1) / NUnrooted(nTip))
-  scores <- vapply(logical(nTrees), function (XX) RandomTreeScore(nTip, morphyObj), integer(1))
-  expect_true(expectedBounds[1] < sum(scores==1) && expectedBounds[2] > sum(scores==1))
+  expectedBounds <- qbinom(c(stringency, 1 - stringency), nTrees,
+                           NUnrooted(nTip - 1L) / NUnrooted(nTip))
+  scores <- vapply(logical(nTrees), 
+                   function (XX) RandomTreeScore(morphyObj), integer(1))
+  expect_lt(expectedBounds[1], sum(scores==1))
+  expect_gt(expectedBounds[2], sum(scores==1))
 })
 
 test_that("five-tip trees are randomly scored", {
@@ -61,8 +64,10 @@ test_that("five-tip trees are randomly scored", {
   nTip <- 5
   morphyObj <- MorphyWith('00011;')
   on.exit(morphyObj <- UnloadMorphy(morphyObj))
-  expectedBounds <- qbinom(c(stringency, 1-stringency), nTrees, NUnrooted(nTip - 1) / NUnrooted(nTip))
-  scores <- vapply(logical(nTrees), function (XX) RandomTreeScore(nTip, morphyObj), integer(1))
+  expectedBounds <- qbinom(c(stringency, 1-stringency), nTrees,
+                           NUnrooted(nTip - 1) / NUnrooted(nTip))
+  scores <- vapply(logical(nTrees),
+                   function (XX) RandomTreeScore(morphyObj), integer(1))
   expect_equal(2L, max(scores))
   expect_lt(expectedBounds[1], sum(scores == 1))
   expect_gt(expectedBounds[2], sum(scores == 1))
@@ -79,23 +84,35 @@ test_that("six-tip trees are randomly scored", {
   
   morphyObj <- MorphyWith('000011;')
   on.exit(morphyObj <- UnloadMorphy(morphyObj))
-  expectedBounds <- qbinom(c(stringency, 1-stringency), nTrees, NUnrooted(5) / NUnrooted(6))
-  scores <- vapply(logical(nTrees), function (XX) RandomTreeScore(nTip, morphyObj), integer(1))
-  expect_true(max(scores) == 2)
-  expect_true(expectedBounds[1] < sum(scores==1) && expectedBounds[2] > sum(scores==1))  
+  expectedBounds <- qbinom(c(stringency, 1-stringency), nTrees,
+                           NUnrooted(5) / NUnrooted(6))
+  scores <- vapply(logical(nTrees),
+                   function (XX) RandomTreeScore(morphyObj), integer(1))
   morphyObj <- UnloadMorphy(morphyObj)
   
+  expect_true(max(scores) == 2)
+  expect_lt(expectedBounds[1], sum(scores==1))
+  expect_gt(expectedBounds[2], sum(scores==1))
+  
   morphyObj <- MorphyWith('001122;')
-  expectedBounds <- qbinom(c(stringency, 1-stringency), nTrees, 7 / NUnrooted(nTip))
-  scores <- vapply(logical(nTrees), function (XX) RandomTreeScore(nTip, morphyObj), integer(1))
+  expectedBounds <- qbinom(c(stringency, 1 - stringency), nTrees,
+                           7 / NUnrooted(nTip))
+  scores <- vapply(logical(nTrees), 
+                   function (XX) RandomTreeScore(morphyObj),
+                   integer(1))
+  morphyObj <- UnloadMorphy(morphyObj)
+  
   expect_true(all(scores %in% 2:4))
   expect_lt(expectedBounds[1], sum(scores == 2))
   expect_gt(expectedBounds[2], sum(scores == 2))
-  morphyObj <- UnloadMorphy(morphyObj)
   
   morphyObj <- MorphyWith('000111;')
-  expectedBounds <- qbinom(c(stringency, 1-stringency), nTrees,  3 * 3 / NUnrooted(nTip))
-  scores <- vapply(logical(nTrees), function (XX) RandomTreeScore(nTip, morphyObj), integer(1))
+  expectedBounds <- qbinom(c(stringency, 1-stringency), nTrees,
+                           3 * 3 / NUnrooted(nTip))
+  scores <- vapply(logical(nTrees),
+                   function (XX) RandomTreeScore(morphyObj), integer(1))
+  # unloaded on exit; don't unload twice || morphyObj <- UnloadMorphy(morphyObj)
+  
   expect_true(max(scores) == 3)
   expect_lt(expectedBounds[1], sum(scores == 1))
   expect_gt(expectedBounds[2], sum(scores == 1))
@@ -107,11 +124,14 @@ test_that("twelve-tip trees are randomly scored", {
   stringency <- 0.01 #  increased from 0.005 to avoid false +ves
   nTip <- 12
   morphyObj <- MorphyWith('000000011111;')
+  on.exit(morphyObj <- UnloadMorphy(morphyObj))
   expectedBounds <- qbinom(c(stringency, 1 - stringency), nTrees, 
                            NUnrooted(7) * (2 * 7 - 3) *
                            NUnrooted(5) * (2 * 5 - 3) / NUnrooted(nTip))
   
-  scores <- vapply(logical(nTrees), function (XX) RandomTreeScore(nTip, morphyObj), integer(1L))
+  scores <- vapply(logical(nTrees), 
+                   function (XX) RandomTreeScore(morphyObj),
+                   integer(1L))
   # table(scores)
   
   expect_equal(5L, max(scores))
