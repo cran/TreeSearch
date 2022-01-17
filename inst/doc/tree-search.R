@@ -1,3 +1,6 @@
+## ---- echo = FALSE------------------------------------------------------------
+knitr::opts_chunk$set(fig.width = 7.2, fig.asp = 0.7) 
+
 ## ----Load-library-------------------------------------------------------------
 library("TreeSearch")
 
@@ -7,7 +10,7 @@ vinther <- phangorn::phyDat(rawData, type = 'USER', levels = c(0:9, '-'))
 
 ## ----RNG-version--------------------------------------------------------------
 # Set a random seed so that random functions in this document are reproducible
-suppressWarnings(RNGversion("3.5.0")) # Until we can require R3.6.0
+suppressWarnings(RNGversion("3.5.0")) # Until we require R v3.6.0
 set.seed(0)
 
 ## ----first-pass, message = FALSE----------------------------------------------
@@ -45,10 +48,10 @@ TreeLength(bestTrees[[1]], vinther)
 
 ## ----plot-label-nodes---------------------------------------------------------
 par(mar = rep(0.25, 4), cex = 0.75) # make plot easier to read
-cons <- ape::consensus(bestTrees, p = 0.5)
-splitFreqs <- TreeTools::SplitFrequency(cons, bestTrees) / length(bestTrees)
-plot(cons)
-TreeTools::LabelSplits(cons, round(splitFreqs * 100), unit = '%',
+majCons <- ape::consensus(bestTrees, p = 0.5)
+splitFreqs <- TreeTools::SplitFrequency(majCons, bestTrees) / length(bestTrees)
+plot(majCons)
+TreeTools::LabelSplits(majCons, round(splitFreqs * 100), unit = '%',
                        col = TreeTools::SupportColor(splitFreqs),
                        frame = 'none', pos = 3L)
 
@@ -59,29 +62,48 @@ jackTrees <- lapply(logical(nReplicates), function (x)
           verbosity = 0)
 )
 
+strict <- ape::consensus(bestTrees, p = 1)
+
 par(mar = rep(0, 4), cex = 0.8)
 # Take the strict consensus of all trees for each replicate
-JackLabels(cons, lapply(jackTrees, ape::consensus)) -> XX
+JackLabels(strict, lapply(jackTrees, ape::consensus)) -> XX
 
 ## ----concordance--------------------------------------------------------------
-concordance <- QuartetConcordance(cons, vinther)
+concordance <- QuartetConcordance(strict, vinther)
 
 # Alternative measures:
-# concordance <- ClusteringConcordance(cons, vinther)
-# concordance <- PhylogeneticConcordance(cons, vinther)
+# concordance <- ClusteringConcordance(strict, vinther)
+# concordance <- PhylogeneticConcordance(strict, vinther)
 
 par(mar = rep(0, 4), cex = 0.8)
-plot(cons)
-TreeTools::LabelSplits(cons, signif(concordance, 3),
+plot(strict)
+TreeTools::LabelSplits(strict, signif(concordance, 3),
                        col = TreeTools::SupportColor(concordance / max(concordance)),
                        frame = 'none', pos = 3L)
+
+## ----stability----------------------------------------------------------------
+par(mar = rep(0, 4), cex = 0.8)
+
+plot(strict, tip.color = Rogue::ColByStability(bestTrees))
+
+## ----find-rogues--------------------------------------------------------------
+Rogue::QuickRogue(bestTrees, p = 1)
+
+## ----cons-without-halk--------------------------------------------------------
+par(mar = rep(0, 4), cex = 0.8)
+noWiwaxia <- lapply(bestTrees, TreeTools::DropTip, 'Wiwaxia')
+plot(ape::consensus(noWiwaxia), tip.color = Rogue::ColByStability(noWiwaxia))
+
+## ----restore-wiwaxia----------------------------------------------------------
+par(mar = rep(0, 4), cex = 0.8)
+xx <- TreeTools::RoguePlot(bestTrees, 'Wiwaxia', p = 1)
 
 ## ----iw-search, message = FALSE-----------------------------------------------
 iwTrees <- MaximizeParsimony(vinther, concavity = 10)
 par(mar = rep(0.25, 4), cex = 0.75) # make plot easier to read
 plot(ape::consensus(iwTrees))
 
-## ----simple-constraints, message = FALSE--------------------------------------
+## ----simple-constraints, fig.width = 4, fig.align = "center", message = FALSE----
 library("TreeTools", quietly = TRUE, warn.conflicts = FALSE)
 constraint <- MatrixToPhyDat(c(a = 1, b = 1, c = 0, d = 0, e = 0, f = 0))
 characters <- MatrixToPhyDat(matrix(
@@ -91,7 +113,7 @@ characters <- MatrixToPhyDat(matrix(
 plot(MaximizeParsimony(characters, constraint = constraint,
                        verbosity = -1)[[1]])
 
-## ----complex-constraints, message = FALSE-------------------------------------
+## ----complex-constraints, fig.width = 4, fig.align = "center", message = FALSE----
 characters <- MatrixToPhyDat(matrix(
   c(0, 0, 1, 1, 1, 1, 1,
     1, 1, 1, 1, 0, 0, 0), ncol = 2,

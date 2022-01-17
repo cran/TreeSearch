@@ -3,8 +3,9 @@
 #' `TreeLength()` uses the Morphy library \insertCite{Brazeau2017}{TreeSearch}
 #' to calculate a parsimony score for a tree, handling inapplicable data 
 #' according to the algorithm of \insertCite{Brazeau2019;textual}{TreeSearch}.
-#' Tree scoring can employ implied weights \insertCite{Goloboff1993}{TreeSearch}
-#' or profile parsimony \insertCite{Faith2001}{TreeSearch}.
+#' Trees may be scored using equal weights, implied weights
+#' \insertCite{Goloboff1993}{TreeSearch}, or profile parsimony
+#' \insertCite{Faith2001}{TreeSearch}.
 #'
 #' @param tree A tree of class `phylo`, a list thereof (optionally of class
 #' `multiPhylo`), or an integer -- in which case `tree` random trees will be 
@@ -13,7 +14,7 @@
 #' @template concavityParam
 #' 
 #' @return `TreeLength()` returns a numeric vector containing the score for
-#' each tree.
+#' each tree in `tree`.
 #' 
 #' @examples
 #' data("inapplicable.datasets")
@@ -42,8 +43,14 @@ TreeLength <- function (tree, dataset, concavity = Inf) UseMethod('TreeLength')
 #' @rdname TreeLength
 #' @export
 TreeLength.phylo <- function (tree, dataset, concavity = Inf) {
-  if (length(tree$tip.label) < length(dataset)) {
+  tipLabels <- tree$tip.label
+  if (length(tipLabels) < length(dataset)) {
+    if (!all(tipLabels %in% names(dataset))) {
+      stop("Missing in `dataset`: ",
+           paste(setdiff(tipLabels, names(dataset)), collapse = ', '))
+    }
     dataset <- .Recompress(dataset[tree$tip.label])
+    
   }
   if (is.finite(concavity)) {
     if (!('min.length' %fin% names(attributes(dataset)))) {
@@ -111,7 +118,26 @@ TreeLength.list <- function (tree, dataset, concavity = Inf) {
     dataset <- .Recompress(dataset[TipLabels(tree[[1]])])
   }
   
-  tree[] <- RenumberTips(tree, dataset)
+  # TODO replace with tree[] <- ... when fix available for
+  #  https://github.com/emmanuelparadis/ape/issues/36
+  at <- attributes(tree)
+  tree <- RenumberTips(tree, dataset)
+  attributes(tree) <- at
+  
+  nEdge <- unique(vapply(tree, function (tr) dim(tr$edge)[1], integer(1)))
+  if (length(nEdge) > 1L) {
+    tree <- lapply(tree, RootTree, 1)
+    nEdge <- unique(vapply(tree, function (tr) dim(tr$edge)[1], integer(1)))
+    
+    if (length(nEdge) > 1L) {
+      stop("Trees have different numbers of edges (",
+           paste0(nEdge, collapse = ', '), 
+           "); try collapsing polytomies?)")
+    } else {
+      warning("Mixture of rooted and unrooted trees; all re-rooted on tip 1.")
+    }
+  }
+  
   edges <- vapply(tree, `[[`, tree[[1]]$edge, 'edge')
   
   # Initialize data

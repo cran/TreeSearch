@@ -5,7 +5,7 @@
 #'
 #' @return A list detailing the number of taxa, internal nodes, and characters and their weights.
 #'
-#' @author Martin R. Smith
+#' @template MRS
 #' @method summary morphyPtr
 #' @family Morphy API functions
 #' @importFrom Rcpp compileAttributes
@@ -223,6 +223,9 @@ MorphyErrorCheck <- function (action) {
 #' RandomTreeScore(morphyObj)
 #' morphyObj <- UnloadMorphy(morphyObj)
 #' @template MRS
+#' @seealso 
+#' Score a tree: [`MorphyTreeLength()`]
+#' 
 #' @family Morphy API functions
 #' @export
 SingleCharMorphy <- function (char, gap = 'inapp') {

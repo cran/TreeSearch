@@ -19,6 +19,7 @@ test_that("Constraints work", {
   expect_equal(PectinateTree(letters[1:6]), ewResults[[1]])
   expect_equal(c(seed = 0, start = 1, final = 0),
                attr(ewResults, 'firstHit'))
+  expect_equal(names(ewResults), 'start_1')
   expect_equal(PectinateTree(letters[1:6]),
                MaximizeParsimony(characters, concavity = 'p',
                                  PectinateTree(c('a', 'b', 'f', 'd', 'e', 'c')),
@@ -70,6 +71,19 @@ test_that("MaximizeParsimony() times out", {
   expect_gt(as.difftime(5, units = 'secs'), Sys.time() - startTime)
 })
 
+test_that("Seed trees retained", {
+  tree1 <- read.tree(text = "(a, (b, (c, (d, (e, f)))));")
+  tree2 <- read.tree(text = "(a, (b, (c, (f, (e, d)))));")
+  badTree <- read.tree(text = "(f, (b, (c, (a, (e, d)))));")
+  dat <- StringToPhyDat('110000 110000 111000 111000 111100 111001',
+                        letters[1:6], byTaxon = FALSE)
+  results <- MaximizeParsimony(dataset = dat, 
+                               tree = c(tree1, tree2, badTree),
+                               ratchIter = 0, verbosity = 4)
+  expect_equal(attr(results, 'firstHit'),
+               c(seed = 2, start = 0, final = 0))
+})
+
 test_that("Mismatched tree/dataset handled with warnings", {
   treeAf <- read.tree(text = "(a, (b, (c, (d, (e, f)))));")
   treeBg <- read.tree(text = "(g, (b, (c, (d, (e, f)))));")
@@ -83,12 +97,12 @@ test_that("Mismatched tree/dataset handled with warnings", {
   QP <- function (...) MaximizeParsimony(..., ratchIter = 0, maxHits = 1,
                                          verbosity = 0)
   
-  expect_equal(5, NTip(expect_warning(QP(datAf, treeBg))))
-  expect_equal(5, NTip(expect_warning(QP(datAe, treeAf))))
-  expect_equal(6, NTip(expect_warning(QP(datAg, treeAf))))
-  expect_equal(5, NTip(expect_warning(QP(datAf, treeBg, constraint = datAe))))
-  expect_equal(6, NTip(QP(datAf, treeAf, constraint = datAe)))
-  expect_equal(6, NTip(expect_warning(QP(datAf, treeAf, constraint = datAg))))
+  expect_equal(5, unname(NTip(expect_warning(QP(datAf, treeBg)))))
+  expect_equal(5, unname(NTip(expect_warning(QP(datAe, treeAf)))))
+  expect_equal(6, unname(NTip(expect_warning(QP(datAg, treeAf)))))
+  expect_equal(5, unname(NTip(expect_warning(QP(datAf, treeBg, constraint = datAe)))))
+  expect_equal(6, unname(NTip(QP(datAf, treeAf, constraint = datAe))))
+  expect_equal(6, unname(NTip(expect_warning(QP(datAf, treeAf, constraint = datAg)))))
 })
 
 test_that("Root retained if not 1", {
@@ -136,4 +150,31 @@ test_that("Resample() fails and works", {
   expect_equal(c(1, 1/2, 0) * sum(vapply(bootTrees, length, 1L)), bootSupport,
                tolerance = 0.2)
     
+})
+
+test_that(".CombineResults() handles duplicates", {
+  x <- structure(
+    array(c(
+      rep(1L, 8),
+      rep(2L, 8),
+      rep(3L, 8),
+      rep(2L, 8),
+      rep(1L, 8)
+      ),
+      dim = c(4, 2, 5)),
+    firstHit = c(start = 5, test = 0, end = 0)
+  )
+  y <- array(c(rep(1L, 8),
+               rep(4L, 8),
+               rep(1L, 8),
+               rep(4L, 8),
+               rep(1L, 8)),
+          dim = c(4, 2, 5)
+          )
+  expect_warning(.CombineResults(x, y, stage = "test"))
+  uX <- structure(unique(x, MARGIN = 3L),
+                  firstHit = c(start = 3, test = 0, end = 0))
+  expect_equal(attr(.CombineResults(uX, y, stage = "test"), "firstHit"),
+               c(start = 3, test = 1, end = 0))
+               
 })

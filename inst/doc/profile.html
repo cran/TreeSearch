@@ -12,7 +12,7 @@
 
 <meta name="author" content="Martin R. Smith" />
 
-<meta name="date" content="2021-09-23" />
+<meta name="date" content="2022-01-17" />
 
 <title>Tree Search with Profile Parsimony</title>
 
@@ -163,11 +163,11 @@ div.csl-indent {
 
 <h1 class="title toc-ignore">Tree Search with Profile Parsimony</h1>
 <h4 class="author">Martin R. Smith</h4>
-<h4 class="date">2021-09-23</h4>
+<h4 class="date">2022-01-17</h4>
 
 
 
-<p>Profile Parsimony <span class="citation">(Faith &amp; Trueman, 2001)</span> finds the tree that is most faithful to the information contained within a given dataset. It is the ‘exact solution’ that implied weights parsimony approximates.</p>
+<p>Profile Parsimony <span class="citation">(Faith &amp; Trueman, 2001)</span> finds the tree that is most faithful to the information contained within a given dataset. It is the ‘exact solution’ that implied weights parsimony approximates. For more information on the philosophy and mathematics of profile parsimony, see the <a href="profile-scores.html">companion vignette</a>.</p>
 <p>Profile Parsimony is currently implemented in “TreeSearch” for characters with up to two parsimony-informative states. (Further states are treated as ambiguous, whilst retaining as much information as possible.)</p>
 <div id="getting-started" class="section level2">
 <h2>Getting started</h2>
@@ -228,7 +228,7 @@ div.csl-indent {
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(<span class="fu">signif</span>(<span class="fu">TreeLength</span>(suboptimals, myMatrix, <span class="st">&#39;profile&#39;</span>)))</span></code></pre></div>
 <pre><code>## 
 ## 512.118 513.229 513.897 513.966 514.739 514.849 
-##       1       1       1       3       1       1</code></pre>
+##       2       1       1       3       1       1</code></pre>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ape<span class="sc">::</span><span class="fu">consensus</span>(suboptimals))</span></code></pre></div>
 <p><img src="data:image/png;base64,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" /><!-- --></p>
 </div>

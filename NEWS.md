@@ -1,7 +1,16 @@
+# TreeSearch 1.1.0
+
+- Improvements to 'shiny' GUI
+- Better integration of rogue taxon exploration
+- New vignette describing profile parsimony
+- `MinimumLength()` fully supports ambiguous applicability
+
+
 # TreeSearch 1.0.1
 
 - Memory management with invalid input
 - Corrections to metadata
+
 
 # TreeSearch 1.0.0
 
@@ -92,7 +101,7 @@
 # TreeSearch 0.3.0
 
 ## New features
- - Implement an information theoretic tree distance measure (Smith, in prep)
+ - Implement an information theoretic tree distance measure (Smith, 2020)
  - Prepare for new random number generator in R3.6.0
 
 ## Deprecations

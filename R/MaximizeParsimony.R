@@ -9,7 +9,7 @@
 #' under implied or equal weights, treating inapplicable characters as such
 #' in order to avoid the artefacts of the standard Fitch algorithm
 #' \insertCite{@see @Maddison1993; @Brazeau2019}{TreeSearch}.
-#' The tree scoring implementation uses the MorphyLib C library
+#' Tree length is calculated using the MorphyLib C library
 #' \insertCite{Brazeau2017}{TreeSearch}.
 #' 
 #' Tree search commences with `ratchIter` iterations of the parsimony ratchet
@@ -58,8 +58,14 @@
 #' @param quickHits Numeric: iterations on subsampled datasets
 #'  will retain `quickHits` &times; `maxHits` trees with the best score.
 #' @param concavity Numeric specifying concavity constant for implied step 
-#' weighting; set as `Inf` for equal step weights (which is a bad idea; see 
-#' \insertCite{Smith2019;textual}{TreeSearch}).
+#' weighting.
+#' The most appropriate value will depend on the dataset, but values around
+#' 10--15 often perform well \insertCite{Goloboff2018,Smith2019}{TreeSearch}.
+#' The character string "profile" employs an approximation of profile parsimony
+#' \insertCite{Faith2001}{TreeSearch}.
+#' Set as `Inf` for equal step weights, which underperforms step weighting
+#' approaches
+#' \insertCite{Goloboff2008,Goloboff2018,Goloboff2019,Smith2019}{TreeSearch}.
 #' @param tolerance Numeric specifying degree of suboptimality to tolerate
 #' before rejecting a tree.  The default, `sqrt(.Machine$double.eps)`, retains
 #' trees that may be equally parsimonious but for rounding errors.  
@@ -78,14 +84,21 @@
 #' @return `MaximizeParsimony()` returns a list of trees with class
 #' `multiPhylo`. This lists all trees found during each search step that
 #' are within `tolerance` of the optimal score, listed in the sequence that
-#' they were first visited; it may contain more than `maxHits` elements.
+#' they were first visited, and named according to the step in which they were
+#' first found; it may contain more than `maxHits` elements.
 #' Note that the default search parameters may need to be increased in order for
 #' these trees to be the globally optimal trees; examine the messages printed
 #' during tree search to evaluate whether the optimal score has stabilized.
 #' 
-#' The return value has the attribute `newTrees`, a named integer vector listing
+#' The return value has the attribute `firstHit`, a named integer vector listing
 #' the number of optimal trees visited for the first time in each stage of
-#' the tree search.
+#' the tree search. Stages are named:
+#' - `seed`: starting trees;
+#' - `start`: Initial TBR search;
+#' - `ratchN`: Ratchet iteration `N`;
+#' - `final`: Final TBR search.
+#' The first tree hit for the first time in ratchet iteration three is named
+#' `ratch3_1`.
 #' 
 #' @examples
 #' ## Only run examples in interactive R sessions
@@ -107,6 +120,7 @@
 #' trees <- MaximizeParsimony(dataset, ratchIter = 0, startIter = 0,
 #'                            tbrIter = 1, maxHits = 4, maxTime = 1/100,
 #'                            concavity = 10, verbosity = 4)
+#' names(trees)
 #'
 #' # In actual use, be sure to check that the score has converged on a global
 #' # optimum, conducting additional iterations and runs as necessary.
@@ -298,6 +312,9 @@ MaximizeParsimony <- function (dataset, tree,
               if (nHits >= maxHits) break
             }
           }
+          # If an early iteration improves the score, a later iteration will
+          # probably improve it even more; we may as well keep working through
+          # the list instead of calculating a new one (which takes time)
           if (improvedScore && runif(1) < (i / nMoves) ^ 2) break
         }
         if (nHits >= maxHits) break
@@ -354,6 +371,7 @@ MaximizeParsimony <- function (dataset, tree,
                                ": Tree search terminated with score {.strong ",
                                "{signif(.Score(bestEdges[, , 1]))}}"))
     }
+    firstHit <- attr(bestEdges, 'firstHit')
     structure(lapply(seq_len(dim(bestEdges)[3]), function (i) {
       tr <- tree
       tr$edge <- bestEdges[, , i]
@@ -363,7 +381,8 @@ MaximizeParsimony <- function (dataset, tree,
         RootTree(tr, outgroup)
       }
     }),
-    firstHit = attr(bestEdges, 'firstHit'),
+    firstHit = firstHit,
+    names = paste0(rep(names(firstHit), firstHit), '_', unlist(lapply(firstHit, seq_len))),
     class = 'multiPhylo')
   }
   
@@ -378,12 +397,17 @@ MaximizeParsimony <- function (dataset, tree,
   stopTime <- startTime + as.difftime(maxTime, units = 'mins')
   
   # Initialize tree
+  startTrees <- NULL
   if (missing(tree)) {
     tree <- AdditionTree(dataset, constraint = constraint,
                          concavity = concavity)
   } else if (inherits(tree, 'multiPhylo')) {
-    .Info(2L, "Starting search from {.var tree[[1]]}")
-    tree <- tree[[1]]
+    startTrees <- unique(tree)
+    sampledTree <- sample.int(length(tree), 1)
+    .Info(2L, paste0("Starting search from {.var tree[[", sampledTree, "]]}"))
+    tree <- tree[[sampledTree]]
+  } else if (inherits(tree, 'phylo')) {
+    startTrees <- c(tree)
   }
   if (dim(tree$edge)[1] != 2 * tree$Nnode) {
     cli_alert_warning("`tree` is not bifurcating; collapsing polytomies at random")
@@ -403,16 +427,17 @@ MaximizeParsimony <- function (dataset, tree,
   treeOnly <- setdiff(leaves, taxa) 
   datOnly <- setdiff(taxa, leaves) 
   if (length(treeOnly)) {
-    cli_alert_warning("Ignoring taxa on tree missing in dataset:\n   ",
-                      paste0(treeOnly, collapse = ', '), "\n")
+    cli_alert_warning(paste0("Ignoring taxa on tree missing in dataset:\n>   ",
+                      paste0(treeOnly, collapse = ', ')))
     warning("Ignored taxa on tree missing in dataset:\n   ",
              paste0(treeOnly, collapse = ', '))
     tree <- DropTip(tree, treeOnly)
+    startTrees <- DropTip(startTrees, treeOnly)
   }
   if (length(datOnly)) {
-    cli_alert_warning("Ignoring taxa in dataset missing on tree:\n   ",
-                      paste0(datOnly, collapse = ', '), "\n")
-    warning("Ignored taxa in dataset missing on tree:\n   ",
+    cli_alert_warning(paste0("Ignoring taxa in dataset missing on tree:\n>   ",
+                      paste0(datOnly, collapse = ', ')))
+    warning("Ignored taxa in dataset missing on tree:\n>   ",
             paste0(datOnly, collapse = ', '))
     dataset <- dataset[-fmatch(datOnly, taxa)]
   }
@@ -424,8 +449,8 @@ MaximizeParsimony <- function (dataset, tree,
     }
     consOnly <- setdiff(consTaxa, tree$tip.label)
     if (length(consOnly)) {
-      cli_alert_warning("Ignoring taxa in constraint missing on tree:\n   ", 
-              paste0(consOnly, collapse = ', '), "\n")
+      cli_alert_warning(paste0("Ignoring taxa in constraint missing on tree:\n>   ", 
+              paste0(consOnly, collapse = ', ')))
       warning("Ignored taxa in constraint missing on tree:\n   ", 
               paste0(consOnly, collapse = ', '))
       constraint <- constraint[-fmatch(consOnly, consTaxa)]
@@ -508,6 +533,7 @@ MaximizeParsimony <- function (dataset, tree,
     characters <- PhyToString(dataset, ps = '', useIndex = FALSE,
                               byTaxon = FALSE, concatenate = FALSE)
     startWeights <- at$weight
+    minLength <- MinimumLength(dataset, compress = TRUE)
     morphyObjects <- lapply(characters, SingleCharMorphy)
     on.exit(morphyObjects <- vapply(morphyObjects, UnloadMorphy, integer(1)),
             add = TRUE)
@@ -520,30 +546,10 @@ MaximizeParsimony <- function (dataset, tree,
     simpleCont <- ifelse(rowSums(cont) == 1,
                          apply(cont != 0, 1, function (x) colnames(cont)[x][1]),
                          '?')
-  }
-  if (iw) {
-    inappLevel <- at$levels == '-'
-    
-    if (any(inappLevel)) {
-      # TODO this is a workaround until MinimumLength can handle {-, 1}
-      cont[cont[, inappLevel] > 0, ] <- 0
-      ambiguousToken <- at$allLevels == '?'
-      cont[ambiguousToken, ] <- colSums(cont[!ambiguousToken, ]) > 0
-    }
-    
-    # Perhaps replace with previous code:
-    # inappLevel <- which(at$levels == "-")
-    # cont[, inappLevel] <- 0
-  }
   
-  if (iw || profile) {
-    powersOf2 <- 2L ^ c(0L, seq_len(nLevel - 1L))
-    tmp <- as.integer(cont %*% powersOf2)
-    unlisted <- unlist(dataset, use.names = FALSE)
-    binaryMatrix <- matrix(tmp[unlisted], nChar, nTip, byrow = FALSE)
-    minLength <- apply(binaryMatrix, 1, MinimumLength)
     
-    tokenMatrix <- matrix(simpleCont[unlisted], nChar, nTip, byrow = FALSE)
+    unlisted <- unlist(dataset, use.names = FALSE)
+    tokenMatrix <- matrix(simpleCont[unlisted], nChar, nTip)
     charInfo <- apply(tokenMatrix, 1, CharacterInformation)
     needsInapp <- rowSums(tokenMatrix == '-') > 2
     inappSlowdown <- 3L # A guess
@@ -564,14 +570,23 @@ MaximizeParsimony <- function (dataset, tree,
   nHits <- 1L
   tbrStart <- startIter > 0
   tbrEnd <- finalIter > 0
-  bestEdges <- edge
-  bestScore <- .Score(edge)
-  dim(bestEdges) <- c(dim(bestEdges), 1)
+  if (is.null(startTrees)) {
+    bestEdges <- edge
+    dim(bestEdges) <- c(dim(bestEdges), 1)
+    bestScore <- .Score(edge)
+  } else {
+    starters <- RenumberTips(startTrees, names(dataset))
+    startEdges <- vapply(lapply(starters, Preorder), `[[`, startTrees[[1]]$edge,
+                        'edge')
+    startScores <- apply(startEdges, 3, .Score)
+    bestScore <- min(startScores)
+    bestEdges <- startEdges[, , startScores == bestScore, drop = FALSE]
+  }
   nStages <- sum(tbrStart, ratchIter, tbrEnd)
-  attr(bestEdges, 'firstHit') <- c('seed' = 1,
+  attr(bestEdges, 'firstHit') <- c('seed' = dim(bestEdges)[3],
     setNames(double(nStages),
              c(if(tbrStart) 'start',
-               if (ratchIter > 0) paste0('ratch', seq_len(ratchIter)),
+               if(ratchIter > 0) paste0('ratch', seq_len(ratchIter)),
                if(tbrEnd) 'final')))
   
   
@@ -718,7 +733,7 @@ MaximizeParsimony <- function (dataset, tree,
 #' Combine two edge matrices
 #' 
 #' @param x,y 3D arrays, each slice containing an edge matrix from a tree
-#' of class `phylo`.
+#' of class `phylo`.  `x` should not contain duplicates.
 #' @return A single 3D array containing each unique edge matrix from (`x` and)
 #' `y`, with a `firstHit` attribute as documented in [`MaximizeParsimony()`].
 #' @template MRS
@@ -727,6 +742,9 @@ MaximizeParsimony <- function (dataset, tree,
   xDim <- dim(x)
   if (length(xDim) == 2L) {
     xDim <- c(xDim, 1L)
+  }
+  if (any(duplicated(x, MARGIN = 3L))) {
+    warning(".CombineResults(x) should not contain duplicates.")
   }
   
   res <- unique(array(c(x, y), dim = xDim + c(0, 0, dim(y)[3])), MARGIN = 3L)
