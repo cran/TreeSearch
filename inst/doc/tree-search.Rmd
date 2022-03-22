@@ -19,7 +19,7 @@ knitr::opts_chunk$set(fig.width = 7.2, fig.asp = 0.7)
 parsimony search on morphological datasets that contain inapplicable data,
 using the algorithm proposed by Brazeau, Guillerme and Smith [-@Brazeau2019]
 and implemented in the 'MorphyLib' C library [@Brazeau2017]
-([details](https://cdn.jsdelivr.net/gh/TGuillerme/Inapp@c4d502fa4ae3702eb207b2da3a692e469ba3b6ab/inst/gitbook/_book/index.html)).
+([details](https://rawgit.com/TGuillerme/Inapp/c4d502fa4ae3702eb207b2da3a692e469ba3b6ab/inst/gitbook/_book/index.html)).
 
 ## Getting started
 
@@ -70,8 +70,7 @@ phylogenetic signal is obscure enough that it can require Ratchet searches to
 escape from local optima.
 
 ```{r Load-data}
-rawData <- TreeSearch::inapplicable.datasets[['Vinther2008']]
-vinther <- phangorn::phyDat(rawData, type = 'USER', levels = c(0:9, '-'))
+vinther <- TreeSearch::inapplicable.phyData[["Vinther2008"]]
 ```
 
 ```{R RNG-version}
@@ -88,7 +87,7 @@ bestTrees <- MaximizeParsimony(vinther)
 It can be instructive to inspect the progress of tree search.
 
 ```{r inspect-progress}
-firstHit <- attr(bestTrees, 'firstHit')
+firstHit <- attr(bestTrees, "firstHit")
 firstHit
 ```
 
@@ -109,10 +108,10 @@ par(mar = rep(0, 4))
 TreeDist::Plot3(map,
                 col = cols[rep(seq_along(firstHit), firstHit)],
                 pch = 16, cex = 2,
-                axes = FALSE, xlab = '', ylab = '', asp = 1)
+                axes = FALSE, xlab = "", ylab = "", asp = 1)
 TreeTools::MSTEdges(distances, plot = TRUE, map[, 1], map[, 2],
                     col = '#00000030', lty = 2)
-legend('topright', names(firstHit), col = cols, pch = 16, bty = 'n')
+legend("topright", names(firstHit), col = cols, pch = 16, bty = "n")
 ```
 
 A quick glance suggests that early ratchet iterations captured a large part of
@@ -155,9 +154,9 @@ par(mar = rep(0.25, 4), cex = 0.75) # make plot easier to read
 majCons <- ape::consensus(bestTrees, p = 0.5)
 splitFreqs <- TreeTools::SplitFrequency(majCons, bestTrees) / length(bestTrees)
 plot(majCons)
-TreeTools::LabelSplits(majCons, round(splitFreqs * 100), unit = '%',
+TreeTools::LabelSplits(majCons, round(splitFreqs * 100), unit = "%",
                        col = TreeTools::SupportColor(splitFreqs),
-                       frame = 'none', pos = 3L)
+                       frame = "none", pos = 3L)
 ```
 
 This approach is a sensible way to analyse clade credibility when the frequency
@@ -190,7 +189,7 @@ the requirements of a particular dataset.
 nReplicates <- 10
 jackTrees <- lapply(logical(nReplicates), function (x)
   Resample(vinther, bestTrees, ratchIter = 0, tbrIter = 1, maxHits = 4,
-          verbosity = 0)
+           verbosity = 0)
 )
 
 strict <- ape::consensus(bestTrees, p = 1)
@@ -221,7 +220,7 @@ par(mar = rep(0, 4), cex = 0.8)
 plot(strict)
 TreeTools::LabelSplits(strict, signif(concordance, 3),
                        col = TreeTools::SupportColor(concordance / max(concordance)),
-                       frame = 'none', pos = 3L)
+                       frame = "none", pos = 3L)
 ```
 
 ### Exploring taxon stability
@@ -253,7 +252,7 @@ The most informative single summary tree is thus provided by:
 
 ```{r cons-without-halk}
 par(mar = rep(0, 4), cex = 0.8)
-noWiwaxia <- lapply(bestTrees, TreeTools::DropTip, 'Wiwaxia')
+noWiwaxia <- lapply(bestTrees, TreeTools::DropTip, "Wiwaxia")
 plot(ape::consensus(noWiwaxia), tip.color = Rogue::ColByStability(noWiwaxia))
 ```
 
@@ -265,7 +264,7 @@ We can see where _Wiwaxia_ would plot on this tree using:
 
 ```{r restore-wiwaxia}
 par(mar = rep(0, 4), cex = 0.8)
-xx <- TreeTools::RoguePlot(bestTrees, 'Wiwaxia', p = 1)
+xx <- TreeTools::RoguePlot(bestTrees, "Wiwaxia", p = 1)
 ```
 
 Brighter greens indicate that more trees contained _Wiwaxia_ in this position.
@@ -317,7 +316,7 @@ constraints, but if it cannot, it may be necessary to specify one manually
 Here's a simple example on six taxa that enforces the bipartition ab | cdef:
 
 ```{r simple-constraints, fig.width = 4, fig.align = "center", message = FALSE}
-library("TreeTools", quietly = TRUE, warn.conflicts = FALSE)
+library("TreeTools", quietly = TRUE)
 constraint <- MatrixToPhyDat(c(a = 1, b = 1, c = 0, d = 0, e = 0, f = 0))
 characters <- MatrixToPhyDat(matrix(
   c(0, 1, 1, 1, 0, 0,

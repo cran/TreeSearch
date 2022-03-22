@@ -12,7 +12,7 @@
 
 <meta name="author" content="Martin R. Smith" />
 
-<meta name="date" content="2022-01-17" />
+<meta name="date" content="2022-03-22" />
 
 <title>Tree Search with Profile Parsimony</title>
 
@@ -163,7 +163,7 @@ div.csl-indent {
 
 <h1 class="title toc-ignore">Tree Search with Profile Parsimony</h1>
 <h4 class="author">Martin R. Smith</h4>
-<h4 class="date">2022-01-17</h4>
+<h4 class="date">2022-03-22</h4>
 
 
 
@@ -200,7 +200,7 @@ div.csl-indent {
 <p>We could alternatively use a random or neighbour-joining tree:</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>randomTree <span class="ot">&lt;-</span> TreeTools<span class="sc">::</span><span class="fu">RandomTree</span>(myMatrix, <span class="at">root =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">TreeLength</span>(randomTree, myMatrix, <span class="st">&#39;profile&#39;</span>)</span></code></pre></div>
-<pre><code>## [1] 774.8324</code></pre>
+<pre><code>## [1] 783.324</code></pre>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>njTree <span class="ot">&lt;-</span> TreeTools<span class="sc">::</span><span class="fu">NJTree</span>(myMatrix)</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">TreeLength</span>(njTree, myMatrix, <span class="st">&#39;profile&#39;</span>)</span></code></pre></div>
 <pre><code>## [1] 540.2259</code></pre>

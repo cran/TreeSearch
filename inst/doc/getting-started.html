@@ -12,7 +12,7 @@
 
 <meta name="author" content="Martin R. Smith" />
 
-<meta name="date" content="2022-01-17" />
+<meta name="date" content="2022-03-22" />
 
 <title>Getting started: Installing R and TreeSearch</title>
 
@@ -141,7 +141,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <h1 class="title toc-ignore">Getting started: Installing R and TreeSearch</h1>
 <h4 class="author">Martin R. Smith</h4>
-<h4 class="date">2022-01-17</h4>
+<h4 class="date">2022-03-22</h4>
 
 
 
@@ -157,12 +157,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Once installed, load the “TreeSearch” package into R using</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&#39;TreeSearch&#39;</span>)</span></code></pre></div>
 <p>Activate the graphical user interface by typing <code>EasyTrees()</code>.</p>
-<p>Some features of the graphical user interface require up-to-date versions of the “ape” and “TreeTools” packages, due on CRAN in late 2021. Until then, install the latest versions using</p>
+<p>In Jan 2022, some users are reporting issues after loading trees from Nexus files. These arise due to an issue in the underlying “ape” package. To install a patched version, close and re-launch R and run:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">require</span>(<span class="st">&#39;remotes&#39;</span>)) <span class="fu">install.packages</span>(<span class="st">&#39;remotes&#39;</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&#39;emmanuelparadis/ape&#39;</span>)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">packageVersion</span>(<span class="st">&#39;ape&#39;</span>) <span class="co"># Should be at least 5.5.2</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&#39;ms609/TreeTools@Rogue&#39;</span>)</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">packageVersion</span>(<span class="st">&#39;TreeTools&#39;</span>) <span class="co"># Should be &gt; 1.5.0 or end in .91XX</span></span></code></pre></div>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;ms609/ape@patch-3&quot;</span>)</span></code></pre></div>
 <p>Windows users may need to install <a href="https://cran.r-project.org/bin/windows/Rtools/">Rtools</a> before installing from the GitHub source.</p>
 </div>
 <div id="for-advanced-users" class="section level3">
