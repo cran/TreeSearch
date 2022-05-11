@@ -12,11 +12,23 @@
 
 <meta name="author" content="Martin R. Smith" />
 
-<meta name="date" content="2022-03-22" />
+<meta name="date" content="2022-05-11" />
 
 <title>Tree Search with Profile Parsimony</title>
 
-<script src="data:application/javascript;base64,Ly8gUGFuZG9jIDIuOSBhZGRzIGF0dHJpYnV0ZXMgb24gYm90aCBoZWFkZXIgYW5kIGRpdi4gV2UgcmVtb3ZlIHRoZSBmb3JtZXIgKHRvCi8vIGJlIGNvbXBhdGlibGUgd2l0aCB0aGUgYmVoYXZpb3Igb2YgUGFuZG9jIDwgMi44KS4KZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcignRE9NQ29udGVudExvYWRlZCcsIGZ1bmN0aW9uKGUpIHsKICB2YXIgaHMgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsKCJkaXYuc2VjdGlvbltjbGFzcyo9J2xldmVsJ10gPiA6Zmlyc3QtY2hpbGQiKTsKICB2YXIgaSwgaCwgYTsKICBmb3IgKGkgPSAwOyBpIDwgaHMubGVuZ3RoOyBpKyspIHsKICAgIGggPSBoc1tpXTsKICAgIGlmICghL15oWzEtNl0kL2kudGVzdChoLnRhZ05hbWUpKSBjb250aW51ZTsgIC8vIGl0IHNob3VsZCBiZSBhIGhlYWRlciBoMS1oNgogICAgYSA9IGguYXR0cmlidXRlczsKICAgIHdoaWxlIChhLmxlbmd0aCA+IDApIGgucmVtb3ZlQXR0cmlidXRlKGFbMF0ubmFtZSk7CiAgfQp9KTsK"></script>
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -26,6 +38,7 @@
   div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
   ul.task-list{list-style: none;}
     </style>
+
 
 
 <style type="text/css">
@@ -149,7 +162,187 @@ div.csl-indent {
 }
 </style>
 
-<link rel="stylesheet" href="data:text/css,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" type="text/css" />
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
 
 
 
@@ -163,16 +356,24 @@ div.csl-indent {
 
 <h1 class="title toc-ignore">Tree Search with Profile Parsimony</h1>
 <h4 class="author">Martin R. Smith</h4>
-<h4 class="date">2022-03-22</h4>
+<h4 class="date">2022-05-11</h4>
 
 
 
-<p>Profile Parsimony <span class="citation">(Faith &amp; Trueman, 2001)</span> finds the tree that is most faithful to the information contained within a given dataset. It is the ‘exact solution’ that implied weights parsimony approximates. For more information on the philosophy and mathematics of profile parsimony, see the <a href="profile-scores.html">companion vignette</a>.</p>
-<p>Profile Parsimony is currently implemented in “TreeSearch” for characters with up to two parsimony-informative states. (Further states are treated as ambiguous, whilst retaining as much information as possible.)</p>
+<p>Profile Parsimony <span class="citation">(Faith &amp; Trueman,
+2001)</span> finds the tree that is most faithful to the information
+contained within a given dataset. It is the ‘exact solution’ that
+implied weights parsimony approximates. For more information on the
+philosophy and mathematics of profile parsimony, see the <a href="profile-scores.html">companion vignette</a>.</p>
+<p>Profile Parsimony is currently implemented in “TreeSearch” for
+characters with up to two parsimony-informative states. (Further states
+are treated as ambiguous, whilst retaining as much information as
+possible.)</p>
 <div id="getting-started" class="section level2">
 <h2>Getting started</h2>
 <!--Duplicated from inapplicable.Rmd-->
-<p><a href="getting-started.html">A companion vignette</a> gives details on installing the package and getting up and running.</p>
+<p><a href="getting-started.html">A companion vignette</a> gives details
+on installing the package and getting up and running.</p>
 <!--
 # message=FALSE will suppress message when loading TreeSearch
 # Temporary fix until R.oo is updated -- remove thereafter
@@ -180,17 +381,22 @@ div.csl-indent {
 -->
 <p>Once installed, load the inapplicable package into R using</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&#39;TreeSearch&#39;</span>)</span></code></pre></div>
-<p>In order to reproduce the random elements of this document, set a random seed:</p>
+<p>In order to reproduce the random elements of this document, set a
+random seed:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set a random seed so that random functions in this document are reproducible</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressWarnings</span>(<span class="fu">RNGversion</span>(<span class="st">&#39;3.5.0&#39;</span>)) <span class="co"># Until we can require R3.6.0</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">888</span>)</span></code></pre></div>
 </div>
 <div id="scoring-a-tree-and-conducting-a-tree-search" class="section level2">
 <h2>Scoring a tree, and conducting a tree search</h2>
-<p>Here’s an example of using the package to conduct tree search with profile parsimony. You can <a href="https://ms609.github.io/TreeTools/articles/load-data.html">load your own dataset</a>, but for this example, we’ll use a simulated dataset that comes bundled with the <code>TreeSearch</code> package.</p>
+<p>Here’s an example of using the package to conduct tree search with
+profile parsimony. You can <a href="https://ms609.github.io/TreeTools/articles/load-data.html">load
+your own dataset</a>, but for this example, we’ll use a simulated
+dataset that comes bundled with the <code>TreeSearch</code> package.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(congreveLamsdellMatrices)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>myMatrix <span class="ot">&lt;-</span> congreveLamsdellMatrices[[<span class="dv">10</span>]]</span></code></pre></div>
-<p>Unless a starting tree is provided, tree search will from a random addition tree:</p>
+<p>Unless a starting tree is provided, tree search will from a random
+addition tree:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>additionTree <span class="ot">&lt;-</span> <span class="fu">AdditionTree</span>(myMatrix, <span class="at">concavity =</span> <span class="st">&#39;profile&#39;</span>)</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">TreeLength</span>(additionTree, myMatrix, <span class="st">&#39;profile&#39;</span>)</span></code></pre></div>
 <pre><code>## [1] 552.6187</code></pre>
@@ -204,26 +410,42 @@ div.csl-indent {
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>njTree <span class="ot">&lt;-</span> TreeTools<span class="sc">::</span><span class="fu">NJTree</span>(myMatrix)</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">TreeLength</span>(njTree, myMatrix, <span class="st">&#39;profile&#39;</span>)</span></code></pre></div>
 <pre><code>## [1] 540.2259</code></pre>
-<p>We search for trees with a better score using TBR rearrangements and the parsimony ratchet <span class="citation">(Nixon, 1999)</span>:</p>
+<p>We search for trees with a better score using TBR rearrangements and
+the parsimony ratchet <span class="citation">(Nixon, 1999)</span>:</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>betterTrees <span class="ot">&lt;-</span> <span class="fu">MaximizeParsimony</span>(myMatrix, additionTree, <span class="at">concavity =</span> <span class="st">&#39;profile&#39;</span>,</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">ratchIter =</span> <span class="dv">3</span>, <span class="at">tbrIter =</span> <span class="dv">3</span>, <span class="at">maxHits =</span> <span class="dv">8</span>)</span></code></pre></div>
-<p>We’ve used very low values of <code>ratchIter</code>, <code>tbrIter</code> and <code>maxHits</code> for a rapid run, so this is not necessarily a thorough enough search to find a globally optimal tree. Nevertheless, let’s see the resultant tree, and its score:</p>
+<p>We’ve used very low values of <code>ratchIter</code>,
+<code>tbrIter</code> and <code>maxHits</code> for a rapid run, so this
+is not necessarily a thorough enough search to find a globally optimal
+tree. Nevertheless, let’s see the resultant tree, and its score:</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">TreeLength</span>(betterTrees[[<span class="dv">1</span>]], myMatrix, <span class="st">&#39;profile&#39;</span>)</span></code></pre></div>
 <pre><code>## [1] 512.1181</code></pre>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">rep</span>(<span class="fl">0.25</span>, <span class="dv">4</span>), <span class="at">cex =</span> <span class="fl">0.75</span>) <span class="co"># make plot easier to read</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ape<span class="sc">::</span><span class="fu">consensus</span>(betterTrees))</span></code></pre></div>
 <p><img src="data:image/png;base64,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" /><!-- --></p>
-<p>The default parameters may not be enough to find the optimal tree; type <code>?MaximizeParsimony</code> to view all search parameters – or keep repeating the search until tree score stops improving.</p>
+<p>The default parameters may not be enough to find the optimal tree;
+type <code>?MaximizeParsimony</code> to view all search parameters – or
+keep repeating the search until tree score stops improving.</p>
 </div>
 <div id="view-the-results" class="section level2">
 <h2>View the results</h2>
-<p>In parsimony search, it is good practice to consider trees that are slightly suboptimal <span class="citation">(Smith, 2019)</span>.</p>
-<p>Here, we’ll take a consensus that includes all trees that are suboptimal by up to 3 bits. To sample this region of tree space well, the trick is to use large values of <code>ratchHits</code> and <code>ratchIter</code>, and small values of <code>searchHits</code> and <code>searchiter</code>, so that many runs don’t quite hit the optimal tree. In a serious study, you would want to sample many more than the 3 Ratchet hits (<code>ratchHits</code>) we’ll settle for here, probably using many more Ratchet iterations.</p>
+<p>In parsimony search, it is good practice to consider trees that are
+slightly suboptimal <span class="citation">(Smith, 2019)</span>.</p>
+<p>Here, we’ll take a consensus that includes all trees that are
+suboptimal by up to 3 bits. To sample this region of tree space well,
+the trick is to use large values of <code>ratchHits</code> and
+<code>ratchIter</code>, and small values of <code>searchHits</code> and
+<code>searchiter</code>, so that many runs don’t quite hit the optimal
+tree. In a serious study, you would want to sample many more than the 3
+Ratchet hits (<code>ratchHits</code>) we’ll settle for here, probably
+using many more Ratchet iterations.</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>suboptimals <span class="ot">&lt;-</span> <span class="fu">MaximizeParsimony</span>(myMatrix, betterTrees, <span class="at">tolerance =</span> <span class="dv">3</span>,</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">ratchIter =</span> <span class="dv">2</span>, <span class="at">tbrIter =</span> <span class="dv">3</span>,</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">maxHits =</span> <span class="dv">25</span>,</span>
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">concavity =</span> <span class="st">&#39;profile&#39;</span>)</span></code></pre></div>
-<p>The consensus of these slightly suboptimal trees provides a less resolved, but typically more reliable, summary of the signal with the phylogenetic dataset <span class="citation">(Smith, 2019)</span>:</p>
+<p>The consensus of these slightly suboptimal trees provides a less
+resolved, but typically more reliable, summary of the signal with the
+phylogenetic dataset <span class="citation">(Smith, 2019)</span>:</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">rep</span>(<span class="fl">0.25</span>, <span class="dv">4</span>), <span class="at">cex =</span> <span class="fl">0.75</span>)</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(<span class="fu">signif</span>(<span class="fu">TreeLength</span>(suboptimals, myMatrix, <span class="st">&#39;profile&#39;</span>)))</span></code></pre></div>
 <pre><code>## 
@@ -236,13 +458,19 @@ div.csl-indent {
 <h2 class="unnumbered">References</h2>
 <div id="refs" class="references csl-bib-body hanging-indent" line-spacing="2">
 <div id="ref-Faith2001" class="csl-entry">
-Faith, D. P., &amp; Trueman, J. W. H. (2001). <span class="nocase">Towards an inclusive philosophy for phylogenetic inference</span>. <em>Systematic Biology</em>, <em>50</em>(3), 331–350. doi:<a href="https://doi.org/10.1080/10635150118627">10.1080/10635150118627</a>
+Faith, D. P., &amp; Trueman, J. W. H. (2001). <span class="nocase">Towards an inclusive philosophy for phylogenetic
+inference</span>. <em>Systematic Biology</em>, <em>50</em>(3), 331–350.
+doi:<a href="https://doi.org/10.1080/10635150118627">10.1080/10635150118627</a>
 </div>
 <div id="ref-Nixon1999" class="csl-entry">
-Nixon, K. C. (1999). <span class="nocase">The Parsimony Ratchet, a new method for rapid parsimony analysis</span>. <em>Cladistics</em>, <em>15</em>(4), 407–414. doi:<a href="https://doi.org/10.1111/j.1096-0031.1999.tb00277.x">10.1111/j.1096-0031.1999.tb00277.x</a>
+Nixon, K. C. (1999). <span class="nocase">The Parsimony Ratchet, a new
+method for rapid parsimony analysis</span>. <em>Cladistics</em>,
+<em>15</em>(4), 407–414. doi:<a href="https://doi.org/10.1111/j.1096-0031.1999.tb00277.x">10.1111/j.1096-0031.1999.tb00277.x</a>
 </div>
 <div id="ref-Smith2019" class="csl-entry">
-Smith, M. R. (2019). Bayesian and parsimony approaches reconstruct informative trees from simulated morphological datasets. <em>Biology Letters</em>, <em>15</em>(2), 20180632. doi:<a href="https://doi.org/10.1098/rsbl.2018.0632">10.1098/rsbl.2018.0632</a>
+Smith, M. R. (2019). Bayesian and parsimony approaches reconstruct
+informative trees from simulated morphological datasets. <em>Biology
+Letters</em>, <em>15</em>(2), 20180632. doi:<a href="https://doi.org/10.1098/rsbl.2018.0632">10.1098/rsbl.2018.0632</a>
 </div>
 </div>
 </div>

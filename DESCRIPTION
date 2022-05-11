@@ -1,6 +1,6 @@
 Package: TreeSearch
 Title: Phylogenetic Analysis with Morphological Data
-Version: 1.1.1
+Version: 1.1.2
 Authors@R: c(
     person(
       "Martin R.", 'Smith',
@@ -54,10 +54,10 @@ Language: en-GB
 VignetteBuilder: knitr
 RoxygenNote: 7.1.2
 NeedsCompilation: yes
-Packaged: 2022-03-22 09:07:12 UTC; pjjg18
+Packaged: 2022-05-11 09:07:02 UTC; pjjg18
 Author: Martin R. Smith [aut, cre, cph]
     (<https://orcid.org/0000-0001-5660-1727>),
   Martin Brazeau [cph] (<https://orcid.org/0000-0002-0650-1282>)
 Maintainer: Martin R. Smith <martin.smith@durham.ac.uk>
 Repository: CRAN
-Date/Publication: 2022-03-22 10:10:28 UTC
+Date/Publication: 2022-05-11 11:20:05 UTC
