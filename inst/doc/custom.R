@@ -53,7 +53,7 @@ PlotTree(result)
 
 ## ----iw-setup-----------------------------------------------------------------
 IWInitMorphy <- function (dataset) {
-  attr(dataset, 'morphyObjs') <- 
+  attr(dataset, "morphyObjs") <- 
     lapply(PhyToString(dataset, byTaxon = FALSE, useIndex = FALSE, 
                        concatenate = FALSE), 
            SingleCharMorphy)
@@ -64,18 +64,18 @@ IWInitMorphy <- function (dataset) {
 
 ## ----iw-destroy---------------------------------------------------------------
 IWDestroyMorphy <- function (dataset) {
-  vapply(attr(dataset, 'morphyObjs'), UnloadMorphy, integer(1))
+  vapply(attr(dataset, "morphyObjs"), UnloadMorphy, integer(1))
 }
 
 ## ----iw-score-----------------------------------------------------------------
 IWScoreMorphy <- function (parent, child, dataset, concavity = 10L, 
-                           minLength = attr(dataset, 'min.length'), ...) {
-  steps <- vapply(attr(dataset, 'morphyObjs'), MorphyLength,
+                           minLength = attr(dataset, "min.length"), ...) {
+  steps <- vapply(attr(dataset, "morphyObjs"), MorphyLength,
                   parent = parent, child = child, integer(1))
   homoplasies <- steps - minLength
   fit <- homoplasies / (homoplasies + concavity)
   # Return:
-  sum(fit * attr(dataset, 'weight'))
+  sum(fit * attr(dataset, "weight"))
 }
 
 ## ----iw-search, message = FALSE-----------------------------------------------
@@ -96,7 +96,7 @@ iwTree <- TreeSearch(NJTree(dataset), dataset,
 IWBootstrap <- function (edgeList, dataset, concavity = 10L, EdgeSwapper = NNISwap, 
                          maxIter, maxHits, verbosity = 1L, ...) {
   att <- attributes(dataset)
-  startWeights <- att[['weight']]
+  startWeights <- att[["weight"]]
   
   # Decompress phyDat object so each character is listed once
   eachChar <- seq_along(startWeights)
@@ -107,10 +107,10 @@ IWBootstrap <- function (edgeList, dataset, concavity = 10L, EdgeSwapper = NNISw
   sampled <- resampling != 0
   sampledData <- lapply(dataset, function (x) x[sampled])
   sampledAtt <- att
-  sampledAtt[['weight']] <- resampling[sampled]
-  sampledAtt[['index']] <- rep.int(seq_len(sum(sampled)), resampling[sampled])
-  sampledAtt[['min.length']] <- minLength <- att[['min.length']][sampled]
-  sampledAtt[['morphyObjs']] <- att[['morphyObjs']][sampled]
+  sampledAtt[["weight"]] <- resampling[sampled]
+  sampledAtt[["index"]] <- rep.int(seq_len(sum(sampled)), resampling[sampled])
+  sampledAtt[["min.length"]] <- minLength <- att[["min.length"]][sampled]
+  sampledAtt[["morphyObjs"]] <- att[["morphyObjs"]][sampled]
   attributes(sampledData) <- sampledAtt
   
   # Search using resampled dataset

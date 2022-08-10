@@ -1,9 +1,12 @@
 library("TreeTools", quietly = TRUE)
 
 test_that("Profile fails gracefully", {
+  skip_if(interactive()) # Uses CLI instead of warning()
   dataset <- MatrixToPhyDat(c(a = 1, b = 1, c = 0, d = 0, e = 3, f = 3))
-  expect_warning(PrepareDataProfile(dataset))
-  expect_warning(MaximizeParsimony(dataset, concavity = "pr"))
+  expect_warning(PrepareDataProfile(dataset),
+                 "Can handle max. 2 informative tokens")
+  expect_warning(MaximizeParsimony(dataset, concavity = "pr"),
+                 "Can handle max. 2 informative tokens")
 })
 
 test_that("Constraints work", {
@@ -134,13 +137,15 @@ test_that("Resample() fails and works", {
   nRep <- 42L # Arbitrary number to balance runtime vs false +ves & -ves
   bal <- as.Splits(BalancedTree(dataset))
   
-  skip_if_not_installed("TreeTools", "1.4.5.9003") # postorder / as.Splits order
   jackTrees <- replicate(nRep, Resample(dataset, NJTree(dataset), verbosity = 0L))
   jackSplits <- as.Splits(unlist(jackTrees, recursive = FALSE))
-  jackSupport <- rowSums(vapply(jackSplits, function(sp) in.Splits(bal, sp),
-                                logical(3)))
+  jackSupport <- rowSums(
+    # TODO replace :::.in.Splits with exported %in%
+    # %in% works when testing file but not entire package
+    # See https://github.com/r-lib/testthat/issues/1661
+    vapply(jackSplits, function(sp) TreeTools:::.in.Splits(bal, sp), logical(3))
+  )
   
-  skip_if_not_installed("TreeTools", "1.6.0.9002") # names
   # This test could be replaced with a more statistically robust alternative!
   expect_equal(jackSupport, tolerance = 0.2,
                c("8" = 1/2, "9" = 1, "10" = 1/2, "11" = 0)[names(bal)] *
@@ -149,9 +154,14 @@ test_that("Resample() fails and works", {
   bootTrees <- replicate(nRep, Resample(dataset, method = "bootstrap",
                                         verbosity = 0))
   #bootSupport <- rowSums(vapply(lapply(bootTrees, `[[`, 1),
-  bootSupport <- rowSums(vapply(unlist(bootTrees, recursive = FALSE),
-                                function(tr) in.Splits(bal, as.Splits(tr)),
-                                logical(3)))
+  bootSupport <- rowSums(vapply(
+    unlist(bootTrees, recursive = FALSE),
+    # TODO replace :::.in.Splits with exported %in%
+    # %in% works when testing file but not entire package
+    # See https://github.com/r-lib/testthat/issues/1661
+    function(tr) TreeTools:::.in.Splits(bal, as.Splits(tr)),
+    logical(3)
+  ))
   # This test could be replaced with a more statistically robust alternative!
   expect_equal(bootSupport, tolerance = 0.2,
                c("8" = 1/2, "9" = 1, "10" = 1/2, "11" = 0)[names(bal)] * 

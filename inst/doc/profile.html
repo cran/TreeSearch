@@ -12,7 +12,7 @@
 
 <meta name="author" content="Martin R. Smith" />
 
-<meta name="date" content="2022-05-11" />
+<meta name="date" content="2022-07-25" />
 
 <title>Tree Search with Profile Parsimony</title>
 
@@ -356,7 +356,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Tree Search with Profile Parsimony</h1>
 <h4 class="author">Martin R. Smith</h4>
-<h4 class="date">2022-05-11</h4>
+<h4 class="date">2022-07-25</h4>
 
 
 
@@ -380,11 +380,11 @@ on installing the package and getting up and running.</p>
 # https://github.com/r-lib/rlang/issues/669
 -->
 <p>Once installed, load the inapplicable package into R using</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&#39;TreeSearch&#39;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;TreeSearch&quot;</span>)</span></code></pre></div>
 <p>In order to reproduce the random elements of this document, set a
 random seed:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set a random seed so that random functions in this document are reproducible</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressWarnings</span>(<span class="fu">RNGversion</span>(<span class="st">&#39;3.5.0&#39;</span>)) <span class="co"># Until we can require R3.6.0</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressWarnings</span>(<span class="fu">RNGversion</span>(<span class="st">&quot;3.5.0&quot;</span>)) <span class="co"># Until we can require R3.6.0</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">888</span>)</span></code></pre></div>
 </div>
 <div id="scoring-a-tree-and-conducting-a-tree-search" class="section level2">
@@ -397,28 +397,28 @@ dataset that comes bundled with the <code>TreeSearch</code> package.</p>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>myMatrix <span class="ot">&lt;-</span> congreveLamsdellMatrices[[<span class="dv">10</span>]]</span></code></pre></div>
 <p>Unless a starting tree is provided, tree search will from a random
 addition tree:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>additionTree <span class="ot">&lt;-</span> <span class="fu">AdditionTree</span>(myMatrix, <span class="at">concavity =</span> <span class="st">&#39;profile&#39;</span>)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">TreeLength</span>(additionTree, myMatrix, <span class="st">&#39;profile&#39;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>additionTree <span class="ot">&lt;-</span> <span class="fu">AdditionTree</span>(myMatrix, <span class="at">concavity =</span> <span class="st">&quot;profile&quot;</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">TreeLength</span>(additionTree, myMatrix, <span class="st">&quot;profile&quot;</span>)</span></code></pre></div>
 <pre><code>## [1] 552.6187</code></pre>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">rep</span>(<span class="fl">0.25</span>, <span class="dv">4</span>), <span class="at">cex =</span> <span class="fl">0.75</span>) <span class="co"># make plot easier to read</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(additionTree)</span></code></pre></div>
 <p><img src="data:image/png;base64,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" /><!-- --></p>
 <p>We could alternatively use a random or neighbour-joining tree:</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>randomTree <span class="ot">&lt;-</span> TreeTools<span class="sc">::</span><span class="fu">RandomTree</span>(myMatrix, <span class="at">root =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">TreeLength</span>(randomTree, myMatrix, <span class="st">&#39;profile&#39;</span>)</span></code></pre></div>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">TreeLength</span>(randomTree, myMatrix, <span class="st">&quot;profile&quot;</span>)</span></code></pre></div>
 <pre><code>## [1] 783.324</code></pre>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>njTree <span class="ot">&lt;-</span> TreeTools<span class="sc">::</span><span class="fu">NJTree</span>(myMatrix)</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">TreeLength</span>(njTree, myMatrix, <span class="st">&#39;profile&#39;</span>)</span></code></pre></div>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">TreeLength</span>(njTree, myMatrix, <span class="st">&quot;profile&quot;</span>)</span></code></pre></div>
 <pre><code>## [1] 540.2259</code></pre>
 <p>We search for trees with a better score using TBR rearrangements and
 the parsimony ratchet <span class="citation">(Nixon, 1999)</span>:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>betterTrees <span class="ot">&lt;-</span> <span class="fu">MaximizeParsimony</span>(myMatrix, additionTree, <span class="at">concavity =</span> <span class="st">&#39;profile&#39;</span>,</span>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>betterTrees <span class="ot">&lt;-</span> <span class="fu">MaximizeParsimony</span>(myMatrix, additionTree, <span class="at">concavity =</span> <span class="st">&quot;profile&quot;</span>,</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">ratchIter =</span> <span class="dv">3</span>, <span class="at">tbrIter =</span> <span class="dv">3</span>, <span class="at">maxHits =</span> <span class="dv">8</span>)</span></code></pre></div>
 <p>We’ve used very low values of <code>ratchIter</code>,
 <code>tbrIter</code> and <code>maxHits</code> for a rapid run, so this
 is not necessarily a thorough enough search to find a globally optimal
 tree. Nevertheless, let’s see the resultant tree, and its score:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">TreeLength</span>(betterTrees[[<span class="dv">1</span>]], myMatrix, <span class="st">&#39;profile&#39;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">TreeLength</span>(betterTrees[[<span class="dv">1</span>]], myMatrix, <span class="st">&quot;profile&quot;</span>)</span></code></pre></div>
 <pre><code>## [1] 512.1181</code></pre>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">rep</span>(<span class="fl">0.25</span>, <span class="dv">4</span>), <span class="at">cex =</span> <span class="fl">0.75</span>) <span class="co"># make plot easier to read</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ape<span class="sc">::</span><span class="fu">consensus</span>(betterTrees))</span></code></pre></div>
@@ -442,12 +442,12 @@ using many more Ratchet iterations.</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>suboptimals <span class="ot">&lt;-</span> <span class="fu">MaximizeParsimony</span>(myMatrix, betterTrees, <span class="at">tolerance =</span> <span class="dv">3</span>,</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">ratchIter =</span> <span class="dv">2</span>, <span class="at">tbrIter =</span> <span class="dv">3</span>,</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">maxHits =</span> <span class="dv">25</span>,</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">concavity =</span> <span class="st">&#39;profile&#39;</span>)</span></code></pre></div>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">concavity =</span> <span class="st">&quot;profile&quot;</span>)</span></code></pre></div>
 <p>The consensus of these slightly suboptimal trees provides a less
 resolved, but typically more reliable, summary of the signal with the
 phylogenetic dataset <span class="citation">(Smith, 2019)</span>:</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">rep</span>(<span class="fl">0.25</span>, <span class="dv">4</span>), <span class="at">cex =</span> <span class="fl">0.75</span>)</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(<span class="fu">signif</span>(<span class="fu">TreeLength</span>(suboptimals, myMatrix, <span class="st">&#39;profile&#39;</span>)))</span></code></pre></div>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(<span class="fu">signif</span>(<span class="fu">TreeLength</span>(suboptimals, myMatrix, <span class="st">&quot;profile&quot;</span>)))</span></code></pre></div>
 <pre><code>## 
 ## 512.118 513.229 513.897 513.966 514.739 514.849 
 ##       2       1       1       3       1       1</code></pre>

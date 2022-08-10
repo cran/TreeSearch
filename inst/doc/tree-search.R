@@ -30,7 +30,7 @@ TreeDist::Plot3(map,
                 pch = 16, cex = 2,
                 axes = FALSE, xlab = "", ylab = "", asp = 1)
 TreeTools::MSTEdges(distances, plot = TRUE, map[, 1], map[, 2],
-                    col = '#00000030', lty = 2)
+                    col = "#00000030", lty = 2)
 legend("topright", names(firstHit), col = cols, pch = 16, bty = "n")
 
 ## ----second-pass, message = FALSE---------------------------------------------
@@ -118,7 +118,7 @@ characters <- MatrixToPhyDat(matrix(
     1, 1, 1, 1, 0, 0, 0), ncol = 2,
   dimnames = list(letters[1:7], NULL)))
 constraint <- MatrixToPhyDat(matrix(
-  c(0, 0, 1, '?', 1, 1,
+  c(0, 0, 1, "?", 1, 1,
     1, 1, 1,   1, 0, 0), ncol = 2,
   dimnames = list(letters[1:6], NULL)))
 plot(MaximizeParsimony(characters, constraint = constraint,
