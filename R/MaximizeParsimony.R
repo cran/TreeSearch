@@ -19,10 +19,10 @@
 #' is conducted to broaden the sampling of trees.
 #' 
 #' This function can be called using the R command line / terminal, or through
-#' the 'shiny' graphical user interface app (type `EasyTrees()` to launch).
+#' the "shiny" graphical user interface app (type `EasyTrees()` to launch).
 #' 
 #'  
-#' For detailed documentation of the 'TreeSearch' package, including full 
+#' For detailed documentation of the "TreeSearch" package, including full 
 #' instructions for loading phylogenetic data into R and initiating and 
 #' configuring tree search, see the 
 #' [package documentation](https://ms609.github.io/TreeSearch/).
@@ -42,7 +42,7 @@
 #' break points to evaluate before concluding each search.
 #' The counter is reset to zero each time tree score improves.
 #' The counter is reset to zero each time tree score improves.
-#' One 'iteration' comprises breaking a single branch and evaluating all 
+#' One "iteration" comprises breaking a single branch and evaluating all 
 #' possible reconnections.
 #' @param startIter Numeric: an initial round of tree search with
 #' `startIter` &times; `tbrIter` \acronym{TBR} break points is conducted in
@@ -72,8 +72,10 @@
 #' Setting to larger values will include trees suboptimal by up to `tolerance`
 #' in search results, which may improve the accuracy of the consensus tree
 #' (at the expense of resolution) \insertCite{Smith2019}{TreeSearch}.
-#' @param constraint An object of class `phyDat`; returned trees will be
-#' perfectly compatible with each character in `constraint`.
+#' @param constraint Either an object of class `phyDat`, in which case
+#' returned trees will be perfectly compatible with each character in
+#' `constraint`; or a tree of class `phylo`, all of whose nodes will occur
+#' in any output tree.
 #' See [`ImposeConstraint()`] and 
 #' [vignette](https://ms609.github.io/TreeSearch/articles/tree-search.html)
 #' for further examples.
@@ -103,7 +105,7 @@
 #' @examples
 #' ## Only run examples in interactive R sessions
 #' if (interactive()) {
-#'   # launch 'shiny' point-and-click interface
+#'   # launch "shiny" point-and-click interface
 #'   EasyTrees()
 #'   
 #'   # Here too, use the "continue search" function to ensure that tree score
@@ -112,8 +114,8 @@
 #' 
 #' 
 #' # Load data for analysis in R
-#' library('TreeTools')
-#' data('congreveLamsdellMatrices', package = 'TreeSearch')
+#' library("TreeTools")
+#' data("congreveLamsdellMatrices", package = "TreeSearch")
 #' dataset <- congreveLamsdellMatrices[[42]]
 #' 
 #' # A very quick run for demonstration purposes
@@ -174,6 +176,7 @@
 #' DropTip
 #' ImposeConstraint
 #' MakeTreeBinary
+#' MatrixToPhyDat
 #' NTip
 #' @references
 #' \insertAllCited{}
@@ -276,7 +279,7 @@ MaximizeParsimony <- function (dataset, tree,
       cli_progress_update(set = 0, total = length(optTbr))
       
       for (brk in optTbr) {
-        cli_progress_update(1, status = paste0('D', iter, ", score ",
+        cli_progress_update(1, status = paste0("D", iter, ", score ",
                                                signif(bestScore), ", hit ",
                                                nHits, "."))
         .Message(7L, "Break ", brk)
@@ -331,7 +334,7 @@ MaximizeParsimony <- function (dataset, tree,
   }
 
   
-  .Search <- function (name = 'TBR search', .edge = edge, .hits = searchHits,
+  .Search <- function (name = "TBR search", .edge = edge, .hits = searchHits,
                        .weight = startWeights) {
     if (length(dim(.edge)) == 3L) {
       .edge <- .edge[, , 1]
@@ -353,11 +356,11 @@ MaximizeParsimony <- function (dataset, tree,
     }
   }
   
-  .Timeout <- function () {
+  .Timeout <- function() {
     if (Sys.time() > stopTime) {
-      .Info(1L, "Stopping search at ", Sys.time(), ": ", maxTime,
+      .Info(1L, "Stopping search at ", .DateTime(), ": ", maxTime,
             " minutes have elapsed.",
-            "  Best score was ", signif(.Score(bestEdges[, , 1])), '.',
+            "  Best score was ", signif(.Score(bestEdges[, , 1])), ".",
             if (maxTime == 60) "\nIncrease `maxTime` for longer runs.")
       return (TRUE)
     }
@@ -365,13 +368,13 @@ MaximizeParsimony <- function (dataset, tree,
     FALSE
   }
   
-  .ReturnValue <- function (bestEdges) {
+  .ReturnValue <- function(bestEdges) {
     if (verbosity > 0L) {
-      cli_alert_success(paste0(Sys.time(), 
+      cli_alert_success(paste0(.DateTime(),
                                ": Tree search terminated with score {.strong ",
                                "{signif(.Score(bestEdges[, , 1]))}}"))
     }
-    firstHit <- attr(bestEdges, 'firstHit')
+    firstHit <- attr(bestEdges, "firstHit")
     structure(lapply(seq_len(dim(bestEdges)[3]), function (i) {
       tr <- tree
       tr$edge <- bestEdges[, , i]
@@ -382,8 +385,8 @@ MaximizeParsimony <- function (dataset, tree,
       }
     }),
     firstHit = firstHit,
-    names = paste0(rep(names(firstHit), firstHit), '_', unlist(lapply(firstHit, seq_len))),
-    class = 'multiPhylo')
+    names = paste0(rep(names(firstHit), firstHit), "_", unlist(lapply(firstHit, seq_len))),
+    class = "multiPhylo")
   }
   
   
@@ -394,19 +397,19 @@ MaximizeParsimony <- function (dataset, tree,
   iw <- is.finite(concavity)
   constrained <- !missing(constraint)
   startTime <- Sys.time()
-  stopTime <- startTime + as.difftime(maxTime, units = 'mins')
+  stopTime <- startTime + as.difftime(maxTime, units = "mins")
   
   # Initialize tree
   startTrees <- NULL
   if (missing(tree)) {
     tree <- AdditionTree(dataset, constraint = constraint,
                          concavity = concavity)
-  } else if (inherits(tree, 'multiPhylo')) {
+  } else if (inherits(tree, "multiPhylo")) {
     startTrees <- unique(tree)
     sampledTree <- sample.int(length(tree), 1)
     .Info(2L, paste0("Starting search from {.var tree[[", sampledTree, "]]}"))
     tree <- tree[[sampledTree]]
-  } else if (inherits(tree, 'phylo')) {
+  } else if (inherits(tree, "phylo")) {
     startTrees <- c(tree)
   }
   if (dim(tree$edge)[1] != 2 * tree$Nnode) {
@@ -428,31 +431,35 @@ MaximizeParsimony <- function (dataset, tree,
   datOnly <- setdiff(taxa, leaves) 
   if (length(treeOnly)) {
     cli_alert_warning(paste0("Ignoring taxa on tree missing in dataset:\n>   ",
-                      paste0(treeOnly, collapse = ', ')))
+                      paste0(treeOnly, collapse = ", ")))
     warning("Ignored taxa on tree missing in dataset:\n   ",
-             paste0(treeOnly, collapse = ', '))
+             paste0(treeOnly, collapse = ", "))
     tree <- DropTip(tree, treeOnly)
     startTrees <- DropTip(startTrees, treeOnly)
   }
   if (length(datOnly)) {
     cli_alert_warning(paste0("Ignoring taxa in dataset missing on tree:\n>   ",
-                      paste0(datOnly, collapse = ', ')))
+                      paste0(datOnly, collapse = ", ")))
     warning("Ignored taxa in dataset missing on tree:\n>   ",
-            paste0(datOnly, collapse = ', '))
+            paste0(datOnly, collapse = ", "))
     dataset <- dataset[-fmatch(datOnly, taxa)]
   }
   if (constrained) {
-    consTaxa <- names(constraint)
+    if (!inherits(constraint, "phyDat")) {
+      constraint <- MatrixToPhyDat(t(as.matrix(constraint)))
+    }
+    consTaxa <- TipLabels(constraint)
     treeOnly <- setdiff(tree$tip.label, consTaxa)
     if (length(treeOnly)) {
       constraint <- AddUnconstrained(constraint, treeOnly)
     }
     consOnly <- setdiff(consTaxa, tree$tip.label)
     if (length(consOnly)) {
-      cli_alert_warning(paste0("Ignoring taxa in constraint missing on tree:\n>   ", 
-              paste0(consOnly, collapse = ', ')))
-      warning("Ignored taxa in constraint missing on tree:\n   ", 
-              paste0(consOnly, collapse = ', '))
+      cli_alert_warning(
+        paste0("Ignoring taxa in constraint missing on tree:\n>   ", 
+               paste0(consOnly, collapse = ", ")))
+      warning("Ignored taxa in constraint missing on tree:\n   ",
+              paste0(consOnly, collapse = ", "))
       constraint <- constraint[-fmatch(consOnly, consTaxa)]
     }
     constraint <- constraint[names(dataset)]
@@ -467,7 +474,7 @@ MaximizeParsimony <- function (dataset, tree,
   if (constrained) {
     morphyConstr <- PhyDat2Morphy(constraint)
     on.exit(morphyConstr <- UnloadMorphy(morphyConstr), add = TRUE)
-    constraintWeight <- attr(constraint, 'weight')
+    constraintWeight <- attr(constraint, "weight")
     if (any(constraintWeight > 1)) {
       cli_alert_warning("Some constraints are exact duplicates.")
     }
@@ -516,23 +523,23 @@ MaximizeParsimony <- function (dataset, tree,
   # Initialize data
   if (profile) {
     dataset <- PrepareDataProfile(dataset)
-    originalLevels <- attr(dataset, 'levels')
-    if ('-' %fin% originalLevels) {
+    originalLevels <- attr(dataset, "levels")
+    if ("-" %fin% originalLevels) {
       #TODO Fixing this will require updating the counts table cleverly
-      # Or we could use approximate info amounts, e.g. by treating '-' as 
+      # Or we could use approximate info amounts, e.g. by treating "-" as 
       # an extra token
-      cli_alert_info(paste0("Inapplicable tokens '-' treated as ambiguous '?' ",
-                            "for profile parsimony"))
-      cont <- attr(dataset, 'contrast')
-      cont[cont[, '-'] != 0, ] <- 1
-      attr(dataset, 'contrast') <- cont[, colnames(cont) != '-']
-      attr(dataset, 'levels') <- originalLevels[originalLevels != '-']
+      cli_alert_info(paste0("Inapplicable tokens \"-\" treated as ambiguous ",
+                            "\"?\" for profile parsimony"))
+      cont <- attr(dataset, "contrast")
+      cont[cont[, "-"] != 0, ] <- 1
+      attr(dataset, "contrast") <- cont[, colnames(cont) != "-"]
+      attr(dataset, "levels") <- originalLevels[originalLevels != "-"]
     }
-    profiles <- attr(dataset, 'info.amounts')
+    profiles <- attr(dataset, "info.amounts")
   }
   if (iw || profile) {
     at <- attributes(dataset)
-    characters <- PhyToString(dataset, ps = '', useIndex = FALSE,
+    characters <- PhyToString(dataset, ps = "", useIndex = FALSE,
                               byTaxon = FALSE, concatenate = FALSE)
     startWeights <- at$weight
     minLength <- MinimumLength(dataset, compress = TRUE)
@@ -547,13 +554,13 @@ MaximizeParsimony <- function (dataset, tree,
     if (is.null(colnames(cont))) colnames(cont) <- as.character(at$levels)
     simpleCont <- ifelse(rowSums(cont) == 1,
                          apply(cont != 0, 1, function (x) colnames(cont)[x][1]),
-                         '?')
+                         "?")
   
     
     unlisted <- unlist(dataset, use.names = FALSE)
     tokenMatrix <- matrix(simpleCont[unlisted], nChar, nTip)
     charInfo <- apply(tokenMatrix, 1, CharacterInformation)
-    needsInapp <- rowSums(tokenMatrix == '-') > 2
+    needsInapp <- rowSums(tokenMatrix == "-") > 2
     inappSlowdown <- 3L # A guess
     # Crude estimate of score added per unit processing time
     rawPriority <- charInfo / ifelse(needsInapp, inappSlowdown, 1)
@@ -606,7 +613,7 @@ MaximizeParsimony <- function (dataset, tree,
              " TBR depth ", as.integer(searchIter),
              "; keeping max ", as.integer(searchHits),
              " trees; k = ", concavity, ".")
-    .Info(1L, Sys.time(), ": Score to beat: ", signif(bestScore))
+    .Info(1L, .DateTime(), ": Score to beat: ", signif(bestScore))
 
     newEdges <- .Search("TBR search 1")
     
@@ -634,13 +641,12 @@ MaximizeParsimony <- function (dataset, tree,
              "TBR depth {ceiling(searchIter)}; ",
              "max. {ceiling(searchHits)} hits; ",
              "k = {concavity}.")
-    cli_alert("{Sys.time()}: Score to beat: {.strong {signif(bestScore)}}")
+    cli_alert("{ .DateTime()}: Score to beat: {.strong {signif(bestScore)}}")
     
     iter <- 0L
     while (iter < ratchIter) {
       iter <- iter + 1L
-      .Message(1L, "Ratchet iteration {iter} @ ",
-               "{format(Sys.time(), \"%H:%M:%S\")}",
+      .Message(1L, "Ratchet iteration {iter} @ {(.Time())}",
                "; score to beat: {.strong {signif(bestScore)} }")
       verbosity <- verbosity - 1L
       eachChar <- seq_along(startWeights)
@@ -718,7 +724,7 @@ MaximizeParsimony <- function (dataset, tree,
     .Heading("Sample local optimum",
              "TBR depth {searchIter}; keeping {searchHits}",
              " trees; k = {concavity}")
-    .Info(1L, Sys.time(), ": Score: ", signif(bestScore))
+    .Info(1L, .Time(), ": Score: ", signif(bestScore))
     finalEdges <- .Search("Final search")
     newBestScore <- .Score(finalEdges[, , 1])
     improved <- newBestScore + epsilon < bestScore
@@ -770,6 +776,14 @@ MaximizeParsimony <- function (dataset, tree,
   hit[] <- 0
   hit[stage] <- dim(new)[3]
   structure(new, "firstHit" = hit)
+}
+
+.Time <- function() {
+  format(Sys.time(), "%H:%M:%S")
+}
+
+.DateTime <- function() {
+  format(Sys.time(), "%Y-%m-%d %T")
 }
 
 #' @rdname MaximizeParsimony

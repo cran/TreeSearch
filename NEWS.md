@@ -1,3 +1,18 @@
+# TreeSearch 1.3.0
+
+## New features
+- New function `LengthAdded()` tests which characters contribute to taxon
+  instability, per Pol & Escapa (2009) <doi:10.1111/j.1096-0031.2009.00258.x>
+- `WhenFirstHit()` recovers tree search information from tree names
+- New [vignette](https://ms609.github.io/TreeSearch/dev/articles/tree-space.html) on tree space mapping
+- Support `phylo` trees as constraints
+
+## GUI improvements
+- Support reading characters from Excel spreadsheets
+- Allow retention of suboptimal trees
+- Use K-means++ clustering
+
+
 # TreeSearch 1.2.0
 
 - 'shiny' GUI improvements:
@@ -7,7 +22,7 @@
   - Misc bug fixes
 
 - New function `QuartetResolution()` evaluates how a quartet is resolved in
-  each of a list of trees.
+  each of a list of trees
 
 
 # TreeSearch 1.1.2
@@ -16,6 +31,7 @@
 - Improve error handling
 - Replace `throw` with `stop` in C++
 - Remove test of elapsed times, for CRAN compliance
+
 
 # TreeSearch 1.1.1
 

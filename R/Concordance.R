@@ -24,7 +24,7 @@
 #' 
 #' NOTE: These functions are under development, and may be incompletely tested
 #' or change without notice.
-#' Complete documentation and discussion will follow soon.
+#' Complete documentation and discussion will follow in due course.
 #' 
 #' @template treeParam
 #' @template datasetParam
@@ -35,7 +35,7 @@
 #' \insertAllCited{}
 #' 
 #' @examples 
-#' data('congreveLamsdellMatrices', package = 'TreeSearch')
+#' data("congreveLamsdellMatrices", package = "TreeSearch")
 #' dataset <- congreveLamsdellMatrices[[1]][, 1:20]
 #' tree <- referenceTree
 #' qc <- QuartetConcordance(tree, dataset)
@@ -65,14 +65,14 @@ QuartetConcordance <- function (tree, dataset = NULL) {
     warning("Cannot calculate concordance without `dataset`.")
     return(NULL)
   }
-  dataset <- dataset[tree$tip.label]
+  dataset <- dataset[TipLabels(tree)]
   splits <- as.Splits(tree, dataset)
   logiSplits <- vapply(seq_along(splits), function (i) as.logical(splits[[i]]),
                        logical(NTip(dataset)))
   
-  characters <- .TMP_PhyDatToMatrix(dataset, ambigNA = TRUE)
+  characters <- PhyDatToMatrix(dataset, ambigNA = TRUE)
   
-  cli_progress_bar(name = 'Quartet concordance', total = dim(logiSplits)[2])
+  cli_progress_bar(name = "Quartet concordance", total = dim(logiSplits)[2])
   setNames(apply(logiSplits, 2, function (split) {
     cli_progress_update(1, .envir = parent.frame(2))
     quarts <- rowSums(apply(characters, 2, function (char) {
@@ -98,21 +98,6 @@ QuartetConcordance <- function (tree, dataset = NULL) {
   }), names(splits))
 }
 
-#TODO duplicates TreeTools v1.5.1+ PhyDatToMatrix; replace when can require
-.TMP_PhyDatToMatrix <- function (dataset, ambigNA = TRUE, inappNA = TRUE) {
-  at <- attributes(dataset)
-  allLevels <- as.character(at$allLevels)
-  if (inappNA) {
-    allLevels[allLevels == '-'] <- NA_character_
-  }
-  if (ambigNA) {
-    allLevels[rowSums(at$contrast) != 1L] <- NA_character_
-  }
-  matrix(allLevels[unlist(dataset, recursive = FALSE, use.names = FALSE)],
-         ncol = at$nr, byrow = TRUE, dimnames = list(at$names, NULL)
-  )[, at$index, drop = FALSE]
-}
-
 #' @importFrom TreeDist Entropy
 .Entropy <- function (...) {
   Entropy (c(...) / sum(...))
@@ -127,13 +112,13 @@ ClusteringConcordance <- function (tree, dataset) {
     warning("Cannot calculate concordance without `dataset`.")
     return(NULL)
   }
-  dataset <- dataset[tree$tip.label]
+  dataset <- dataset[TipLabels(tree)]
   splits <- as.logical(as.Splits(tree))
   
   at <- attributes(dataset)
   cont <- at$contrast
-  if ('-' %in% colnames(cont)) {
-    cont[cont[, '-'] > 0, ] <- 1
+  if ("-" %in% colnames(cont)) {
+    cont[cont[, "-"] > 0, ] <- 1
   }
   ambiguous <- rowSums(cont) != 1
   
@@ -153,7 +138,7 @@ ClusteringConcordance <- function (tree, dataset) {
       c(hSpl = .Entropy(table(spl)), hJoint =  .Entropy(table(ch, spl)))
     })
     
-    cbind(hSum = hChar + h['hSpl', ], joint = h['hJoint', ])
+    cbind(hSum = hChar + h["hSpl", ], joint = h["hJoint", ])
   })
   
   splitI <- seq_len(dim(splits)[1])
@@ -173,13 +158,16 @@ PhylogeneticConcordance <- function (tree, dataset) {
     warning("Cannot calculate concordance without `dataset`.")
     return(NULL)
   }
-  dataset <- dataset[tree$tip.label]
+  dataset <- dataset[TipLabels(tree)]
   splits <- as.Splits(tree)
+  if (is.null(names(splits))) {
+    names(splits) <- paste0("sp", seq_along(splits))
+  }
   characters <- as.multiPhylo(dataset)
   
   blankRet <- matrix(0, length(splits), 2,
                      dimnames = list(names(splits),
-                                     c('concordant', 'possible')))
+                                     c("concordant", "possible")))
   
   support <- rowSums(vapply(characters, function (char) {
     ret <- blankRet
@@ -188,8 +176,8 @@ PhylogeneticConcordance <- function (tree, dataset) {
       compatible <- CompatibleSplits(thinned, char)
       if (length(compatible)) {
         ci <- CladisticInfo(thinned)
-        ret[names(thinned), 'concordant'] <- ci * apply(compatible, 1, all)
-        ret[names(thinned), 'possible'] <- ci
+        ret[names(thinned), "concordant"] <- ci * apply(compatible, 1, all)
+        ret[names(thinned), "possible"] <- ci
       }
     }
     # Return:
@@ -201,6 +189,7 @@ PhylogeneticConcordance <- function (tree, dataset) {
 }
 
 #' @rdname SiteConcordance
+# Mutual clustering information of each split with the split implied by each character
 #' @importFrom TreeDist ClusteringEntropy MutualClusteringInfo
 #' @export
 MutualClusteringConcordance <- function (tree, dataset) {
@@ -208,7 +197,7 @@ MutualClusteringConcordance <- function (tree, dataset) {
     warning("Cannot calculate concordance without `dataset`.")
     return(NULL)
   }
-  dataset <- dataset[tree$tip.label]
+  dataset <- dataset[TipLabels(tree)]
   splits <- as.multiPhylo(as.Splits(tree))
   characters <- as.multiPhylo(dataset)
   
@@ -231,7 +220,7 @@ SharedPhylogeneticConcordance <- function (tree, dataset) {
     warning("Cannot calculate concordance without `dataset`.")
     return(NULL)
   }
-  dataset <- dataset[tree$tip.label]
+  dataset <- dataset[TipLabels(tree)]
   splits <- as.multiPhylo(as.Splits(tree))
   characters <- as.multiPhylo(dataset)
   
@@ -280,14 +269,14 @@ SharedPhylogeneticConcordance <- function (tree, dataset) {
 #' @importFrom TreeTools Log2UnrootedMult Log2Unrooted
 #' @export
 ConcordantInformation <- function (tree, dataset) {
-  dataset <- dataset[tree$tip.label]
+  dataset <- dataset[TipLabels(tree)]
   originalInfo <- sum(apply(PhyDatToMatrix(dataset), 2, CharacterInformation))
   dataset <- PrepareDataProfile(dataset)
   
   extraSteps <- CharacterLength(tree, dataset, compress = TRUE) -
     MinimumLength(dataset, compress = TRUE)
-  chars <- matrix(unlist(dataset), attr(dataset, 'nr'))
-  ambiguousToken <- which(attr(dataset, 'allLevels') == "?")
+  chars <- matrix(unlist(dataset), attr(dataset, "nr"))
+  ambiguousToken <- which(attr(dataset, "allLevels") == "?")
   asSplits <- apply(chars, 1, function (x) {
     ret <- table(x)
     if (length(ambiguousToken) != 0) {
@@ -317,7 +306,7 @@ ConcordantInformation <- function (tree, dataset) {
   noise[noise < sqrt(.Machine$double.eps)] <- 0
   
   
-  index <- attr(dataset, 'index')
+  index <- attr(dataset, "index")
   if (any(is.na(signal))) {
     na <- is.na(signal)
     icA <- ic
@@ -326,8 +315,8 @@ ConcordantInformation <- function (tree, dataset) {
     kept <- sum(icA[index])
     discarded <- totalInfo - kept
     warning("Could not calculate signal for characters ",
-            paste0(match(which(na), index), collapse = ', '),
-            '; discarded ', signif(discarded), " bits from totals.")
+            paste0(match(which(na), index), collapse = ", "),
+            "; discarded ", signif(discarded), " bits from totals.")
     totalNoise <- sum(noise[index], na.rm = TRUE)
     totalSignal <- sum(signal[index], na.rm = TRUE)
     signalNoise <- totalSignal / totalNoise
@@ -335,13 +324,13 @@ ConcordantInformation <- function (tree, dataset) {
     infoNeeded <- Log2Unrooted(length(dataset))
     infoOverkill <- totalInfo / infoNeeded
     
-    message('`dataset` contains ',
-            signif(totalInfo), ' bits (after discarding ',
-            signif(discarded), '), of which ',
-            signif(totalSignal), ' signal, ',
-            signif(totalNoise), ' noise, ',
-            signif(infoNeeded), ' needed.  ',
-            'S:N = ', signif(signalNoise), "\n")
+    message("`dataset` contains ",
+            signif(totalInfo), " bits (after discarding ",
+            signif(discarded), "), of which ",
+            signif(totalSignal), " signal, ",
+            signif(totalNoise), " noise, ",
+            signif(infoNeeded), " needed.  ",
+            "S:N = ", signif(signalNoise), "\n")
     
   } else {
     totalInfo <- sum(ic[index])
@@ -355,16 +344,16 @@ ConcordantInformation <- function (tree, dataset) {
     discarded <- originalInfo - totalInfo
     if (discarded < sqrt(.Machine$double.eps)) discarded <- 0
     
-    message('dataset contains ',
-            signif(totalInfo), ' bits',
+    message("dataset contains ",
+            signif(totalInfo), " bits",
             if (totalInfo != originalInfo) {
-              paste0(' (after discarding ', signif(originalInfo - totalInfo),
-                     ' bits)')
-            }, ', of which ', 
-            signif(totalSignal), ' signal, ',
-            signif(totalNoise), ' noise, ',
-            signif(infoNeeded), ' needed.  ',
-            'S:N = ', signif(signalNoise), "\n")
+              paste0(" (after discarding ", signif(originalInfo - totalInfo),
+                     " bits)")
+            }, ", of which ", 
+            signif(totalSignal), " signal, ",
+            signif(totalNoise), " noise, ",
+            signif(infoNeeded), " needed.  ",
+            "S:N = ", signif(signalNoise), "\n")
   }
   
   # Return:
@@ -382,7 +371,7 @@ ConcordantInformation <- function (tree, dataset) {
 #' @rdname ConcordantInformation
 #' @export
 Evaluate <- function (tree, dataset) {
-  .Deprecated('ConcordantInformation()')
+  .Deprecated("ConcordantInformation()")
   ConcordantInformation(tree, dataset)
 }
 

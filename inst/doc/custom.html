@@ -12,7 +12,7 @@
 
 <meta name="author" content="Martin R. Smith" />
 
-<meta name="date" content="2022-07-25" />
+<meta name="date" content="2023-02-20" />
 
 <title>Tree search with custom optimality criteria</title>
 
@@ -31,23 +31,23 @@ document.addEventListener('DOMContentLoaded', function(e) {
 </script>
 
 <style type="text/css">
-  code{white-space: pre-wrap;}
-  span.smallcaps{font-variant: small-caps;}
-  span.underline{text-decoration: underline;}
-  div.column{display: inline-block; vertical-align: top; width: 50%;}
-  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-  ul.task-list{list-style: none;}
-    </style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
 
 
 
 <style type="text/css">
-  code {
-    white-space: pre;
-  }
-  .sourceCode {
-    overflow: visible;
-  }
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
 </style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
@@ -65,55 +65,54 @@ pre > code.sourceCode { white-space: pre-wrap; }
 pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
-  { counter-reset: source-line 0; }
+{ counter-reset: source-line 0; }
 pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
+{ position: relative; left: -4em; counter-increment: source-line; }
 pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-    color: #aaaaaa;
-  }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
 div.sourceCode
-  {   }
+{ }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #7d9029; } /* Attribute */
-code span.bn { color: #40a070; } /* BaseN */
-code span.bu { } /* BuiltIn */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #4070a0; } /* Char */
-code span.cn { color: #880000; } /* Constant */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.ex { } /* Extension */
-code span.fl { color: #40a070; } /* Float */
-code span.fu { color: #06287e; } /* Function */
-code span.im { } /* Import */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.op { color: #666666; } /* Operator */
-code span.ot { color: #007020; } /* Other */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.ss { color: #bb6688; } /* SpecialString */
-code span.st { color: #4070a0; } /* String */
-code span.va { color: #19177c; } /* Variable */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
 </style>
 <script>
 // apply pandoc div.sourceCode style to pre.sourceCode instead
@@ -122,13 +121,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   for (var i = 0; i < sheets.length; i++) {
     if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
     try { var rules = sheets[i].cssRules; } catch (e) { continue; }
-    for (var j = 0; j < rules.length; j++) {
+    var j = 0;
+    while (j < rules.length) {
       var rule = rules[j];
       // check if there is a div.sourceCode rule
-      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -140,25 +146,25 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 <style type="text/css">
-/* for pandoc --citeproc since 2.11 */
+
 div.csl-bib-body { }
 div.csl-entry {
-  clear: both;
+clear: both;
 }
 .hanging div.csl-entry {
-  margin-left:2em;
-  text-indent:-2em;
+margin-left:2em;
+text-indent:-2em;
 }
 div.csl-left-margin {
-  min-width:2em;
-  float:left;
+min-width:2em;
+float:left;
 }
 div.csl-right-inline {
-  margin-left:2em;
-  padding-left:1em;
+margin-left:2em;
+padding-left:1em;
 }
 div.csl-indent {
-  margin-left: 2em;
+margin-left: 2em;
 }
 </style>
 
@@ -357,7 +363,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h1 class="title toc-ignore">Tree search with custom optimality
 criteria</h1>
 <h4 class="author">Martin R. Smith</h4>
-<h4 class="date">2022-07-25</h4>
+<h4 class="date">2023-02-20</h4>
 
 
 
@@ -417,9 +423,9 @@ anything to <code>dataset</code> before it is sent to
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>                     <span class="at">maxIter =</span> 50L, <span class="at">maxHits =</span> 10L, </span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>                     <span class="at">verbosity =</span> 1L)</span></code></pre></div>
 <pre><code>##   - Performing tree search.  Initial score: 56</code></pre>
-<pre><code>##   - Final score 33 found 6 times after 50 rearrangements.</code></pre>
+<pre><code>##   - Final score 33 found 3 times after 50 rearrangements.</code></pre>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">PlotTree</span>(result)</span></code></pre></div>
-<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
 </div>
 <div id="maximizing-tree-distance" class="section level2">
 <h2>Maximizing tree distance</h2>
@@ -443,12 +449,12 @@ that is most different from a starting tree. Notice that
 <span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>                     <span class="at">TreeScorer =</span> DistanceScore,</span>
 <span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>                     <span class="at">maxIter =</span> 50L, <span class="at">maxHits =</span> 10L, </span>
 <span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>                     <span class="at">verbosity =</span> 1L)</span></code></pre></div>
-<pre><code>##   - Performing tree search.  Initial score: -3.5661656266226</code></pre>
+<pre><code>##   - Performing tree search.  Initial score: -7.18872187554087</code></pre>
 <pre><code>##   - Final score -7.87744375108174 found 2 times after 50 rearrangements.</code></pre>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">PlotTree</span>(startTree)</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">PlotTree</span>(result)</span></code></pre></div>
-<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAEgCAMAAAAjXV6yAAAAhFBMVEUAAAAAADoAAGYAOmYAOpAAZrY6AAA6ADo6AGY6OgA6OpA6ZpA6ZrY6kNtmAABmADpmAGZmOgBmOjpmOmZmZjpmkNtmtttmtv+QOgCQOjqQOmaQZjqQkLaQ2/+2ZgC2Zjq2kDq22/+2///bkDrbtmbb////tmb/25D/27b//7b//9v///+7y0EJAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAIPklEQVR4nO2dD1fbRhDEBQTSpoGEtgHSggkx/id9/+9X30m2pbOsOU6r3SuZeS/ti7s3u/khy37peF1U1KAK6wFyFwEBERAQAQEREBABAWUAaP24/XVbnN1bD9LIzVM+F2ff/O8yADS7rjY336rVbz+tJ6m1naeaXy7WX/089oDKh3sPp/z+ZD2K126eRsqAimM9FMX95stT9fphYdG+d575xW3xRz2ONqDjh/zV81wUFy8m7Y+0nad8OH8pH66jjwiqp93ycvu0/7DYDaTd/kjbeTY39+42FH1EUD3t3D16+wzzoAzaH2k3Ty6A3D1x414w5nkAcvP414tZJk8x99NyT6/VR4UXsYg/rb96ZpeL1/OfsUck1XcFnT2pvU+MuoK285T/FhdP0UckZfy2K6E9AckfGSMCyqudQHsCkj8yRgSUVzuB9gQkf2SMCCivdgLtCUj+yBj92oBi/kJTsF3KhCpHxngRkGK7BBGQfHsCkj8yxouAFNsliIDk2xOQ/JExXgQ0UbuYN+nTvJH/vwBKPDfehoB0Osd6EdBE7QhoonPjbTIAtH6slv4lZiC+oAmom7rNAFATxFl+GsgoagLqpm7tAbnEUlWBFLAioCB1qw2oP1W6xzTCOmnCE/O0UrfKgHpUXzrL4RDwZID652mlbu0B+fAmuIA0AQWpW3tA/h6NPoegCChI3ZoDqq+dOQhJ6wEKU7fmgPxPCz3DFAGFqVtzQD5VCj/po3kFdVO35oBUrWPuQdN0FveaxpqA3mpDQMCGgIANAQEbAgI2BARsCAjYEBCwISBgQ0DAJhaQ2f/5jpUUoLePXAj2zx9Qgi8BRVUQEKggIFBBQKCCgEAFAYEKAgIVBAQqCAhUEBCoICBQQUCggoBABQGBClNA3d2potZQfb5untXtbkdXBoC6u1NFraH6fH3K9a6atzOKloCC3amS1lg9vm6e9eOiGwNWA3QiVdranZpsnaQT82z/S/mjnTDTA3T8ULA7NdlaSvWVMy8+tJfdWgIKdqcmW0upCW+ub9ofRbAEFOxOTbaWUvPJiG6I0xBQuDs12VpIbh6fau/scjUEFO5OTbYWkpvHvcp3d7maXkHd3anJ1kKqU7e3wS5Xy3uQlPVEIqCozgQEOhMQ6ExAoDMBgc4EBDoTEOhMQKAzAYHOBAQ6ExDoLARouiDs+wAU3U7v3HgRUFRnAgKdCQh0JiDQmYBAZwICnQkIdCYg0JmAQGcCAp1zA6T5YUY0Suufau3eXkZAoIyAQNkvDcilSt0y17On02WagLrzZADIp1yvh8s0AXXnsQe0T1ANlSkCCubRBtSfKl19/L24aAWopgIU85fCwTzKgHrkUqXzi5dy1sooTgbo7fPYA2pSpZ0wuSWgYB57QLvwZi6AgnnMAe0/iTDP4ykWzmMOaLc79fVj64XMEFA4jzmg3e7UTsrV9ArqzmMOqFeW96DeIwQEjhAQOEJA4AgBgSMEBI4QEDhCQOAIAYEjBASOEBA4QkDgCAGBIwQEjhAQOEJA4AgBgSMEBI4QEDhCQOAIAYEjBASOvE9AIh9Xe9eAIh6JNCEgYEJAwISAgAkBARNTQC5VutW89X3hpoC28yz9S9794YgpoDqxtLoSzwclAmoSVMtP4rtc01R/z/Pmr79bX/dsCaj53uld4M0cUFnvTn2++y4eoEoC1Myz/3puZUA9b279j2r5efNVPAYcAejUPPWuycMRPUDHD7lU6erTYvV5qGwyQP3ztL7f3R7Q9p7ogu2dDyNYAvL36EPk1hyQT5VeuWvb4lWsf56sPqvhd7lu/9VZ2G4IyM9zeIbZA/KpUn8XGirTvILcLtdDqN0cUFyZ4j2ot4KAgAkBARMCAiYEBEwICJgQEDAhIGBCQMCEgIAJAQETAgImBARMZADF7DWIdIIPJLmkLG4SBSRS0lsmBCihhICiKggIVBAQqCAgUEFAoIKAQAUBgQoCAhUEBCoICFQQEKggIFCRP6AkScyTASCXcl11d3SZz1PtU7cZAHLfhn1zNxwDVp6nOqRu7QG5LM76cTG8R1F5nlbq1hxQkyqtyh9DCTP1efapW21Ap1Kl86L1DLOf55C6VQbUo2Z36vpmKEiepPR5Wqlbe0C73amDq0qTlDxPO3VrDsjdE31qe9bKARvP007dmgNyqVL3Kv96PpS0152naqVuzQHVqVK0y1V5nlbq1hzQhE4iLgQUZZLRQIJOBKThQkBRJhkNJOhEQBouBBRlktFAgk4EpOFCQFEmGQ0k6ERAGi4NIBlJDNSaKgsXuT/Uu76CZERAal4EpOJEQBouBKRhIu5FQCpOBKThQkAaJuJeBKTiREAaLgSkYTLOy6dcr4qLl9FOU8yTAaDZ9XYeo5QrnscekEssuWFMUq54HnNAu5RrtTzPAlA4jzKgkynXanMjH8FLUjCPNqDjh+qU6+Z2cJerooJ57AH58Oa6ff3YAgrmMQfkk/+rq2tQpqZwHnNALlVaPlyjMjWF85gDcqlSn0s+E/84VJLCecwBjSnTEAEBERAQAQEREBABAREQEAEBERAQAQEREBABAREQkCggsSDsOwUk146AZMo0REBABAREQEAEBERAQAQEREBABAREQEAEBERAQAQElAGgendq+Y/4DrNEdefJAJBPLJUP8osmE9Wdxx5QnVi6bX8XtimgYB5zQD5VuvnzbnY/WKamcB5tQKdSpeX3p+EyNQXz2L9eNKnSztepWyqYxx5QvaJ0eYnqtBTMYw6o3m+93y1rrnAec0DN7tTOPdpS4TzmgOrdqd17tKXCecwB5S4CAiIgIAICIiCg/wDj/8s1TUEj+gAAAABJRU5ErkJggg==" /><!-- --></p>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
 </div>
 <div id="searching-using-implied-weights" class="section level2">
 <h2>Searching using implied weights</h2>

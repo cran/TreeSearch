@@ -1,6 +1,6 @@
 Package: TreeSearch
 Title: Phylogenetic Analysis with Discrete Character Data
-Version: 1.2.0
+Version: 1.3.0
 Authors@R: c(
     person(
       "Martin R.", 'Smith',
@@ -9,7 +9,7 @@ Authors@R: c(
       comment = c(ORCID = "0000-0001-5660-1727")
     ),
     person(
-      given = "Martin", family="Brazeau",
+      given = "Martin", family = "Brazeau",
       role = c("cph"),
       comment = c(ORCID = "0000-0002-0650-1282")
     )
@@ -34,10 +34,10 @@ BugReports: https://github.com/ms609/TreeSearch/issues/
 Depends: R (>= 3.5.0)
 Imports: ape (>= 5.6), cli (>= 3.0), cluster, fastmatch (>= 1.1.3),
         future, promises, protoclust, Rcpp, Rdpack (>= 0.7), Rogue (>
-        2.0.0), shiny (>= 1.6.0), shinyjs, stats, TreeDist (>= 2.3.0),
-        TreeTools (>= 1.7.0),
-Suggests: knitr, phangorn (>= 2.2.1), Quartet, rmarkdown, shinytest,
-        spelling, testthat, vdiffr (>= 1.0.0),
+        2.0.0), shiny (>= 1.6.0), shinyjs, stats, TreeDist (>= 2.5.0),
+        TreeTools (>= 1.9.0),
+Suggests: knitr, phangorn (>= 2.2.1), Quartet, readxl, rmarkdown,
+        shinytest, spelling, testthat, vdiffr (>= 1.0.0),
 Config/Needs/check: callr, pkgbuild, rcmdcheck,
 Config/Needs/coverage: covr, spelling
 Config/Needs/memcheck: devtools
@@ -46,18 +46,18 @@ Config/Needs/revdeps: revdepcheck
 Config/Needs/website: curl, igraph, pkgdown,
 RdMacros: Rdpack
 LinkingTo: Rcpp, TreeTools,
-SystemRequirements: C++14
+SystemRequirements: C++17
 LazyData: true
 ByteCompile: true
 Encoding: UTF-8
 Language: en-GB
 VignetteBuilder: knitr
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 NeedsCompilation: yes
-Packaged: 2022-07-25 15:22:32 UTC; pjjg18
+Packaged: 2023-02-20 09:13:22 UTC; pjjg18
 Author: Martin R. Smith [aut, cre, cph]
     (<https://orcid.org/0000-0001-5660-1727>),
   Martin Brazeau [cph] (<https://orcid.org/0000-0002-0650-1282>)
 Maintainer: Martin R. Smith <martin.smith@durham.ac.uk>
 Repository: CRAN
-Date/Publication: 2022-08-10 22:40:17 UTC
+Date/Publication: 2023-02-20 09:40:07 UTC

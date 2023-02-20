@@ -1,12 +1,16 @@
 # options("TreeSearch.write.code" = TRUE) # Show code as it is written to log
 # options("TreeSearch.logging" = TRUE) # Log function entry and exit
 logging <- isTRUE(getOption("TreeSearch.logging"))
-options(shiny.maxRequestSize = 1024^3) # Allow max 1 GB files
+options(shiny.maxRequestSize = 1024 ^ 3) # Allow max 1 GB files
 
 
 library("methods", exclude = c("show", "removeClass"))
 library("cli")
 library("TreeSearch") # load now: inapplicable.datasets required within ui
+.DateTime <- function() { # Copy, because not exported
+  format(Sys.time(), "%Y-%m-%d %T")
+}
+
 suppressPackageStartupMessages({
   library("shiny", exclude = c("runExample"))
   library("shinyjs", exclude = c("runExample"))
@@ -16,8 +20,8 @@ suppressPackageStartupMessages({
 if (logging) {
   logMsgFile <- file("log.lg", open = "w+")
   LogMsg <- function (...) {
-    message(Sys.time(), ": ", ...)
-    writeLines(as.character(Sys.time()), con = logMsgFile)
+    message(.DateTime(), ": ", ...)
+    writeLines(.DateTime(), con = logMsgFile)
     writeLines(paste0("  ", ...), con = logMsgFile)
   }
   Put <- function (..., file) {
@@ -56,6 +60,8 @@ Notification <- function (...) {
     showNotification(...)
   }
 }
+
+Icon <- function(...) icon(..., class = "fas")
 
 aJiffy <- 42 # ms, default debounce period for input sliders etc
 typingJiffy <- 2.5 * aJiffy # slightly slower if might be typing
@@ -109,7 +115,7 @@ Reference <- function (authors, year, title, journal = "",
   paste0("<p class=\"reference\">", authors, " (", year, "). &ldquo;", title,
          "&rdquo;. ",
          if (editors != "") paste0("In: ", editors, " (eds). ") else "",
-         if (journal != "") paste0("<i>", journal, "</i>. ") else "",
+         if (journal != "") paste0("<i>", journal, "</i> ") else "",
          if (is.null(volume)) "" else paste0("<b>", volume, "</b>:"),
          if (is.null(publisher)) "" else paste0(publisher, ". "),
          if (is.null(pages)) "" else paste0(paste0(pages, collapse = "&ndash;"), ". "),
@@ -120,6 +126,13 @@ Reference <- function (authors, year, title, journal = "",
 }
 
 
+Arthur2007 <- Reference(
+  c("Arthur, D.", "Vassilvitskii, S"),
+  title = "k-means++: the advantages of careful seeding",
+  year = 2007,
+  journal = "Proceedings of the Eighteenth Annual ACM-SIAM Symposium on Discrete Algorithms",
+  pages = c(1027, 1035)
+)
 Brazeau2019 <- Reference(c("Brazeau, M.D.", "Guillerme, T.", "Smith, M.R."), 2019,
                            title = "An algorithm for morphological phylogenetic analysis with inapplicable data",
                            journal = "Systematic Biology",
@@ -145,11 +158,11 @@ Gower1969 <- Reference(
   title = "Minimum spanning trees and single linkage cluster analysis",
   authors = c("Gower, J.C.", "Ross, G.J.S."),
   year = 1969, volume = 18, pages = c(54, 64), doi = "10.2307/2346439",
-  journal = "Journal of the Royal Statistical Society. Series C (Applied Statistics)")
+  journal = "Journal of the Royal Statistical Society Series C (Applied Statistics)")
 Hartigan1979 <- Reference(
   title = "Algorithm AS 136: a <i>K</i>-means clustering algorithm",
   authors = c("Hartigan, J.A.", "Wong, M.A."),
-  journal = "Journal of the Royal Statistical Society. Series C (Applied Statistics)",
+  journal = "Journal of the Royal Statistical Society Series C (Applied Statistics)",
   year = 1979, volume = 28, pages = c(100, 108),
   doi = "10.2307/2346830")
 Kaski2003 <- Reference(
@@ -170,7 +183,7 @@ Maechler2019 <- Reference(
   journal = "Comprehensive R Archive Network")
 Morphy <- Reference(
   c("Brazeau, M.D.", "Smith, M.R.", "Guillerme, T."), 2017,
-  "MorphyLib: a library for phylogenetic analysis of categorical trait data with inapplicability.",
+  "MorphyLib: a library for phylogenetic analysis of categorical trait data with inapplicability",
   doi = "10.5281/zenodo.815371")
 Murtagh1983 <- Reference(
   title = "A survey of recent advances in hierarchical clustering algorithms",
@@ -181,32 +194,40 @@ Nixon1999 <- Reference(
   journal = "Cladistics", volume = 15, pages = "407-414",
   title = "The Parsimony Ratchet, a new method for rapid parsimony analysis",
   doi = "10.1111/j.1096-0031.1999.tb00277.x")
+Pol2009 <- Reference(
+  title = "Unstable taxa in cladistic analysis: identification and the assessment of relevant characters",
+  authors = c("Pol, D.", "Escapa, I.H."),
+  journal = "Cladistics", 2009, 25, pages = c(515, 527), 
+  doi = "10.1111/j.1096-0031.2009.00258.x")
 RCoreTeam <- Reference(
   authors = "R Core Team", year = 2020,
   title = "R: A language and environment for statistical computing",
   publisher = "R Foundation for Statistical Computing, Vienna, Austria")
 SmithDist <- Reference(
-  "Smith, M.R.", 2020, "TreeDist: distances between phylogenetic trees",
+  "Smith, M.R.", "2020a", "TreeDist: distances between phylogenetic trees",
   doi = "10.5281/zenodo.3528123", "Comprehensive R Archive Network")
 SmithQuartet <- Reference(
   "Smith, M.R.", 2019,
   "Quartet: comparison of phylogenetic trees using quartet and split measures",
   "Comprehensive R Archive Network", doi = "10.5281/zenodo.2536318")
 SmithSearch <- Reference(
-  "Smith, M.R.", 2021, " TreeSearch: morphological phylogenetic analysis in R",
-  "Preprint at bioRxiv.", doi = "10.1101/2021.11.08.467735")
+  "Smith, M.R.", 2022, "TreeSearch: morphological phylogenetic analysis in R",
+  "R Journal", pages = "Accepted manuscript",
+  doi = "10.1101/2021.11.08.467735")
 Smith2020 <- Reference(
-  "Smith, M.R.", 2020,
+  "Smith, M.R.", "2020b",
   "Information theoretic Generalized Robinson-Foulds metrics for comparing phylogenetic trees",
   "Bioinformatics", volume = 36, pages = "5007--5013",
   doi = "10.1093/bioinformatics/btaa614")
 SmithSpace <- Reference(
-  "Smith, M.R.", "2022b", "Robust analysis of phylogenetic tree space",
-  "Systematic Biology", pages = "syab100", doi = "10.1093/sysbio/syab100")
+  "Smith, M.R.", "2022a", "Robust analysis of phylogenetic tree space",
+  "Systematic Biology", 71, pages = c("1255", "1270"),
+  doi = "10.1093/sysbio/syab100")
 SmithRogue <- Reference(
-  "Smith, M.R.", "2022a",
+  "Smith, M.R.", "2022b",
   "Using information theory to detect rogue taxa and improve consensus trees",
-  "Systematic Biology", pages = "syab099", doi = "10.1093/sysbio/syab099")
+  "Systematic Biology", 71, pages = c("1088", "1094"),
+  doi = "10.1093/sysbio/syab099")
 Stockham2002 <- Reference(
   authors = c("Stockham, C.", "Wang, L.-S.", "Warnow, T."), 2002,
   "Statistically based postprocessing of phylogenetic analysis by clustering",
@@ -253,18 +274,31 @@ ui <- fluidPage(
                     "Agnarsson 2004" = "Agnarsson2004",
                     "Sun et al. 2018" = "Sun2018",
                     "Wills et al. 2012" = "Wills2012",
-                    if (logging) setNames(names(inapplicable.datasets), names(inapplicable.datasets)))),
+                    if (logging) setNames(names(inapplicable.datasets),
+                                          names(inapplicable.datasets)))),
       fileInput("dataFile",
                 tags$span(
                   tags$i(class="fas fa-solid fa-table"),
                   tags$span("Load data from file")
                   ),
                 placeholder = "No data file selected"),
+      hidden(tags$span(id = "readxl.options",
+        selectInput("readxl.sheet", "Excel sheet to read:", "Sheet 1", "Sheet 1"),
+        tags$span("First character row & column:"),
+        numericInput("readxlSkip",
+                     label = NULL,
+                     min = 2L, value = 2L, step = 1L),
+        numericInput("readxlSkipCols",
+                     label = NULL,
+                     min = 2L, value = 2L, step = 1L),
+        htmlOutput("readxl.chars", style = "clear: both;"),
+        htmlOutput("readxl.taxa", style = "clear: both; margin-bottom: 1em;")
+      )),
       tags$label("Search", class = "control-label", 
                  style = "display: block; margin-top: -15px;"),
-      actionButton("searchConfig", "Configure", icon = icon("cogs")),
-      hidden(actionButton("go", "Search", icon = icon("search"))),
-      downloadButton("saveZip", "Save log"),
+      actionButton("searchConfig", "Configure", icon = Icon("gears")),
+      hidden(actionButton("go", "Search", icon = Icon("magnifying-glass"))),
+      downloadButton("saveZip", "Save log", icon = Icon("download")),
       fileInput("treeFile",
                 label = tags$span(
                   tags$i(class="fas fa-solid fa-tree"),
@@ -280,8 +314,8 @@ ui <- fluidPage(
                     step = 1L, value = c(1, 1)),
         tags$label("Save chosen trees:", class = "control-label"),
         tags$div(style = "display: inline-block",
-          downloadButton("saveNwk", "Newick"),
-          downloadButton("saveNex", "Nexus")
+          downloadButton("saveNwk", "Newick", icon = Icon("download")),
+          downloadButton("saveNex", "Nexus", icon = Icon("download"))
         )
       )),
       hidden(
@@ -298,13 +332,18 @@ ui <- fluidPage(
                  hidden(tags$div(id = "treePlotConfig",
                    selectizeInput("outgroup", "Root on:", multiple = TRUE,
                                   choices = list()),
-                   selectizeInput("concordance", "Split support:",
-                                  choices = list("None" = "none",
-                                                 "% trees containing" = "p",
-                                                 "Quartet concordance" = "qc",
-                                                 "Clustering concordance" = "clc",
-                                                 "Phylogenetic concordance" = "phc"
-                                                 ))
+                   selectizeInput(
+                     "concordance",
+                     "Split support:",
+                     choices = list(
+                       "None" = "none",
+                       "% trees containing" = "p",
+                       "Quartet concordance" = "qc",
+                       "Clustering concordance" = "clc",
+                       "Phylogenetic concordance" = "phc",
+                       "Mutual Clustering conc." = "mcc",
+                       "Shared Phylog. conc." = "spc"
+                     ))
                  )),
                  hidden(tags$div(id = "mapConfig",
                    checkboxGroupInput("mapLines", "Connect:",
@@ -329,16 +368,16 @@ ui <- fluidPage(
       ),
       tags$div(id = "saveAs", 
                tags$span("Save\ua0plot: "),
-               downloadButton("savePlotZip", "R script"),
-               downloadButton("savePdf", "PDF"),
-               downloadButton("savePng", "PNG")
+               downloadButton("savePlotZip", "R script", icon = Icon("download")),
+               downloadButton("savePdf", "PDF", icon = Icon("download")),
+               downloadButton("savePng", "PNG", icon = Icon("download"))
       )
     ),
     fluidRow(
       plotOutput(outputId = "treePlot", height = "600px"),
       hidden(plotOutput("clustCons", height = "200px")),
       hidden(tags$div(id = "charChooser",
-        tags$div(numericInput("whichChar", "Character to map:", value = 1L,
+        tags$div(numericInput("plottedChar", "Character to map:", value = 1L,
                               min = 0L, max = 1L, step = 1L, width = 200),
                  checkboxGroupInput("mapDisplay", "", list(
                    "Align tips" = "tipsRight",
@@ -400,7 +439,7 @@ ui <- fluidPage(
                       list("Cluster membership" = "clust",
                            "Parsimony score" = "score",
                            "When first found" = "firstHit")),
-          selectInput("spacePch", "Plotting symbol:",
+          selectInput("spacePch", "Plotting symbols:",
                       selected = "relat",
                       list("Cluster membership" = "clust",
                            "Relationships" = "relat",
@@ -533,7 +572,7 @@ server <- function(input, output, session) {
   
   BeginLog <- function() {
     LogComment(c(
-      paste("# # TreeSearch session log:", Sys.time(), "# # #"),
+      paste("# # TreeSearch session log:", .DateTime(), "# # #"),
       "",
       systemInfo,
       "",
@@ -567,7 +606,7 @@ server <- function(input, output, session) {
   BeginLogP <- function() {
     r$plotLog <- NULL
     LogCommentP(c(
-      paste("# # TreeSearch plot log:", Sys.time(), "# # #"),
+      paste("# # TreeSearch plot log:", .DateTime(), "# # #"),
       "",
       systemInfo,
       "",
@@ -659,6 +698,7 @@ server <- function(input, output, session) {
   }
   
   r$dataFiles <- 0
+  r$excelFiles <- 0
   r$treeFiles <- 0
   TwoWide <- function(n) {
     formatC(n, width = 2, flag = "0")
@@ -666,13 +706,17 @@ server <- function(input, output, session) {
   DataFileName <- function(n) if (length(n)) {
     paste0("dataFile-", TwoWide(n), ".txt")
   }
+  ExcelFileName <- function(n) if (length(n)) {
+    paste0("excelFile-", TwoWide(n), ".xlsx")
+  }
   TreeFileName <- function(n) if (length(n)) {
     paste0("treeFile-", TwoWide(n), ".txt")
   }
   LastFile <- function(type) {
-    switch(pmatch(type, c("data", "tree")), 
+    switch(pmatch(type, c("data", "excel", "tree")), 
            DataFileName(r$dataFiles),
-           TreeFileName(r$dataFiles)
+           ExcelFileName(r$excelFiles),
+           TreeFileName(r$treeFiles)
     )
   }
   CacheInput <- function(type, fileName) {
@@ -680,6 +724,11 @@ server <- function(input, output, session) {
     r[[key]] <- r[[key]] + 1
     file.copy(fileName, paste0(tempdir(), "/", LastFile(type)),
               overwrite = TRUE)
+  }
+  StashTrees <- function(trees) {
+    key <- paste0("treeFiles")
+    r[[key]] <- r[[key]] + 1
+    write.nexus(trees, file = paste0(tempdir(), "/", LastFile("tree")))
   }
   
   if (!requireNamespace("TreeDist", quietly = TRUE)) {
@@ -707,6 +756,14 @@ server <- function(input, output, session) {
   ##############################################################################
   
   tipLabels <- reactive({r$trees[[1]][["tip.label"]]})
+  
+  nChars <- reactive({
+    if (HaveData()) {
+      as.integer(length(attr(r$dataset, "index")))
+    } else {
+      0L
+    }
+  })
   
   TaxonOrder <- reactive({
     if (HaveData()) {
@@ -752,27 +809,127 @@ server <- function(input, output, session) {
       LogMsg("UpdateData(): from file")
       r$sortTrees <- FALSE # Trees loaded from dataset may be in sequence
       r$readDataFile <- NULL
-      r$dataset <- tryCatch({
-        r$readDataFile <- "ReadTntAsPhyDat(dataFile)"
-        ReadTntAsPhyDat(dataFile)
-      }, error = function(e) tryCatch({
-        r$chars <- ReadCharacters(dataFile)
-        r$charNotes <- ReadNotes(dataFile)
-        r$readDataFile <- "ReadTntAsPhyDat(dataFile)"
-        ReadAsPhyDat(dataFile)
-      }, error = function(e) {
-        r$readDataFile <- NULL
-        NULL
-      }))
       
-      if (!is.null(r$dataset)) {
-        LogComment("Load data from file", 2)
-        CacheInput("data", dataFile)
-        LogCode(c(
-          paste0("dataFile <- \"", LastFile("data"), "\""),
-          paste0("dataset <- ", r$readDataFile)
-        ))
+      if (length(grep("\\.xlsx?$", dataFile))) {
+        if (!requireNamespace("readxl", quietly = TRUE)) {
+          install.packages("readxl")
+        }
+        showElement("readxl.options", anim = TRUE)
+        
+        r$dataset <- tryCatch({
+          sheets <- readxl::excel_sheets(dataFile)
+          updateSelectInput(session,
+                            inputId = "readxl.sheet",
+                            choices = setNames(sheets, sheets),
+                            selected = if (input$readxl.sheet %in% sheets) {
+                                input$readxl.sheet
+                              } else {
+                                sheets[1]
+                              })
+
+          tibble <- readxl::read_excel(
+            path = dataFile,
+            sheet = match(input$readxl.sheet, sheets, nomatch = 1L),
+            skip = max(0L, input$readxlSkip - 2L),
+            .name_repair = "minimal",
+            col_types = "text"
+          )
+          
+          firstCol <- input$readxlSkipCols - 1L
+          chars <- colnames(tibble)[-seq_len(firstCol)]
+          taxNames <- gsub(" ", "_", trimws(unlist(tibble[, firstCol])))
+          output$readxl.taxa <- renderUI(HTML(paste(
+            "<em>Taxon names</em>:",
+            paste(taxNames[1:3], collapse = ", "),
+            "...\n")))
+          output$readxl.chars <- renderUI(HTML(paste(
+            "<em>Character names</em>:",
+            # not r$chars, which may be modified before output updated
+            paste(chars[1:3], collapse = ", "),
+            "..."
+          )))
+          r$chars <- chars
+          
+          dat <- as.matrix(tibble[, -seq_len(firstCol)])
+          rownames(dat) <- taxNames
+          dat <- MatrixToPhyDat(dat)
+          if (attr(dat, "nr") == 0) {
+            stop("No characters loaded; throw error")
+          }
+          
+          # Lines that could cause an error must come before log
+          
+          LogComment("Load data from spreadsheet", 2)
+          if (r$excelFiles == 0 ||
+              tools::md5sum(dataFile) != 
+              tools::md5sum(paste0(tempdir(), "/", LastFile("excel")))) {
+            CacheInput("excel", dataFile)
+          }
+          LogCode(c(
+            paste0("dataFile <- \"", LastFile("excel"), "\""),
+            "excelSheet <- readxl::read_excel(",
+            "  path = dataFile,",
+            paste0("  sheet = ", match(input$readxl.sheet, sheets, 1L), ","),
+            paste0("  skip = ", max(0L, input$readxlSkip - 2L), ","),
+            "  .name_repair = \"minimal\",",
+            "  col_types = \"text\"",
+            ")",
+            paste0("dat <- as.matrix(excelSheet[, -seq_len(", firstCol, ")])"),
+            paste0("rownames(dat) <- unlist(excelSheet[, ", firstCol, "])"),
+            "dataset <- MatrixToPhyDat(dat)"
+          ))
+          
+          # Return:
+          dat
+        }, error = function(e) {
+          NULL
+        })
+      } else {
+        hideElement("readxl.options")
       }
+      
+      if (is.null(r$dataset)) suppressWarnings({
+        r$dataset <- tryCatch({
+          r$readDataFile <- "ReadTntAsPhyDat(dataFile)"
+          
+          # Return:
+          ReadTntAsPhyDat(dataFile)
+        }, error = function(e) tryCatch({
+          r$chars <- tryCatch(
+            ReadCharacters(dataFile),
+            error = function(e) {
+              Notification(type = "error", "Error reading characters from file")
+              # Return:
+              NULL
+            })
+          
+          r$charNotes <- tryCatch(
+            ReadNotes(dataFile),
+            error = function(e) {
+              Notification(type = "error", "Error reading character notes")
+              # Return:
+              NULL
+            })
+          
+          r$readDataFile <- "ReadAsPhyDat(dataFile)"
+          
+          # Return:
+          ReadAsPhyDat(dataFile)
+        }, error = function(e) {
+          r$readDataFile <- NULL
+          # Return:
+          NULL
+        }))
+        
+        if (!is.null(r$dataset)) {
+          LogComment("Load data from file", 2)
+          CacheInput("data", dataFile)
+          LogCode(c(
+            paste0("dataFile <- \"", LastFile("data"), "\""),
+            paste0("dataset <- ", r$readDataFile)
+          ))
+        }
+      })
     } else {
       LogMsg("UpdateData(): from package")
       
@@ -798,16 +955,16 @@ server <- function(input, output, session) {
     if (is.null(r$dataset)) {
       Notification(type = "error", "Could not read data from file")
       
-      updateSliderInput(session, "whichChar", min = 0L,
-                        max = 0L, value = 0L)
+      updateNumericInput(session, "plottedChar", min = 0L,
+                         max = 0L, value = 0L)
       return ("Could not read data from file")
     } else {
       Notification(type = "message", 
-                       paste("Loaded", attr(r$dataset, "nr"), "characters and",
+                       paste("Loaded", nChars(), "characters and",
                              length(r$dataset), "taxa"))
       
-      updateSliderInput(session, "whichChar", min = 0L,
-                        max = as.integer(attr(r$dataset, "nr")), value = 1L)
+      updateNumericInput(session, "plottedChar", min = 0L,
+                         max = nChars(), value = 1L)
     }
     
     tryCatch({
@@ -1016,6 +1173,10 @@ server <- function(input, output, session) {
   
   observeEvent(input$dataSource, UpdateData(), ignoreInit = TRUE)
   observeEvent(input$dataFile, UpdateData(), ignoreInit = TRUE)
+  observeEvent(input$readxl.sheet, UpdateData(), ignoreInit = TRUE)
+  observeEvent(input$readxlSkip, UpdateData(), ignoreInit = TRUE)
+  observeEvent(input$readxlSkipCols, UpdateData(), ignoreInit = TRUE)
+  
   observeEvent(r$dataset, {
     r$dataHash <- rlang::hash(r$dataset)
   })
@@ -1030,6 +1191,7 @@ server <- function(input, output, session) {
     updateSelectInput(session, "implied.weights",
                       selected = input$implied.weights)
     updateSliderInput(session, "concavity", value = input$concavity)
+    updateNumericInput(session, "epsilon", value = input$epsilon)
     updateSliderInput(session, "ratchIter", value = input$ratchIter)
     updateSliderInput(session, "tbrIter", value = input$tbrIter)
     updateSliderInput(session, "maxHits", value = input$maxHits)
@@ -1046,12 +1208,16 @@ server <- function(input, output, session) {
                               "Equal" = "off"), "on"),
               sliderInput("concavity", "Step weight concavity constant", min = 0L,
                          max = 3L, pre = "10^", value = 1L),
+              numericInput("epsilon", "Keep if suboptimal by \u2264", min = 0,
+                          value = 0),
               sliderInput("ratchIter", "Ratchet iterations", min = 0L,
                           max = 50L, value = 6L, step = 1L),
-              sliderInput("maxHits", "Maximum hits", min = 0L, max = 5L,
-                          value = 2L, pre = "10^"),
+              sliderInput("timeout", "Maximum run duration", min = 1,
+                          max = 600, value = 30, post = "min", step = 1),
       )), column(6, 
              tagList(
+              sliderInput("maxHits", "Maximum hits", min = 0L, max = 5L,
+                         value = 2L, pre = "10^"),
               sliderInput("tbrIter", "TBR depth", min = 1L, max = 20L,
                           value = 1L, step = 1L),
               sliderInput("startIter", "First iteration extra depth", min = 1L,
@@ -1061,8 +1227,8 @@ server <- function(input, output, session) {
              ))
       ),
       title = "Tree search settings",
-      footer = tagList(modalButton("Close", icon = icon("window-close")),
-                       actionButton("modalGo", icon = icon("search"), 
+      footer = tagList(modalButton("Close", icon = Icon("rectangle-xmark")),
+                       actionButton("modalGo", icon = Icon("magnifying-glass"), 
                                     if(length(r$trees)) {
                                       "Continue search" 
                                     } else {
@@ -1357,6 +1523,14 @@ server <- function(input, output, session) {
            "prof" = "Profile")
   })
   
+  tolerance <- reactive({
+    if (input$epsilon == 0) {
+      sqrt(.Machine$double.eps)
+    } else {
+      input$epsilon
+    }
+  })
+  
   StartSearch <- function () {
     if (!HaveData()) {
       Notification("No data loaded", type = "error")
@@ -1368,8 +1542,10 @@ server <- function(input, output, session) {
         AdditionTree(r$dataset, concavity = concavity())
       } else {
         LogComment("Select starting tree")
-        LogCode("startTree <- trees[[1]]")
-        r$trees[[1]]
+        firstOptimal <- which.min(scores())
+        LogCode(paste0("startTree <- trees[[", firstOptimal, "]]",
+                       " # First tree with optimal score"))
+        r$trees[[firstOptimal]]
       }
       LogMsg("StartSearch()")
       PutData(r$dataset)
@@ -1383,8 +1559,10 @@ server <- function(input, output, session) {
         paste0("  ratchIter = ", input$ratchIter, ","), 
         paste0("  tbrIter = ", input$tbrIter, ","), 
         paste0("  maxHits = ", ceiling(10 ^ input$maxHits), ","), 
-        paste0("  startIter = ", input$startIter, ","), 
-        paste0("  finalIter = ", input$finalIter, ","), 
+        paste0("  maxTime = ", input$timeout, ","),
+        paste0("  startIter = ", input$startIter, ","),
+        paste0("  finalIter = ", input$finalIter, ","),
+        if (input$epsilon > 0) paste0("  tolerance = ", tolerance(), ","),
         "  verbosity = 4",
         ")"))
       newTrees <- withProgress(
@@ -1394,8 +1572,10 @@ server <- function(input, output, session) {
                           ratchIter = input$ratchIter,
                           tbrIter = input$tbrIter,
                           maxHits = ceiling(10 ^ input$maxHits),
+                          maxTime = input$timeout,
                           startIter = input$startIter,
                           finalIter = input$finalIter,
+                          tolerance = tolerance(),
                           verbosity = 4L),
         value = 0.85, message = "Finding MPT",
         detail = paste0(ceiling(10^input$maxHits), " hits; ", wtType())
@@ -1448,14 +1628,25 @@ server <- function(input, output, session) {
     }
   }
   
-  PlottedChar <- debounce(reactive(as.integer(input$whichChar)), aJiffy)
-  observeEvent(input$whichChar, {
-    if (input$whichChar > 0) {
+  PlottedChar <- debounce(reactive({
+    typed <- max(0L, as.integer(input$plottedChar), na.rm = TRUE)
+    if (nChars() > 0 && typed > nChars()) {
+      Notification(type = "warning",
+                   paste("Dataset contains", nChars(), "characters.")
+      )
+      updateNumericInput(session, "plottedChar", value = nChars())
+    }
+    min(typed, nChars())
+  }), aJiffy)
+  
+  observeEvent(PlottedChar(), {
+    if (PlottedChar() > 0) {
       showElement("mapDisplay")
     } else {
       hideElement("mapDisplay")
     }
-  })
+  }, ignoreInit = TRUE)
+  
   whichTree <- debounce(reactive(input$whichTree), aJiffy)
   
   PlottedTree <- reactive({
@@ -1562,6 +1753,12 @@ server <- function(input, output, session) {
   
   TipCols <- reactive(stableCol()) # TODO allow user to choose how to colour
   
+  TipColLegend <- function() {
+    SpectrumLegend(palette = hcl.colors(131, "inferno")[1:101],
+                   legend = c("Stable", "Unstable"),
+                   title = "Leaf stability")
+  }
+  
   consP <- debounce(reactive(signif(input$consP)), 50)
   observeEvent(consP(), {
     if (AnyTrees()) {
@@ -1578,6 +1775,8 @@ server <- function(input, output, session) {
     switch(input$concordance,
           "p" = SplitFrequency(r$plottedTree, r$trees) / length(r$trees),
           "qc" = QuartetConcordance(r$plottedTree, r$dataset),
+          "mcc" = MutualClusteringConcordance(r$plottedTree, r$dataset),
+          "spc" = SharedPhylogeneticConcordance(r$plottedTree, r$dataset),
           "clc" = ClusteringConcordance(r$plottedTree, r$dataset),
           "phc" = PhylogeneticConcordance(r$plottedTree, r$dataset),
           NULL
@@ -1604,6 +1803,10 @@ server <- function(input, output, session) {
         "qc"  = paste0("QuartetConcordance(", plottedTree, ", dataset)"),
         "clc" = paste0("ClusteringConcordance(", plottedTree, ", dataset)"),
         "phc" = paste0("PhylogeneticConcordance(", plottedTree, ", dataset)"),
+        "mcc" = paste0("MutualClusteringConcordance(", plottedTree,
+                       ", dataset)"),
+        "spc" = paste0("SharedPhylogeneticConcordance(", plottedTree,
+                       ", dataset)"),
         NULL
       )
       LogCodeP(paste0("concordance <- ", concCode))
@@ -1812,15 +2015,40 @@ server <- function(input, output, session) {
     }
   }
   
+  PolEscVal <- reactive({
+    LengthAdded(r$trees,
+                r$dataset[tipLabels(), PlottedChar()],
+                concavity())
+  })
+  
   CharacterwisePlot <- function() {
     par(mar = rep(0, 4), cex = 0.9)
     n <- PlottedChar()
+    LogMsg("Plotting PlottedTree(", whichTree(), ", ", n, ")")
     r$plottedTree <- PlottedTree()
     if (length(n) && n > 0L) {
       pc <- tryCatch({
+        extraLen <- PolEscVal()
+        roguishness <- if (max(extraLen) == 0) {
+          "black"
+        } else {
+          hcl.colors(256, "inferno")[
+            (192 * extraLen[r$plottedTree$tip.label] / max(extraLen)) + 1
+          ]
+        }
         PlotCharacter(r$plottedTree, r$dataset, n,
                       edge.width = 2.5,
-                      updateTips = "updateTips" %in% input$mapDisplay)
+                      updateTips = "updateTips" %in% input$mapDisplay,
+                      tip.color = roguishness)
+        if (max(extraLen) > 0) {
+          SpectrumLegend(
+            palette = hcl.colors(256, "inferno")[1:193],
+            title = "Mean tree score\nimpact",
+            legend = c("No impact",
+                       signif(max(extraLen) / 2),
+                       signif(max(extraLen)))
+            )
+        }
       },
       error = function (cond) {
         cli::cli_alert_danger(cond)
@@ -1831,14 +2059,11 @@ server <- function(input, output, session) {
         return()
       }
       )
-              
-      PlotCharacter(r$plottedTree, r$dataset, n,
-                    edge.width = 2.5,
-                    updateTips = "updateTips" %in% input$mapDisplay)
       
       LabelConcordance()
     } else {
       plot(r$plottedTree, tip.color = TipCols()[r$plottedTree$tip.label])
+      TipColLegend()
     }
   }
   
@@ -1924,6 +2149,7 @@ server <- function(input, output, session) {
                      whichTree(),
                      input$concordance,
                      r$outgroup,
+                     concavity(),
                      input$mapDisplay,
                      r$dataHash, r$treeHash), 
         "space" = list(r$treeHash, input$plotFormat,
@@ -2022,7 +2248,7 @@ server <- function(input, output, session) {
   
   output$charMapLegend <- bindCache(
     renderUI({
-      n <- PlottedChar() # Debounces input$whichChar
+      n <- PlottedChar()
       if (length(n) && n > 0L && !is.null(r$chars)) {
       
         pal <- c("#00bfc6", "#ffd46f", "#ffbcc5", "#c8a500",
@@ -2076,7 +2302,7 @@ server <- function(input, output, session) {
   
   output$charNotes <- bindCache(
     renderUI({
-      n <- PlottedChar() # Debounces input$whichChar
+      n <- PlottedChar()
       if (length(n) && n > 0L
           && is.list(r$charNotes) && is.list(r$charNotes[[1]])
           && length(r$charNotes) >= n) {
@@ -2249,7 +2475,8 @@ server <- function(input, output, session) {
       
       nK <- length(possibleClusters)
     
-      kClusters <- lapply(possibleClusters, function (k) kmeans(dists, k))
+      kClusters <- lapply(possibleClusters,
+                          function (k) TreeDist::KMeansPP(dists, k))
       kSils <- vapply(kClusters, function (kCluster) {
         mean(cluster::silhouette(kCluster$cluster, dists)[, 3])
       }, double(1))
@@ -2310,11 +2537,11 @@ server <- function(input, output, session) {
       
       LogCommentP("Compute clusters of trees", 2)
       nK <- length(possibleClusters)
-      LogCommentP("Try K-means clustering:")
+      LogCommentP("Try K-means++ clustering (Arthur & Vassilvitskii 2007):")
       LogCodeP(
         paste0(
           "kClusters <- lapply(", possibleClusters, ", ",
-          "function (k) kmeans(dists, k)", ")"
+          "function (k) KMeansPP(dists, k)", ")"
         ),
         "kSils <- vapply(kClusters, function (kCluster) {",
         "  mean(cluster::silhouette(kCluster$cluster, dists)[, 3])",
@@ -2324,7 +2551,7 @@ server <- function(input, output, session) {
         "kCluster <- kClusters[[bestK]]$cluster # Best solution"
       )
       
-      LogCommentP("Try partitioning around medoids:")
+      LogCommentP("Try partitioning around medoids (Maechler et al. 2019):")
       LogCodeP(
         paste0(
           "pamClusters <- lapply(", possibleClusters, ", ",
@@ -2339,7 +2566,10 @@ server <- function(input, output, session) {
       )
       
       
-      LogCommentP("Try hierarchical clustering with minimax linkage")
+      LogCommentP(
+        paste("Try hierarchical clustering with minimax linkage",
+              "(Bien & Tibshirani 2011):")
+      )
       LogCodeP(
         "hTree <- protoclust::protoclust(dists)",
         paste0(
@@ -2551,17 +2781,7 @@ server <- function(input, output, session) {
   spaceLwd <- reactive(2)
   
   FirstHit <- reactive({
-    if (is.null(attr(r$trees, "firstHit"))) {
-      treeNames <- names(r$trees)
-      pattern <- "(seed|start|ratch\\d+|final)_\\d+"
-      if (length(grep(pattern, treeNames, perl = TRUE)) ==
-          length(r$trees)) {
-        
-        whenHit <- gsub(pattern, "\\1", treeNames, perl = TRUE)
-        
-        attr(r$trees, "firstHit") <- table(whenHit)[unique(whenHit)]
-      }
-    }
+    r$trees <- WhenFirstHit(r$trees)
     
     # Return:
     attr(r$trees, "firstHit")
@@ -2585,7 +2805,7 @@ server <- function(input, output, session) {
     if (is.null(FirstHit())) {
       paste0(palettes[[1]], " # Arbitrarily")
     } else {
-      "hcl.colors(length(attr(trees, \"firstHit\")), \"viridis\")"
+      "hcl.colors(length(firstHit), \"viridis\")"
     }
   })
   
@@ -2649,7 +2869,10 @@ server <- function(input, output, session) {
         if (is.null(FirstHit())) {
           beige
         } else {
-          paste0("treeCols <- rep(", LogFirstHitCols(), ", attr(trees, \"firstHit\"))")
+          c("trees <- WhenFirstHit(trees)",
+            "firstHit <- attr(trees, \"firstHit\")",
+            paste0("treeCols <- rep(", LogFirstHitCols(), ", firstHit))")
+          )
         }
       },
       "treeCols <- black"
@@ -2719,7 +2942,7 @@ server <- function(input, output, session) {
   }
   
   maxProjDim <- reactive({
-    min(12, length(r$trees) - 1L)
+    min(12, max(0L, length(r$trees) - 1L))
   })
   
   nProjDim <- reactive({
@@ -2789,8 +3012,7 @@ server <- function(input, output, session) {
                    updateSliderInput(inputId = "spaceDim",
                                      value = min(nDim, input$spaceDim),
                                      max = nDim)
-                   message("Can't map into more than ", nDim,
-                           " dimensions.")
+                   message("Max dimensions available for mapping: ", nDim, ".")
                    cmdscale(distances(), k = nDim)
                  })
       )
@@ -3004,7 +3226,7 @@ server <- function(input, output, session) {
     }
     
     if ("mst" %in% input$mapLines) {
-      LogCommentP("Plot minimum spanning tree")
+      LogCommentP("Plot minimum spanning tree (Gower 1969)")
       LogCodeP(
         "mst <- MSTEdges(as.matrix(dists))",
         "segments(",
@@ -3115,7 +3337,7 @@ server <- function(input, output, session) {
         "  xpd = NA, # Display overflowing text",
         paste0("  col = ", LogFirstHitCols(), ","),
         paste0("  pt.cex = ", spaceCex(), ", # Point size"),
-        paste0("  ", Enquote(names(FirstHit())), ","),
+        paste0("  ", EnC(names(FirstHit())), ","),
         "  title = \"Iteration first hit\"",
         ")"
       )
@@ -3179,22 +3401,28 @@ server <- function(input, output, session) {
       if (isTRUE(getOption("shiny.testmode"))) {
         file.copy(cmdLogFile, file)
       } else {
-        tempDir <- tempfile("zip-")
-        dir.create(tempDir)
-        on.exit(unlink(tempDir))
-        rFile <- paste0(tempDir, "/TreeSearch-session.R")
+        zipDir <- tempfile("zip-")
+        dir.create(zipDir)
+        on.exit(unlink(zipDir))
+        rFile <- paste0(zipDir, "/TreeSearch-session.R")
         file.copy(cmdLogFile, rFile, overwrite = TRUE)
         zip(file, c(
           rFile,
-          paste0(tempdir(), "/", DataFileName(seq_len(r$dataFiles))),
-          paste0(tempdir(), "/", TreeFileName(seq_len(r$treeFiles)))
-        ), flags = "-r9Xj")
+          if (r$dataFiles)
+            paste0(tempdir(), "/", DataFileName(seq_len(r$dataFiles))),
+          if (r$excelFiles)
+            paste0(tempdir(), "/", ExcelFileName(seq_len(r$excelFiles))),
+          if (r$treeFiles)
+            paste0(tempdir(), "/", TreeFileName(seq_len(r$treeFiles)))
+        ), flags = "-9Xj")
       }
     })
   
   output$savePlotZip <- downloadHandler(
     filename = function() paste0(saveDetails()$fileName, ".zip"),
     content = function(file) {
+      StashTrees(r$allTrees)
+      
       if (isTRUE(getOption("shiny.testmode"))) {
         rCode <- RCode()
         rCode <- sub("TreeSearch plot log: 2[\\d\\-]{9} [012][\\d:]{7}",
@@ -3206,7 +3434,7 @@ server <- function(input, output, session) {
         rCode <- sub("dataFile <- .*$",
                      paste0("dataFile <- system.file(\"datasets/",
                             input$dataSource,
-                            ".nex\", package = \"TreeSearch\") # Test mode"),
+                            ".nex\", package = \"TreeSearch\") # FALSE CODE for TEST MODE"),
                      rCode,
                      perl = TRUE)
         rCode <- sub("treeFile <- .*$",
@@ -3225,6 +3453,7 @@ server <- function(input, output, session) {
         zip(file, c(
           rFile,
           paste0(tempdir(), "/", LastFile("data")),
+          paste0(tempdir(), "/", LastFile("excel")),
           paste0(tempdir(), "/", LastFile("tree"))
         ), flags = "-r9Xj")
       }
@@ -3241,9 +3470,13 @@ server <- function(input, output, session) {
   output$savePdf <- downloadHandler(
     filename = function() paste0(saveDetails()$fileName, ".pdf"),
     content = function (file) {
-      pdf(file, title = saveDetails()$title,
-          width = 8L,
-          height = saveDetails()$asp * 10L)
+      width <- 8
+      pdf(
+        file,
+        title = saveDetails()$title,
+        width = width,
+        height = saveDetails()$asp * width
+      )
       MainPlot()
       dev.off()
     })
@@ -3278,12 +3511,13 @@ server <- function(input, output, session) {
      tags$h3("Clustering"),
      HTML(paste("Cluster consensus trees:", Stockham2002)),
      HTML(paste0(
-       "k-means:", Hartigan1979,
+       "k-means++:", Arthur2007, Hartigan1979, 
        "Partitioning around medoids:", Maechler2019,
        "Hierarchical, minimax linkage:", Bien2011, Murtagh1983)),
      tags$h3("Rogue taxa"),
      HTML(paste("Detection:", SmithRogue)),
      HTML(paste("Plotting:", Klopfstein2019)),
+     HTML(paste("Character analysis:", Pol2009)),
     )
   })
 

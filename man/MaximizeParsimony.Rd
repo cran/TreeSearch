@@ -62,7 +62,7 @@ parsimony ratchet \insertCite{Nixon1999}{TreeSearch} to conduct.}
 break points to evaluate before concluding each search.
 The counter is reset to zero each time tree score improves.
 The counter is reset to zero each time tree score improves.
-One 'iteration' comprises breaking a single branch and evaluating all
+One "iteration" comprises breaking a single branch and evaluating all
 possible reconnections.}
 
 \item{startIter}{Numeric: an initial round of tree search with
@@ -100,8 +100,10 @@ Setting to larger values will include trees suboptimal by up to \code{tolerance}
 in search results, which may improve the accuracy of the consensus tree
 (at the expense of resolution) \insertCite{Smith2019}{TreeSearch}.}
 
-\item{constraint}{An object of class \code{phyDat}; returned trees will be
-perfectly compatible with each character in \code{constraint}.
+\item{constraint}{Either an object of class \code{phyDat}, in which case
+returned trees will be perfectly compatible with each character in
+\code{constraint}; or a tree of class \code{phylo}, all of whose nodes will occur
+in any output tree.
 See \code{\link[=ImposeConstraint]{ImposeConstraint()}} and
 \href{https://ms609.github.io/TreeSearch/articles/tree-search.html}{vignette}
 for further examples.}
@@ -164,9 +166,9 @@ A final round of tree bisection and reconnection (\acronym{TBR})
 is conducted to broaden the sampling of trees.
 
 This function can be called using the R command line / terminal, or through
-the 'shiny' graphical user interface app (type \code{EasyTrees()} to launch).
+the "shiny" graphical user interface app (type \code{EasyTrees()} to launch).
 
-For detailed documentation of the 'TreeSearch' package, including full
+For detailed documentation of the "TreeSearch" package, including full
 instructions for loading phylogenetic data into R and initiating and
 configuring tree search, see the
 \href{https://ms609.github.io/TreeSearch/}{package documentation}.
@@ -197,7 +199,7 @@ For other ways to estimate clade concordance, see \code{\link[=SiteConcordance]{
 \examples{
 ## Only run examples in interactive R sessions
 if (interactive()) {
-  # launch 'shiny' point-and-click interface
+  # launch "shiny" point-and-click interface
   EasyTrees()
   
   # Here too, use the "continue search" function to ensure that tree score
@@ -206,8 +208,8 @@ if (interactive()) {
 
 
 # Load data for analysis in R
-library('TreeTools')
-data('congreveLamsdellMatrices', package = 'TreeSearch')
+library("TreeTools")
+data("congreveLamsdellMatrices", package = "TreeSearch")
 dataset <- congreveLamsdellMatrices[[42]]
 
 # A very quick run for demonstration purposes
