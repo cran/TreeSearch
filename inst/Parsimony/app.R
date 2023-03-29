@@ -137,7 +137,7 @@ Brazeau2019 <- Reference(c("Brazeau, M.D.", "Guillerme, T.", "Smith, M.R."), 201
                            title = "An algorithm for morphological phylogenetic analysis with inapplicable data",
                            journal = "Systematic Biology",
                            volume = 64,
-                           pages = "619-631",
+                           pages = c(619, 631),
                          doi = "10.1093/sysbio/syy083")
 Bien2011 <- Reference(
   c("Bien, J.", "Tibshirani, R."),
@@ -191,7 +191,7 @@ Murtagh1983 <- Reference(
   doi = "10.1093/comjnl/26.4.354", journal = "The Computer Journal")
 Nixon1999 <- Reference(
   "Nixon, K.C.", 1999,
-  journal = "Cladistics", volume = 15, pages = "407-414",
+  journal = "Cladistics", volume = 15, pages = c(407, 414),
   title = "The Parsimony Ratchet, a new method for rapid parsimony analysis",
   doi = "10.1111/j.1096-0031.1999.tb00277.x")
 Pol2009 <- Reference(
@@ -211,13 +211,13 @@ SmithQuartet <- Reference(
   "Quartet: comparison of phylogenetic trees using quartet and split measures",
   "Comprehensive R Archive Network", doi = "10.5281/zenodo.2536318")
 SmithSearch <- Reference(
-  "Smith, M.R.", 2022, "TreeSearch: morphological phylogenetic analysis in R",
-  "R Journal", pages = "Accepted manuscript",
-  doi = "10.1101/2021.11.08.467735")
+  "Smith, M.R.", 2023, "TreeSearch: morphological phylogenetic analysis in R",
+  "R Journal", volume = 14, pages = c(305, 315),
+  doi = "10.32614/RJ-2023-019")
 Smith2020 <- Reference(
   "Smith, M.R.", "2020b",
   "Information theoretic Generalized Robinson-Foulds metrics for comparing phylogenetic trees",
-  "Bioinformatics", volume = 36, pages = "5007--5013",
+  "Bioinformatics", volume = 36, pages = c("5007", "5013"),
   doi = "10.1093/bioinformatics/btaa614")
 SmithSpace <- Reference(
   "Smith, M.R.", "2022a", "Robust analysis of phylogenetic tree space",
@@ -377,13 +377,16 @@ ui <- fluidPage(
       plotOutput(outputId = "treePlot", height = "600px"),
       hidden(plotOutput("clustCons", height = "200px")),
       hidden(tags$div(id = "charChooser",
-        tags$div(numericInput("plottedChar", "Character to map:", value = 1L,
-                              min = 0L, max = 1L, step = 1L, width = 200),
-                 checkboxGroupInput("mapDisplay", "", list(
-                   "Align tips" = "tipsRight",
-                   "Infer tips" = "updateTips"
-                   )),
-                 style = "float: right; width: 200px; margin-left: 2em;"),
+        tags$div(
+          numericInput("plottedChar", "Character to map:", value = 1L,
+                       min = 0L, max = 1L, step = 1L, width = 200),
+          selectizeInput("searchChar", "Search characters:", multiple = FALSE,
+                         choices = list()),
+          checkboxGroupInput("mapDisplay", "", list(
+            "Align tips" = "tipsRight",
+            "Infer tips" = "updateTips"
+          )),
+          style = "float: right; width: 200px; margin-left: 2em;"),
         htmlOutput("charMapLegend"),
         htmlOutput("charNotes"),
       )),
@@ -957,6 +960,7 @@ server <- function(input, output, session) {
       
       updateNumericInput(session, "plottedChar", min = 0L,
                          max = 0L, value = 0L)
+      updateSelectizeInput(session, "searchChar", choices = NULL)
       return ("Could not read data from file")
     } else {
       Notification(type = "message", 
@@ -965,6 +969,11 @@ server <- function(input, output, session) {
       
       updateNumericInput(session, "plottedChar", min = 0L,
                          max = nChars(), value = 1L)
+      updateSelectizeInput(session, "searchChar",
+                           choices = paste0(seq_len(nChars()), ": ", 
+                                            colnames(r$chars)),
+                           selected = "",
+                           server = TRUE)
     }
     
     tryCatch({
@@ -1646,6 +1655,13 @@ server <- function(input, output, session) {
       hideElement("mapDisplay")
     }
   }, ignoreInit = TRUE)
+  
+  observeEvent(input$searchChar, {
+    searchResult <- as.numeric(strsplit(input$searchChar, ": ")[[1]][1])
+    if (!is.na(searchResult)) {
+      updateNumericInput(session, "plottedChar", value = searchResult)
+    }
+  })
   
   whichTree <- debounce(reactive(input$whichTree), aJiffy)
   
@@ -2346,7 +2362,7 @@ server <- function(input, output, session) {
           }),
           if (!states[[1]] %in% c("", "''")
               && any(tokens == "-")) {
-            tags$p("Brazeau et al. (2019) advise that neomorphic (0/1) characters should not contain inapplicable tokens (-).")
+            tags$p(tags$em("Brazeau et al. (2019) advise that neomorphic (0/1) characters should not contain inapplicable tokens (-)."))
           }
         )
       }
