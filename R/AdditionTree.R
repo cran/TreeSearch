@@ -6,9 +6,9 @@
 #' @inheritParams MaximizeParsimony
 #' @param sequence Character or numeric vector listing sequence in which to add
 #' taxa. Randomized if not provided.
-#' @examples 
-#' data("Lobo", package = "TreeTools")
-#' AdditionTree(Lobo.phy, concavity = 10)
+#' @examples
+#' data("inapplicable.phyData", package = "TreeSearch")
+#' AdditionTree(inapplicable.phyData[["Longrich2010"]], concavity = 10)
 #' @template MRS
 #' @return `AdditionTree()` returns a tree of class `phylo`, rooted on
 #' `sequence[1]`.
@@ -18,10 +18,13 @@
 #' @family tree generation functions
 #' @seealso 
 #' 
-#' Impose a constraint: [`TreeTools::ImposeConstraint()`](https://ms609.github.io/TreeTools/reference/ImposeConstraint)
+#' Impose a constraint: [`TreeTools::ImposeConstraint()`](
+#' https://ms609.github.io/TreeTools/reference/ImposeConstraint)
 #' 
-#' Neighbour-joining trees: [`TreeTools::NJTree()`](https://ms609.github.io/TreeTools/reference/NJTree.html);
-#' [`TreeTools::ConstrainedNJ()`](https://ms609.github.io/TreeTools/reference/ConstrainedNJ)
+#' Neighbour-joining trees: [`TreeTools::NJTree()`](
+#' https://ms609.github.io/TreeTools/reference/NJTree.html);
+#' [`TreeTools::ConstrainedNJ()`](
+#' https://ms609.github.io/TreeTools/reference/ConstrainedNJ)
 #' @export
 AdditionTree <- function (dataset, concavity = Inf, constraint, sequence) {
   

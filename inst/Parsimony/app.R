@@ -178,7 +178,7 @@ Klopfstein2019 <- Reference(
   doi = "10.1371/journal.pone.0212942"
 )
 Maechler2019 <- Reference(
-  title = "cluster: cluster analysis basics and extensions", year = 2019,
+  title = "cluster: cluster analysis basics and extensions", year = 2022,
   authors = c("Maechler, M.", "Rousseeuw, P.", "Struyf, A.", "Hubert, M.", "Hornik, K."),
   journal = "Comprehensive R Archive Network")
 Morphy <- Reference(
@@ -203,6 +203,12 @@ RCoreTeam <- Reference(
   authors = "R Core Team", year = 2020,
   title = "R: A language and environment for statistical computing",
   publisher = "R Foundation for Statistical Computing, Vienna, Austria")
+Rousseeuw1987 <- Reference(
+  title = "Silhouettes: a graphical aid to the interpretation and validation of cluster analysis",
+  author = "Rousseeuw, P.J.", year = 1987,
+  journal = "Journal of Computational and Applied Mathematics",
+  volume = 20, pages = c(53, 65), doi = "10.1016/0377-0427(87)90125-7"
+)
 SmithDist <- Reference(
   "Smith, M.R.", "2020a", "TreeDist: distances between phylogenetic trees",
   doi = "10.5281/zenodo.3528123", "Comprehensive R Archive Network")
@@ -1251,15 +1257,18 @@ server <- function(input, output, session) {
     tmpFile <- input$treeFile$datapath
     newTrees <- tryCatch({
         r$readTreeFile <- "read.tree(treeFile)"
+        LogMsg("Trying read.tree()")
         read.tree(tmpFile)
       },
       error = function (x) tryCatch({
         r$readTreeFile <- "read.nexus(treeFile)"
+          LogMsg("Trying read.nexus()")
           read.nexus(tmpFile)
         },
         error = function (err) tryCatch(
           {
-            if (err == "NA/NaN argument") {
+            if (grepl("NA/NaN argument", err)) {
+              LogMsg("Terminating tree block")
               # Unterminated tree block, perhaps because a search is ongoing
               withEnd <- tempfile()
               on.exit(unlink(withEnd))
@@ -1337,7 +1346,11 @@ server <- function(input, output, session) {
     PutData(r$dataset)
     LogMsg("scores(): Recalculating scores with k = ", concavity())
     withProgress(tryCatch(
-      signif(TreeLength(r$trees, r$dataset, concavity = concavity())),
+      signif(TreeLength(
+        RootTree(r$trees, 1),
+        r$dataset,
+        concavity = concavity()
+      )),
       error = function (x) {
         if (HaveData() && AnyTrees()) {
           cli::cli_alert(x[[2]])
@@ -1770,9 +1783,13 @@ server <- function(input, output, session) {
   TipCols <- reactive(stableCol()) # TODO allow user to choose how to colour
   
   TipColLegend <- function() {
-    SpectrumLegend(palette = hcl.colors(131, "inferno")[1:101],
-                   legend = c("Stable", "Unstable"),
-                   title = "Leaf stability")
+    PlotTools::SpectrumLegend(
+      "bottomleft", horiz = TRUE, inset = 0.01, bty = "n", xpd = NA,
+      palette = hcl.colors(131, "inferno")[1:101],
+      legend = c("Stable", "Unstable"),
+      title = "Leaf stability",
+      title.font = 2
+    )
   }
   
   consP <- debounce(reactive(signif(input$consP)), 50)
@@ -2057,13 +2074,14 @@ server <- function(input, output, session) {
                       updateTips = "updateTips" %in% input$mapDisplay,
                       tip.color = roguishness)
         if (max(extraLen) > 0) {
-          SpectrumLegend(
+          PlotTools::SpectrumLegend(
+            "bottomleft", bty = "n",
             palette = hcl.colors(256, "inferno")[1:193],
             title = "Mean tree score\nimpact",
-            legend = c("No impact",
-                       signif(max(extraLen) / 2),
-                       signif(max(extraLen)))
-            )
+            title.font = 2,
+            y.intersp = 1.42,
+            legend = c(signif(4:1 * max(extraLen) / 4, 3), "No impact")
+          )
         }
       },
       error = function (cond) {
@@ -3529,7 +3547,9 @@ server <- function(input, output, session) {
      HTML(paste0(
        "k-means++:", Arthur2007, Hartigan1979, 
        "Partitioning around medoids:", Maechler2019,
-       "Hierarchical, minimax linkage:", Bien2011, Murtagh1983)),
+       "Hierarchical, minimax linkage:", Bien2011, Murtagh1983,
+       "Clustering evaluation:", Rousseeuw1987
+       )),
      tags$h3("Rogue taxa"),
      HTML(paste("Detection:", SmithRogue)),
      HTML(paste("Plotting:", Klopfstein2019)),

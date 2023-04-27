@@ -1,3 +1,9 @@
+# TreeSearch 1.3.2 (2023-04-27)
+
+- Use `PlotTools::SpectrumLegend()` for continuous scales in app
+- Restore auto-termination of `.t` files
+
+
 # TreeSearch 1.3.1
 
 - `PlotCharacter()` now returns invisibly
