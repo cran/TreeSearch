@@ -1,5 +1,5 @@
-# options("TreeSearch.write.code" = TRUE) # Show code as it is written to log
 # options("TreeSearch.logging" = TRUE) # Log function entry and exit
+# options("TreeSearch.write.code" = TRUE) # Show code as it is written to log
 logging <- isTRUE(getOption("TreeSearch.logging"))
 options(shiny.maxRequestSize = 1024 ^ 3) # Allow max 1 GB files
 
@@ -1239,6 +1239,8 @@ server <- function(input, output, session) {
                           max = 10L, value = 3L, pre = "\ud7"),
               sliderInput("finalIter", "Final iteration extra depth", min = 1L,
                           max = 10L, value = 1L, pre = "\ud7"),
+              selectizeInput("searchWithout", "Exclude taxa", DatasetTips(),
+                             r$searchWithout, multiple = TRUE)
              ))
       ),
       title = "Tree search settings",
@@ -1364,6 +1366,7 @@ server <- function(input, output, session) {
   }), r$treeHash, r$dataHash, concavity())
   
   DisplayTreeScores <- function () {
+    LogMsg("DisplayTreeScores()")
     treeScores <- scores()
     score <- if (is.null(treeScores)) {
       "; could not be scored from dataset"
@@ -1526,8 +1529,12 @@ server <- function(input, output, session) {
         nchar(input$excludedTip) &&
         input$excludedTip %in% tipLabels()) {
       consTrees <- lapply(r$trees, DropTip, setdiff(dropped, input$excludedTip))
-      plotted <- RoguePlot(consTrees, input$excludedTip, p = consP(),
-                           plot = FALSE)
+      plotted <- TreeTools::RoguePlot(
+        trees = consTrees,
+        tip = input$excludedTip,
+        p = consP(),
+        plot = FALSE
+      )
       tagList(
         tags$span(class = "legendLeft", "1 tree"),
         tags$span(id = "blackToGreen", class = "legendBar", "\ua0"),
@@ -1561,21 +1568,49 @@ server <- function(input, output, session) {
         LogComment("Select starting tree")
         LogCode(paste0("startTree <- AdditionTree(dataset, concavity = ",
                        Enquote(concavity()), ")"))
-        AdditionTree(r$dataset, concavity = concavity())
+        AdditionTree(r$dataset[SearchTips()], concavity = concavity())
       } else {
         LogComment("Select starting tree")
-        firstOptimal <- which.min(scores())
-        LogCode(paste0("startTree <- trees[[", firstOptimal, "]]",
-                       " # First tree with optimal score"))
-        r$trees[[firstOptimal]]
+        treeLabels <- TipLabels(r$trees[[1]])
+        if (all(SearchTips() %in% treeLabels)) {
+          if (length(setdiff(treeLabels, SearchTips())) > 0) {
+            if (length(r$searchWithout)) {
+              LogCode(paste0(
+                "searchTips <- setdiff(names(dataset), ", EnC(r$searchWithout),
+                ")"),
+                "startTree <- KeepTip(trees[[1]], searchTips)")
+            } else {
+              LogCode("startTree <- KeepTip(trees[[1]], names(dataset))")
+            }
+            KeepTip(r$trees[[1]], SearchTips())
+          } else {
+            firstOptimal <- which.min(scores())
+            LogCode(paste0("startTree <- trees[[", firstOptimal, "]]",
+                           " # First tree with optimal score"))
+            r$trees[[firstOptimal]]
+          }
+        } else {
+          # Fuzzy-match labels
+          matching <- TreeDist::LAPJV(adist(treeLabels, SearchTips()))$matching
+          scaffold <- KeepTip(r$trees[[1]], !is.na(matching))
+          scaffold[["tip.label"]] <- SearchTips()[matching[!is.na(matching)]]
+          AdditionTree(r$dataset, concavity = concavity(),
+                       constraint = scaffold)
+        }
       }
       LogMsg("StartSearch()")
-      PutData(r$dataset)
+      PutData(r$dataset[SearchTips()])
       PutTree(startTree)
       LogComment("Search for optimal trees", 1)
       LogCode(c(
         "newTrees <- MaximizeParsimony(",
-        "  dataset,",
+        if (length(r$searchWithout)) {
+          paste0(
+            "  dataset[setdiff(names(dataset), ", EnC(r$searchWithout), ")]"
+          )
+        } else {
+          "  dataset,"
+        },
         "  tree = startTree,",
         paste0("  concavity = ", Enquote(concavity()), ","),
         paste0("  ratchIter = ", input$ratchIter, ","), 
@@ -1588,7 +1623,7 @@ server <- function(input, output, session) {
         "  verbosity = 4",
         ")"))
       newTrees <- withProgress(
-        MaximizeParsimony(r$dataset,
+        MaximizeParsimony(r$dataset[SearchTips()],
                           tree = startTree,
                           concavity = concavity(),
                           ratchIter = input$ratchIter,
@@ -1625,6 +1660,10 @@ server <- function(input, output, session) {
       show("displayConfig")
     }
   }
+  
+  observeEvent(input$searchWithout, {
+    r$searchWithout <- input$searchWithout
+  }, ignoreInit = TRUE)
   
   observeEvent(input$go, StartSearch(), ignoreInit = TRUE)
   observeEvent(input$modalGo, {
@@ -1886,6 +1925,9 @@ server <- function(input, output, session) {
     }
   }, ignoreInit = TRUE)
   
+  DatasetTips <- reactive(names(r$dataset))
+  SearchTips <- reactive(setdiff(DatasetTips(), r$searchWithout))
+  
   KeptTips <- reactive({
     LogMsg("KeptTips()")
     n <- r$keepNTips
@@ -1939,7 +1981,7 @@ server <- function(input, output, session) {
         consTrees <- r$trees
       }
       
-      plotted <- RoguePlot(
+      plotted <- TreeTools::RoguePlot(
         consTrees,
         input$excludedTip,
         p = consP(),
@@ -2295,7 +2337,9 @@ server <- function(input, output, session) {
         appTokens <- setdiff(tokens, "-")
         .State <- function (glyph, text = "Error?", col = "red") {
           if (is.numeric(glyph)) {
-            if (glyph > length(appTokens)) return (NULL)
+            if (glyph > length(appTokens)) {
+              return(NULL)
+            }
             nonBlank <- states != ""
             text <- states[nonBlank][glyph]
             col <- pal[glyph]

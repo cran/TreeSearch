@@ -1,43 +1,43 @@
-## ----Load-library, message=FALSE----------------------------------------------
+## ----load-library, message=FALSE----------------------------------------------
 library("TreeSearch")
 
-## ----RNG-version--------------------------------------------------------------
+## ----rng-version--------------------------------------------------------------
 # Set a random seed so that random functions in this document are reproducible
 suppressWarnings(RNGversion("3.5.0")) # Until we can require R3.6.0
 set.seed(888)
 
-## ----Load Longrich data-------------------------------------------------------
+## ----load-longrich-data-------------------------------------------------------
 data(congreveLamsdellMatrices)
 myMatrix <- congreveLamsdellMatrices[[10]]
 
-## ----Addition tree------------------------------------------------------------
+## ----addition-tree------------------------------------------------------------
 additionTree <- AdditionTree(myMatrix, concavity = "profile")
 TreeLength(additionTree, myMatrix, "profile")
 par(mar = rep(0.25, 4), cex = 0.75) # make plot easier to read
 plot(additionTree)
 
-## ----Random tree--------------------------------------------------------------
+## ----random-tree--------------------------------------------------------------
 randomTree <- TreeTools::RandomTree(myMatrix, root = TRUE)
 TreeLength(randomTree, myMatrix, "profile")
 njTree <- TreeTools::NJTree(myMatrix)
 TreeLength(njTree, myMatrix, "profile")
 
-## ----Starting score, message = FALSE------------------------------------------
+## ----starting-score, message = FALSE------------------------------------------
 betterTrees <- MaximizeParsimony(myMatrix, additionTree, concavity = "profile",
                                  ratchIter = 3, tbrIter = 3, maxHits = 8)
 
-## ----Ratchet-search-results---------------------------------------------------
+## ----ratchet-search-results---------------------------------------------------
 TreeLength(betterTrees[[1]], myMatrix, "profile")
 par(mar = rep(0.25, 4), cex = 0.75) # make plot easier to read
 plot(ape::consensus(betterTrees))
 
-## ----Suboptimal sampling, message = FALSE-------------------------------------
+## ----suboptimal-sampling, message = FALSE-------------------------------------
 suboptimals <- MaximizeParsimony(myMatrix, betterTrees, tolerance = 3,
                                  ratchIter = 2, tbrIter = 3,
                                  maxHits = 25,
                                  concavity = "profile")
 
-## ----Plot suboptimal consensus------------------------------------------------
+## ----plot-suboptimal-consensus------------------------------------------------
 par(mar = rep(0.25, 4), cex = 0.75)
 table(signif(TreeLength(suboptimals, myMatrix, "profile")))
 plot(ape::consensus(suboptimals))

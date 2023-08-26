@@ -12,7 +12,7 @@
 
 <meta name="author" content="Martin R. Smith" />
 
-<meta name="date" content="2023-04-27" />
+<meta name="date" content="2023-08-26" />
 
 <title>Getting started: Installing R and TreeSearch</title>
 
@@ -341,7 +341,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h1 class="title toc-ignore">Getting started: Installing R and
 TreeSearch</h1>
 <h4 class="author">Martin R. Smith</h4>
-<h4 class="date">2023-04-27</h4>
+<h4 class="date">2023-08-26</h4>
 
 
 
@@ -356,36 +356,38 @@ is a popular front-end that makes several of R’s features easier to
 use.</p>
 <p>The “TreeSearch” package can be installed as any other package. To
 get the latest stable version from CRAN, type</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;TreeSearch&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;TreeSearch&quot;</span>)</span></code></pre></div>
 <p>into the R (or RStudio) command line.</p>
 <p>Once installed, load the “TreeSearch” package into R using</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;TreeSearch&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;TreeSearch&quot;</span>)</span></code></pre></div>
 <p>Activate the graphical user interface by typing
 <code>EasyTrees()</code>.</p>
 <p>In Jan 2022, some users are reporting issues after loading trees from
 Nexus files. These arise due to an issue in the underlying “ape”
 package. To install a patched version, close and re-launch R and
 run:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">require</span>(<span class="st">&quot;remotes&quot;</span>)) <span class="fu">install.packages</span>(<span class="st">&quot;remotes&quot;</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;ms609/ape@patch-3&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">require</span>(<span class="st">&quot;remotes&quot;</span>)) <span class="fu">install.packages</span>(<span class="st">&quot;remotes&quot;</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;ms609/ape@patch-3&quot;</span>)</span></code></pre></div>
 <p>Windows users may need to install <a href="https://cran.r-project.org/bin/windows/Rtools/">Rtools</a> before
 installing from the GitHub source.</p>
 </div>
 <div id="for-advanced-users" class="section level3">
 <h3>For advanced users</h3>
 <p>To get the latest development version from <a href="https://github.com/ms609/TreeSearch/">GitHub</a>, type</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;ms609/TreeSearch&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;ms609/TreeSearch&quot;</span>)</span></code></pre></div>
 </div>
 </div>
 <div id="what-next" class="section level2">
 <h2>What next?</h2>
 <p>You might want to:</p>
 <ul>
-<li><a href="https://ms609.github.io/TreeTools/articles/load-data.html">Load
-data</a> from a Nexus file or spreadsheet</li>
-<li>Conduct parsimony search using Brazeau, Guillerme &amp; Smith’s <a href="tree-search.html">approach to inapplicable data</a>, or using <a href="profile.html">Profile parsimony</a>.</li>
-<li>Conduct parsimony search using <a href="custom.html">custom
-optimality criteria</a>.</li>
+<li><p><a href="https://ms609.github.io/TreeTools/articles/load-data.html">Load
+data</a> from a Nexus file or spreadsheet</p></li>
+<li><p>Conduct parsimony search using Brazeau, Guillerme &amp; Smith’s
+<a href="tree-search.html">approach to inapplicable data</a>, or using
+<a href="profile.html">Profile parsimony</a>.</p></li>
+<li><p>Conduct parsimony search using <a href="custom.html">custom
+optimality criteria</a>.</p></li>
 </ul>
 </div>
 
