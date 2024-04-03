@@ -1,5 +1,9 @@
 test_that("PlotCharacter()", {
   
+  dataset <- TreeTools::StringToPhyDat("1111 1111 0000", tips = 12)
+  expect_error(PlotCharacter(TreeTools::BalancedTree(14), dataset),
+               "Taxa in tree missing from dataset:\\s*t13, t14$")
+  
   Character <- function (str, plot = FALSE, edges = FALSE, ...) {
     tree <- ape::read.tree(text = 
      "((((((a, b), c), d), e), f), (g, (h, (i, (j, (k, l))))));")
@@ -11,28 +15,32 @@ test_that("PlotCharacter()", {
                   edge.width = 3, plot = plot, ...)
   }
   
-  expect_equal(structure(c(FALSE, FALSE, TRUE, TRUE, FALSE, TRUE, TRUE, TRUE, 
-                           TRUE, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, 
-                           TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, 
-                           FALSE, FALSE, FALSE, FALSE, TRUE, FALSE, FALSE, FALSE, FALSE, 
-                           FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, TRUE, 
-                           FALSE, FALSE, FALSE, FALSE, TRUE, FALSE, FALSE, FALSE, FALSE, 
-                           FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, 
-                           FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, FALSE, FALSE, FALSE, 
-                           FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, FALSE, 
-                           FALSE, FALSE, FALSE, FALSE, TRUE, FALSE, FALSE, FALSE, TRUE, 
-                           TRUE, FALSE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, 
-                           FALSE, FALSE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, 
-                           TRUE, FALSE, FALSE, FALSE, TRUE, TRUE), .Dim = c(23L, 5L),
-                         .Dimnames = list(NULL, c("-", "0", "1", "2", "3"))),
-               Character("23--1??--032", updateTips = TRUE))
+  expect_equal(
+    Character("23--1??--032", updateTips = TRUE),
+    structure(
+      c(FALSE, FALSE, TRUE, TRUE, FALSE, TRUE, TRUE, TRUE,
+        TRUE, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE,
+        TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,
+        FALSE, FALSE, FALSE, FALSE, TRUE, FALSE, FALSE, FALSE, FALSE,
+        FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, TRUE,
+        FALSE, FALSE, FALSE, FALSE, TRUE, FALSE, FALSE, FALSE, FALSE,
+        FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,
+        FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, FALSE, FALSE, FALSE,
+        FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, FALSE,
+        FALSE, FALSE, FALSE, FALSE, TRUE, FALSE, FALSE, FALSE, TRUE,
+        TRUE, FALSE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,
+        FALSE, FALSE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,
+        TRUE, FALSE, FALSE, FALSE, TRUE, TRUE), .Dim = c(23L, 5L),
+      .Dimnames = list(NULL, c("-", "0", "1", "2", "3"))))
   
   skip_if_not_installed("vdiffr")
 
   Test <- if (interactive()) {
-    function (str, edges = FALSE) invisible(Character(str, plot = TRUE, edges = edges))
+    function (str, edges = FALSE, ...) {
+      invisible(Character(str, plot = TRUE, edges = edges, ...))
+    }
   } else {
-    function (str, edges = FALSE) {
+    function (str, edges = FALSE, ...) {
       vdiffr::expect_doppelganger(
         paste0("PlotChar_",
                gsub("?", "Q",
@@ -40,14 +48,14 @@ test_that("PlotCharacter()", {
                          gsub(")", "b",
                               gsub("-", "I", str,
                                    fixed = TRUE), fixed = TRUE), fixed = TRUE), fixed = TRUE)),
-        function() Character(str, plot = TRUE, edges = edges))
+        function() Character(str, plot = TRUE, edges = edges, ...))
     }
   }
   
   Test("23--1??--032", edges = TRUE)
   Test("23--1??(-0)-(01)32")
   Test("23??1????032")
-  Test("11--????--11")
+  Test("11--????--11", unitEdge = TRUE)
   Test("000011????00")
   Test("????????????")
   Test("-------?????")
