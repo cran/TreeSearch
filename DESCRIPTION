@@ -1,6 +1,6 @@
 Package: TreeSearch
 Title: Phylogenetic Analysis with Discrete Character Data
-Version: 1.5.0
+Version: 1.5.1
 Authors@R: c(
     person(
       "Martin R.", 'Smith',
@@ -54,10 +54,10 @@ Language: en-GB
 VignetteBuilder: knitr
 RoxygenNote: 7.3.1
 NeedsCompilation: yes
-Packaged: 2024-04-03 14:08:20 UTC; pjjg18
+Packaged: 2024-05-23 13:04:51 UTC; pjjg18
 Author: Martin R. Smith [aut, cre, cph]
     (<https://orcid.org/0000-0001-5660-1727>),
   Martin Brazeau [cph] (<https://orcid.org/0000-0002-0650-1282>)
 Maintainer: Martin R. Smith <martin.smith@durham.ac.uk>
 Repository: CRAN
-Date/Publication: 2024-04-03 16:53:07 UTC
+Date/Publication: 2024-05-23 13:40:03 UTC

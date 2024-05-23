@@ -12,7 +12,7 @@
 
 <meta name="author" content="Martin R. Smith" />
 
-<meta name="date" content="2024-04-03" />
+<meta name="date" content="2024-05-23" />
 
 <title>Getting started: Exploring tree space</title>
 
@@ -51,7 +51,7 @@ overflow: visible;
 </style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -150,6 +150,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; }
 div.csl-bib-body { }
 div.csl-entry {
 clear: both;
+margin-bottom: 0em;
 }
 .hanging div.csl-entry {
 margin-left:2em;
@@ -362,7 +363,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Getting started: Exploring tree space</h1>
 <h4 class="author">Martin R. Smith</h4>
-<h4 class="date">2024-04-03</h4>
+<h4 class="date">2024-05-23</h4>
 
 
 
@@ -600,10 +601,10 @@ distribution of trees:</p>
 <span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a>map <span class="ot">&lt;-</span> <span class="fu">cmdscale</span>(dists, <span class="at">k =</span> nDim) </span>
 <span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a></span>
 <span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a><span class="co"># Prepare plot layout </span></span>
-<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a>nPanels <span class="ot">&lt;-</span> nDim <span class="sc">*</span> (nDim <span class="sc">-</span> 1L) <span class="sc">/</span> 2L <span class="co"># Lower-left triangle </span></span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a>nPanels <span class="ot">&lt;-</span> nDim <span class="sc">*</span> (nDim <span class="sc">-</span> <span class="dv">1</span><span class="dt">L</span>) <span class="sc">/</span> <span class="dv">2</span><span class="dt">L</span> <span class="co"># Lower-left triangle </span></span>
 <span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a>plotSeq <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, nDim, nDim)</span>
 <span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a>plotSeq[<span class="fu">upper.tri</span>(plotSeq)] <span class="ot">&lt;-</span> <span class="fu">seq_len</span>(nPanels)</span>
-<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a>plotSeq[nDim <span class="sc">-</span> <span class="dv">1</span>, <span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="fu">max</span>(plotSeq) <span class="sc">+</span> 1L</span>
+<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a>plotSeq[nDim <span class="sc">-</span> <span class="dv">1</span>, <span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="fu">max</span>(plotSeq) <span class="sc">+</span> <span class="dv">1</span><span class="dt">L</span></span>
 <span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a><span class="fu">layout</span>(<span class="fu">t</span>(plotSeq[<span class="sc">-</span>nDim, <span class="sc">-</span><span class="dv">1</span>]))</span>
 <span id="cb12-12"><a href="#cb12-12" tabindex="-1"></a></span>
 <span id="cb12-13"><a href="#cb12-13" tabindex="-1"></a><span class="co"># Set plot margins </span></span>
@@ -766,7 +767,7 @@ inapplicable data)</li>
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1 class="unnumbered">References</h1>
-<div id="refs" class="references csl-bib-body hanging-indent" line-spacing="2">
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0" line-spacing="2">
 <div id="ref-Bien2011" class="csl-entry">
 Bien, J., &amp; Tibshirani, R. (2011). Hierarchical clustering with
 prototypes via minimax linkage. <em>Journal of the American Statistical

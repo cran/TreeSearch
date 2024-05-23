@@ -12,7 +12,7 @@
 
 <meta name="author" content="Martin R. Smith" />
 
-<meta name="date" content="2024-04-03" />
+<meta name="date" content="2024-05-23" />
 
 <title>Tree search with custom optimality criteria</title>
 
@@ -51,7 +51,7 @@ overflow: visible;
 </style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -150,6 +150,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; }
 div.csl-bib-body { }
 div.csl-entry {
 clear: both;
+margin-bottom: 0em;
 }
 .hanging div.csl-entry {
 margin-left:2em;
@@ -363,7 +364,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h1 class="title toc-ignore">Tree search with custom optimality
 criteria</h1>
 <h4 class="author">Martin R. Smith</h4>
-<h4 class="date">2024-04-03</h4>
+<h4 class="date">2024-05-23</h4>
 
 
 
@@ -420,12 +421,12 @@ anything to <code>dataset</code> before it is sent to
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">TreeSearch</span>(tree, <span class="at">dataset =</span> <span class="fu">EmptyPhyDat</span>(tree),</span>
 <span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>                     <span class="at">InitializeData =</span> DoNothing, <span class="at">CleanUpData =</span> DoNothing,</span>
 <span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>                     <span class="at">TreeScorer =</span> TCIScore,</span>
-<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>                     <span class="at">maxIter =</span> 50L, <span class="at">maxHits =</span> 10L, </span>
-<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>                     <span class="at">verbosity =</span> 1L)</span></code></pre></div>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>                     <span class="at">maxIter =</span> <span class="dv">50</span><span class="dt">L</span>, <span class="at">maxHits =</span> <span class="dv">10</span><span class="dt">L</span>, </span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>                     <span class="at">verbosity =</span> <span class="dv">1</span><span class="dt">L</span>)</span></code></pre></div>
 <pre><code>##   - Performing tree search.  Initial score: 56</code></pre>
 <pre><code>##   - Final score 33 found 4 times after 50 rearrangements.</code></pre>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">PlotTree</span>(result)</span></code></pre></div>
-<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
 </div>
 <div id="maximizing-tree-distance" class="section level2">
 <h2>Maximizing tree distance</h2>
@@ -447,14 +448,14 @@ that is most different from a starting tree. Notice that
 <span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">TreeSearch</span>(<span class="fu">RandomTree</span>(<span class="dv">8</span>, <span class="at">root =</span> <span class="cn">TRUE</span>), <span class="at">dataset =</span> <span class="fu">EmptyPhyDat</span>(tree),</span>
 <span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a>                     <span class="at">InitializeData =</span> DoNothing, <span class="at">CleanUpData =</span> DoNothing,</span>
 <span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a>                     <span class="at">TreeScorer =</span> DistanceScore,</span>
-<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a>                     <span class="at">maxIter =</span> 50L, <span class="at">maxHits =</span> 10L, </span>
-<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a>                     <span class="at">verbosity =</span> 1L)</span></code></pre></div>
-<pre><code>##   - Performing tree search.  Initial score: -6.65729762077267</code></pre>
-<pre><code>##   - Final score -7.87744375108174 found 4 times after 50 rearrangements.</code></pre>
+<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a>                     <span class="at">maxIter =</span> <span class="dv">50</span><span class="dt">L</span>, <span class="at">maxHits =</span> <span class="dv">10</span><span class="dt">L</span>, </span>
+<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a>                     <span class="at">verbosity =</span> <span class="dv">1</span><span class="dt">L</span>)</span></code></pre></div>
+<pre><code>##   - Performing tree search.  Initial score: -7.09113199415007</code></pre>
+<pre><code>##   - Final score -7.6637555080134 found 1 times after 50 rearrangements.</code></pre>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
 <span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="fu">PlotTree</span>(startTree)</span>
 <span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="fu">PlotTree</span>(result)</span></code></pre></div>
-<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
 </div>
 <div id="searching-using-implied-weights" class="section level2">
 <h2>Searching using implied weights</h2>
@@ -489,7 +490,7 @@ is the minimum number of steps required by each character – which we
 need in order to convert the total number of steps (returned by
 <code>MorphyLength()</code> to a number of excess steps (<em>e</em> in
 the implied weights formula)</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a>IWScoreMorphy <span class="ot">&lt;-</span> <span class="cf">function</span> (parent, child, dataset, <span class="at">concavity =</span> 10L, </span>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a>IWScoreMorphy <span class="ot">&lt;-</span> <span class="cf">function</span> (parent, child, dataset, <span class="at">concavity =</span> <span class="dv">10</span><span class="dt">L</span>, </span>
 <span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>                           <span class="at">minLength =</span> <span class="fu">attr</span>(dataset, <span class="st">&quot;min.length&quot;</span>), ...) {</span>
 <span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>  steps <span class="ot">&lt;-</span> <span class="fu">vapply</span>(<span class="fu">attr</span>(dataset, <span class="st">&quot;morphyObjs&quot;</span>), MorphyLength,</span>
 <span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a>                  <span class="at">parent =</span> parent, <span class="at">child =</span> child, <span class="fu">integer</span>(<span class="dv">1</span>))</span>
@@ -524,8 +525,8 @@ also sent the arguments <code>maxIter = bootstrapIter</code> and
 <code>maxHits = bootstrapHits</code>, allowing ratchet search intensity
 to be controlled from parameters sent to the <code>Ratchet()</code>
 function.</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a>IWBootstrap <span class="ot">&lt;-</span> <span class="cf">function</span> (edgeList, dataset, <span class="at">concavity =</span> 10L, <span class="at">EdgeSwapper =</span> NNISwap, </span>
-<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a>                         maxIter, maxHits, <span class="at">verbosity =</span> 1L, ...) {</span>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a>IWBootstrap <span class="ot">&lt;-</span> <span class="cf">function</span> (edgeList, dataset, <span class="at">concavity =</span> <span class="dv">10</span><span class="dt">L</span>, <span class="at">EdgeSwapper =</span> NNISwap, </span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a>                         maxIter, maxHits, <span class="at">verbosity =</span> <span class="dv">1</span><span class="dt">L</span>, ...) {</span>
 <span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a>  att <span class="ot">&lt;-</span> <span class="fu">attributes</span>(dataset)</span>
 <span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a>  startWeights <span class="ot">&lt;-</span> att[[<span class="st">&quot;weight&quot;</span>]]</span>
 <span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a>  </span>
@@ -549,7 +550,7 @@ function.</p>
 <span id="cb17-23"><a href="#cb17-23" tabindex="-1"></a>                        <span class="at">concavity =</span> concavity, <span class="at">minLength =</span> minLength,</span>
 <span id="cb17-24"><a href="#cb17-24" tabindex="-1"></a>                        <span class="at">EdgeSwapper =</span> EdgeSwapper, </span>
 <span id="cb17-25"><a href="#cb17-25" tabindex="-1"></a>                        <span class="at">maxIter =</span> maxIter, <span class="at">maxHits =</span> maxHits,</span>
-<span id="cb17-26"><a href="#cb17-26" tabindex="-1"></a>                        <span class="at">verbosity =</span> verbosity <span class="sc">-</span> 1L)</span>
+<span id="cb17-26"><a href="#cb17-26" tabindex="-1"></a>                        <span class="at">verbosity =</span> verbosity <span class="sc">-</span> <span class="dv">1</span><span class="dt">L</span>)</span>
 <span id="cb17-27"><a href="#cb17-27" tabindex="-1"></a>  </span>
 <span id="cb17-28"><a href="#cb17-28" tabindex="-1"></a>  res[<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]</span>
 <span id="cb17-29"><a href="#cb17-29" tabindex="-1"></a>}</span></code></pre></div>
@@ -596,7 +597,7 @@ trees</a></p></li>
 </div>
 <div id="references" class="section level2 unnumbered">
 <h2 class="unnumbered">References</h2>
-<div id="refs" class="references csl-bib-body hanging-indent" line-spacing="2">
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0" line-spacing="2">
 <div id="ref-Brazeau2017" class="csl-entry">
 Brazeau, M. D., Smith, M. R., &amp; Guillerme, T. (2017).
 <span>MorphyLib</span>: A library for phylogenetic analysis of

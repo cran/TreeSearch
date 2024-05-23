@@ -1,3 +1,8 @@
+# TreeSearch 1.5.1 (2024-05-23)
+
+- Fix calls to `DescendantEdges()`
+
+
 # TreeSearch 1.5.0 (2024-04-03)
 
 - `MaximumLength()` calculates maximum possible length of characters, including
@@ -289,7 +294,7 @@
 
 # TreeSearch 0.0.7
 
-## Inapplicables:
+## Inapplicable tokens:
 - Integrated with this package (previously in `inapplicable`)
 - Handle inapplicable data via API to Martin Brazeau's Morphy Phylogenetic Library
 
