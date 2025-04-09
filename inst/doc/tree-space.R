@@ -75,11 +75,11 @@ LabelSplits(
 dists <- TreeDist::ClusteringInfoDistance(trees)
 
 ## ----quartet-distance, eval = FALSE-------------------------------------------
-#  # The quartet distance is a slower alternative:
-#  library("Quartet")
-#  dists <- as.dist(Quartet::QuartetDivergence(
-#     Quartet::ManyToManyQuartetAgreement(trees), similarity = FALSE)
-#  )
+# # The quartet distance is a slower alternative:
+# library("Quartet")
+# dists <- as.dist(Quartet::QuartetDivergence(
+#    Quartet::ManyToManyQuartetAgreement(trees), similarity = FALSE)
+# )
 
 ## ----compute-clusters, fig.keep = "none"--------------------------------------
 # Try K-means clustering (Hartigan & Wong 1979):

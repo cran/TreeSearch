@@ -1,3 +1,21 @@
+# TreeSearch 1.6.0 (2025-04-09)
+
+## Improvements
+- `PlotCharacter()` performs ancestral state reconstruction on consensus trees
+  [#179](https://github.com/ms609/TreeSearch/issues/179)
+- Improve support for constraints in `AdditionTree()`
+  [#173](https://github.com/ms609/TreeSearch/issues/173)
+- Support for ordered (additive) characters via `TreeTools::Decompose()`
+- Fix SPR behaviour when move is close to root
+
+## App improvements
+- Buttons to download consensus trees in app
+- Fix display of state labels in app
+
+## Housekeeping
+- Require R 4.0 (to simplify maintenance)
+
+
 # TreeSearch 1.5.1 (2024-05-23)
 
 - Fix calls to `DescendantEdges()`

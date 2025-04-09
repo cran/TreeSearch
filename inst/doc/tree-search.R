@@ -7,9 +7,9 @@ library("TreeSearch")
 ## ----Load-data----------------------------------------------------------------
 vinther <- TreeSearch::inapplicable.phyData[["Vinther2008"]]
 
-## ----RNG-version--------------------------------------------------------------
+## ----RNG-version, warn = FALSE------------------------------------------------
 # Set a random seed so that random functions in this document are reproducible
-suppressWarnings(RNGversion("3.5.0")) # Until we require R v3.6.0
+RNGversion("3.5.0")
 set.seed(0)
 
 ## ----first-pass, message = FALSE----------------------------------------------

@@ -1,9 +1,9 @@
 ## ----load-library, message=FALSE----------------------------------------------
 library("TreeSearch")
 
-## ----rng-version--------------------------------------------------------------
+## ----rng-version, warn = FALSE------------------------------------------------
 # Set a random seed so that random functions in this document are reproducible
-suppressWarnings(RNGversion("3.5.0")) # Until we can require R3.6.0
+RNGversion("3.5.0")
 set.seed(888)
 
 ## ----load-longrich-data-------------------------------------------------------
