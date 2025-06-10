@@ -1,10 +1,16 @@
+# TreeSearch 1.6.1 (2025-06-10)
+- Handle invariant characters in `PolEscapa()`
+- Handle challenging root positions in `PlotCharacter()`
+- Fix character state colours in app legend
+- Tweak documentation
+
 # TreeSearch 1.6.0 (2025-04-09)
 
 ## Improvements
 - `PlotCharacter()` performs ancestral state reconstruction on consensus trees
-  [#179](https://github.com/ms609/TreeSearch/issues/179)
+  ([#179](https://github.com/ms609/TreeSearch/issues/179))
 - Improve support for constraints in `AdditionTree()`
-  [#173](https://github.com/ms609/TreeSearch/issues/173)
+  ([#173](https://github.com/ms609/TreeSearch/issues/173))
 - Support for ordered (additive) characters via `TreeTools::Decompose()`
 - Fix SPR behaviour when move is close to root
 
